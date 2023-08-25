@@ -91,7 +91,7 @@ public class Color_Board : MonoBehaviour
 
     public void btn_select_model_color(int index_mode)
     {
-        this.app.play_sound();
+        this.app.carrot.play_sound_click();
         this.index_sel_model = index_mode;
         this.check_model();
     }
@@ -110,7 +110,7 @@ public class Color_Board : MonoBehaviour
         this.inp_show_color.text=string.Format("#{0:X2}{1:X2}{2:X2}",c.r, c.g,c.b);
         this.inp_show_properties_color.text= string.Format("#{0:X2}{1:X2}{2:X2}", c.r, c.g, c.b);
         this.img_show_result_color.color = c;
-        this.app.play_sound();
+        this.app.carrot.play_sound_click();
         this.gameObject.SetActive(false);
     }
 

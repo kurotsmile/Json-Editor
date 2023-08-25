@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Advertisements;
-using UnityEngine.Purchasing;
 using UnityEngine.UI;
 
 public class App : MonoBehaviour
@@ -50,21 +48,6 @@ public class App : MonoBehaviour
 
     [Header("Sound")]
     public AudioSource[] sound;
-    private bool is_sound = true;
-
-    [Header("Setting")]
-    public GameObject panel_setting_removeads;
-    public GameObject btn_main_removeads;
-    public Image img_icon_setting_sound;
-    public Sprite sp_sound_on;
-    public Sprite sp_sound_off;
-
-    [Header("Ads")]
-    public string id_ads_unity;
-    public string Vungle_ads_appID;
-    public string Vungle_ads_placementID;
-    private bool is_ads = false;
-    private int count_ads = 0;
 
     [Header("Help")]
     public Sprite[] sp_help;
@@ -78,8 +61,6 @@ public class App : MonoBehaviour
     private void Start()
     {
         this.carrot.Load_Carrot(this.check_exit_app);
-        this.carrot.shop.onCarrotPaySuccess = on_success_carrot_pay;
-        this.carrot.shop.onCarrotRestoreSuccess=on_success_carrot_restore;
         this.carrot.act_after_close_all_box = this.check_data_login;
 
         this.Panel_edit_Properties.SetActive(false);
@@ -94,31 +75,6 @@ public class App : MonoBehaviour
         this.add_obj(prefab_obj_js.GetComponent<js_object>(), "root");
         this.check_mode();
         this.GetComponent<Manager_Project>().load_project();
-
-        if (PlayerPrefs.GetInt("is_sound", 0) == 0) this.is_sound = true; else this.is_sound = false;
-        this.check_sound_status();
-
-        if (PlayerPrefs.GetInt("is_ads", 0) == 0)
-        {
-#if UNITY_WSA_10_0 || UNITY_WINRT_8_1 || UNITY_METRO
-            Vungle.init(Vungle_ads_appID);
-            Vungle.setSoundEnabled(this.is_sound);
-#else
-            Advertisement.Initialize(this.id_ads_unity, false);
-#endif
-
-            this.is_ads = true;
-            Advertisement.Initialize(this.id_ads_unity, false);
-            this.panel_setting_removeads.SetActive(true);
-            this.btn_main_removeads.SetActive(true);
-        }
-        else
-        {
-            this.panel_setting_removeads.SetActive(false);
-            this.btn_main_removeads.SetActive(false);
-            this.is_ads = false;
-        }
-
         this.check_data_login();
     }
 
@@ -132,11 +88,6 @@ public class App : MonoBehaviour
         else if (this.Panel_help.activeInHierarchy)
         {
             this.close_help();
-            this.carrot.set_no_check_exit_app();
-        }
-        else if (this.Panel_setting.activeInHierarchy)
-        {
-            this.close_setting();
             this.carrot.set_no_check_exit_app();
         }
         else if(this.Panel_save.activeInHierarchy)
@@ -172,9 +123,9 @@ public class App : MonoBehaviour
             this.is_change_coderviewer = true;
             this.is_change_editor = true;
             this.obj_icon_save_status_new.SetActive(true);
-            this.play_sound();
+            this.carrot.play_sound_click();
         }
-        this.check_and_show_ads();
+        this.carrot.ads.show_ads_Interstitial();
     }
 
     public void new_project()
@@ -183,7 +134,7 @@ public class App : MonoBehaviour
         this.txt_save_status.text = PlayerPrefs.GetString("new_file","New File");
         this.sel_project_index = -1;
         this.GetComponent<Manager_Project>().set_new_project();
-        this.check_and_show_ads();
+        this.carrot.ads.show_ads_Interstitial();
     }
 
     public void update_option_list()
@@ -211,7 +162,7 @@ public class App : MonoBehaviour
         if (this.index_sel_mode == 0) this.show_editor_by_coder();
         if (this.index_sel_mode == 1) this.show_code_json(false);
         if (this.index_sel_mode == 2) this.show_code_json(true);
-        this.play_sound();
+        this.carrot.play_sound_click();
     }
 
     public void check_mode()
@@ -243,13 +194,13 @@ public class App : MonoBehaviour
 
     public void close_Properties()
     {
-        this.play_sound();
+        this.carrot.play_sound_click();
         this.Panel_edit_Properties.SetActive(false);
     }
 
     public void btn_done_Properties()
     {
-        this.play_sound();
+        this.carrot.play_sound_click();
         this.Js_object_edit_temp.txt_name.text = this.inp_edit_Properties_name.text;
         this.Js_object_edit_temp.set_properties_value(this.index_edit_Properties_type, this.inp_edit_Properties_value.text);
         this.Panel_edit_Properties.SetActive(false);
@@ -267,7 +218,7 @@ public class App : MonoBehaviour
 
     public void btn_sel_type_Properties(int index_sel)
     {
-        this.play_sound();
+        this.carrot.play_sound_click();
         this.index_edit_Properties_type = index_sel;
         this.check_type_Properties();
     }
@@ -280,7 +231,7 @@ public class App : MonoBehaviour
             this.inp_edit_Properties_value.text = "false";
 
         this.check_val_bool_properties();
-        this.play_sound();
+        this.carrot.play_sound_click();
     }
 
     private void check_val_bool_properties()
@@ -340,14 +291,14 @@ public class App : MonoBehaviour
 
     public void show_project()
     {
-        this.play_sound();
+        this.carrot.play_sound_click();
         this.GetComponent<Manager_Project>().show_list();
-        this.check_and_show_ads();
+        this.carrot.ads.show_ads_Interstitial();
     }
 
     public void show_save()
     {
-        this.play_sound();
+        this.carrot.play_sound_click();
         if (this.sel_project_index != -1)
         {
             if (this.is_change_editor) this.GetComponent<Manager_Project>().update_project(this.sel_project_index, this.get_root().get_result());
@@ -359,12 +310,12 @@ public class App : MonoBehaviour
             this.sel_type_save = 0;
             this.check_show_save();
         }
-        this.check_and_show_ads();
+        this.carrot.ads.show_ads_Interstitial();
     }
 
     public void show_save_as()
     {
-        this.play_sound();
+        this.carrot.play_sound_click();
         this.inp_save_project_name.text = "";
         this.sel_type_save = 1;
         this.check_show_save();
@@ -380,7 +331,7 @@ public class App : MonoBehaviour
 
     public void btn_done_save()
     {
-        this.play_sound();
+        this.carrot.play_sound_click();
         if (this.inp_save_project_name.text.Trim() == "")
         {
             this.carrot.show_msg(PlayerPrefs.GetString("project_name_error","Project name cannot be empty!"));
@@ -396,13 +347,13 @@ public class App : MonoBehaviour
 
     public void close_save()
     {
-        this.play_sound();
+        this.carrot.play_sound_click();
         this.Panel_save.SetActive(false);
     }
 
     public void buy_product(int index_p)
     {
-        this.play_sound();
+        this.carrot.play_sound_click();
         this.carrot.shop.buy_product(index_p);
     }
 
@@ -440,37 +391,22 @@ public class App : MonoBehaviour
 
     public void app_rate()
     {
-        this.play_sound();
         this.carrot.show_rate();
     }
 
     public void show_setting()
     {
-        this.play_sound();
-        this.Panel_setting.SetActive(true);
-    }
-
-    public void close_setting()
-    {
-        this.play_sound();
-        this.Panel_setting.SetActive(false);
+        this.carrot.Create_Setting();
     }
 
     public void close_color_select()
     {
-        this.play_sound();
+        this.carrot.play_sound_click();
         this.Panel_select_color.close();
-    }
-
-    public void btn_in_app_restore()
-    {
-        this.play_sound();
-        this.carrot.shop.restore_product();
     }
 
     public void btn_delete_all_data()
     {
-        this.play_sound();
         this.carrot.delete_all_data();
         this.carrot.delay_function(1f,this.Start);
         this.list_item_obj = new List<GameObject>();
@@ -478,7 +414,6 @@ public class App : MonoBehaviour
 
     public void btn_share_app()
     {
-        this.play_sound();
         this.carrot.show_share();
     }
 
@@ -495,55 +430,9 @@ public class App : MonoBehaviour
         this.is_change_editor = true;
     }
 
-    public void play_sound(int index_sound=0)
-    {
-        if(this.is_sound) this.sound[index_sound].Play();
-    }
-
-    public void btn_change_status_sound_setting()
-    {
-        if (this.is_sound)
-        {
-            this.is_sound = false;
-            PlayerPrefs.SetInt("is_sound", 1);
-        }
-        else
-        {
-            this.is_sound = true;
-            PlayerPrefs.SetInt("is_sound", 0);
-            this.play_sound();
-        }
-        this.check_sound_status();
-    }
-
-    private void check_sound_status()
-    {
-        if (this.is_sound)
-            this.img_icon_setting_sound.sprite = this.sp_sound_on;
-        else
-            this.img_icon_setting_sound.sprite = this.sp_sound_off;
-    }
-
-    public void check_and_show_ads()
-    {
-        if (this.is_ads)
-        {
-            this.count_ads++;
-            if (this.count_ads > 16)
-            {
-#if UNITY_WSA_10_0 || UNITY_WINRT_8_1 || UNITY_METRO
-                Vungle.playAd(this.Vungle_ads_placementID);
-#else
-                Advertisement.Show("Interstitial_Android");
-#endif 
-                this.count_ads=0;
-            }
-        }
-    }
-
     public void show_select_color()
     {
-        this.play_sound();
+        this.carrot.play_sound_click();
         this.Panel_select_color.show_table();
     }
 
@@ -552,47 +441,16 @@ public class App : MonoBehaviour
         return this.index_sel_mode;
     }
 
-    public void on_success_carrot_pay(string s_id)
-    {
-        if (s_id == this.carrot.shop.get_id_by_index(0))
-        {
-            this.carrot.show_msg(PlayerPrefs.GetString("shop", "Shop"), PlayerPrefs.GetString("remove_ads_success","Remove ads successfully!"));
-            this.in_app_removeAds();
-        }
-    }
-
-    public void on_success_carrot_restore(string[] arr_id)
-    {
-        for (int i = 0; i < arr_id.Length; i++)
-        {
-            string s_id_p = arr_id[i];
-            if (s_id_p == this.carrot.shop.get_id_by_index(0)) this.in_app_removeAds();
-        }
-    }
-
-    private void in_app_removeAds()
-    {
-        this.is_ads = false;
-        PlayerPrefs.SetInt("is_ads", 1);
-        this.panel_setting_removeads.SetActive(false);
-        this.btn_main_removeads.SetActive(false);
-    }
-
-    public void buy_success(Product product)
-    {
-        this.on_success_carrot_pay(product.definition.id);
-    }
-
     public void show_help()
     {
         this.Panel_help.SetActive(true);
-        this.play_sound();
+        this.carrot.play_sound_click();
     }
 
     public void close_help()
     {
         this.Panel_help.SetActive(false);
-        this.play_sound();
+        this.carrot.play_sound_click();
     }
 
     public void btn_help_next()
@@ -600,7 +458,7 @@ public class App : MonoBehaviour
         this.sel_index_help++;
         if (this.sel_index_help >= this.sp_help.Length) this.sel_index_help = 0;
         this.img_show_help.sprite = this.sp_help[this.sel_index_help];
-        this.play_sound();
+        this.carrot.play_sound_click();
     }
     
     public void btn_help_prev()
@@ -608,19 +466,19 @@ public class App : MonoBehaviour
         this.sel_index_help--;
         if (this.sel_index_help <0) this.sel_index_help = this.sp_help.Length-1;
         this.img_show_help.sprite = this.sp_help[this.sel_index_help];
-        this.play_sound();
+        this.carrot.play_sound_click();
     }
 
     public void btn_show_more_app()
     {
         this.carrot.show_list_carrot_app();
-        this.play_sound();
+        this.carrot.play_sound_click();
     }
 
     public void btn_show_login()
     {
         this.carrot.show_login();
-        this.play_sound();
+        this.carrot.play_sound_click();
     }
 
     public void act_after_login()
@@ -656,13 +514,13 @@ public class App : MonoBehaviour
     public void btn_show_import()
     {
         this.panel_import.SetActive(true);
-        this.play_sound(0);
+        this.carrot.play_sound_click();
     }
 
     public void btn_close_import()
     {
         this.panel_import.SetActive(false);
-        this.play_sound(0);
+        this.carrot.play_sound_click();
     }
 
     public void btn_act_import_url()

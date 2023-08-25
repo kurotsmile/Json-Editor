@@ -132,7 +132,7 @@ public class Manager_Project : MonoBehaviour
 
         this.GetComponent<App>().carrot.close();
         this.GetComponent<App>().ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
-        this.GetComponent<App>().play_sound();
+        this.GetComponent<App>().carrot.play_sound_click();
         this.GetComponent<App>().update_option_list_obj();
     }
 
@@ -390,7 +390,7 @@ public class Manager_Project : MonoBehaviour
 
                 this.GetComponent<App>().carrot.close();
                 this.GetComponent<App>().ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
-                this.GetComponent<App>().play_sound();
+                this.GetComponent<App>().carrot.play_sound_click();
                 this.GetComponent<App>().update_option_list_obj();
                 this.GetComponent<App>().panel_import.SetActive(false);
             }

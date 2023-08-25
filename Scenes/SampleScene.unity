@@ -9363,7 +9363,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
       propertyPath: os_app
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
       propertyPath: pay_app
@@ -9379,7 +9379,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
       propertyPath: store_public
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
       propertyPath: emp_show_lang
@@ -9390,17 +9390,57 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 510177528}
     - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
+      propertyPath: setting_login
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
       propertyPath: link_share_app
       value: https://carrotstore.com/p/json-editor-apk
+      objectReference: {fileID: 0}
+    - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
+      propertyPath: setting_vibrate
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
+      propertyPath: Carrotstore_AppId
+      value: Json Editor
+      objectReference: {fileID: 0}
+    - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
+      propertyPath: setting_soundtrack
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
+      propertyPath: WindowUWP_ProductId
+      value: 9N9ZRZX827RF
+      objectReference: {fileID: 0}
+    - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
+      propertyPath: color_highlight.rgba
+      value: 4281704421
       objectReference: {fileID: 0}
     - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
       propertyPath: path_php_file_action
       value: app_mobile/json_editor/app.php
       objectReference: {fileID: 0}
     - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
+      propertyPath: index_inapp_remove_ads
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
+      propertyPath: index_inapp_buy_bk_music
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
       propertyPath: data_avatar_user.Array.size
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
+      propertyPath: emp_btn_remove_ads.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
+      propertyPath: emp_btn_remove_ads.Array.data[0]
+      value: 
+      objectReference: {fileID: 2486274}
     - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
       propertyPath: event_after_login_user.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -23387,14 +23427,6 @@ MonoBehaviour:
   panel_edit_Properties_bool: {fileID: 1570758919}
   sound:
   - {fileID: 76152137}
-  panel_setting_removeads: {fileID: 534775912}
-  btn_main_removeads: {fileID: 2486274}
-  img_icon_setting_sound: {fileID: 1166359503}
-  sp_sound_on: {fileID: 21300000, guid: e4e2a52745d792643bc40b0b83eb70c8, type: 3}
-  sp_sound_off: {fileID: 21300000, guid: 4eef49d0e4a4c3141b93b150ecd2f49e, type: 3}
-  id_ads_unity: 4527453
-  Vungle_ads_appID: 61cdc2bb01584ff0e36099e7
-  Vungle_ads_placementID: DEFAULT-6333814
   sp_help:
   - {fileID: 21300000, guid: b954232fe9f3ebc4c8cdd68a80e645a1, type: 3}
   - {fileID: 21300000, guid: 6a3e4c53429578344975a42194cfd2c9, type: 3}
