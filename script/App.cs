@@ -47,7 +47,8 @@ public class App : MonoBehaviour
     public GameObject panel_edit_Properties_bool;
 
     [Header("Sound")]
-    public AudioSource[] sound;
+    public AudioClip soundclip_click;
+    public AudioSource soundBackground;
 
     [Header("Help")]
     public Sprite[] sp_help;
@@ -61,6 +62,8 @@ public class App : MonoBehaviour
     private void Start()
     {
         this.carrot.Load_Carrot(this.check_exit_app);
+        this.carrot.change_sound_click(this.soundclip_click);
+        this.carrot.game.load_bk_music(this.soundBackground);
         this.carrot.act_after_close_all_box = this.check_data_login;
 
         this.Panel_edit_Properties.SetActive(false);

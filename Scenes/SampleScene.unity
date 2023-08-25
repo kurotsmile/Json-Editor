@@ -1631,7 +1631,7 @@ GameObject:
   - component: {fileID: 76152136}
   - component: {fileID: 76152137}
   m_Layer: 0
-  m_Name: Sound_Click
+  m_Name: Sound_Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1662,11 +1662,11 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 7fce714e2ba62544ab5d06463861cd8a, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -9374,6 +9374,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
+      propertyPath: type_app
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
       propertyPath: model_app
       value: 0
       objectReference: {fileID: 0}
@@ -9426,12 +9430,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
+      propertyPath: id_ads_Rewarded_android
+      value: ca-app-pub-5388516931803092/7253946783
+      objectReference: {fileID: 0}
+    - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
       propertyPath: index_inapp_buy_bk_music
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
       propertyPath: data_avatar_user.Array.size
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
+      propertyPath: id_ads_Interstitial_android
+      value: ca-app-pub-5388516931803092/7600048253
       objectReference: {fileID: 0}
     - target: {fileID: 5170736565810424378, guid: 03a96ab3934df714c9f607eeba1302ab, type: 3}
       propertyPath: emp_btn_remove_ads.Array.size
@@ -23425,8 +23437,8 @@ MonoBehaviour:
   panel_edit_Properties_value: {fileID: 2146574797}
   panel_edit_Properties_color: {fileID: 1837037191}
   panel_edit_Properties_bool: {fileID: 1570758919}
-  sound:
-  - {fileID: 76152137}
+  soundclip_click: {fileID: 8300000, guid: 7fce714e2ba62544ab5d06463861cd8a, type: 3}
+  soundBackground: {fileID: 76152137}
   sp_help:
   - {fileID: 21300000, guid: b954232fe9f3ebc4c8cdd68a80e645a1, type: 3}
   - {fileID: 21300000, guid: 6a3e4c53429578344975a42194cfd2c9, type: 3}
