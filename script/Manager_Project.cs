@@ -1,4 +1,5 @@
 using Carrot;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,7 +25,11 @@ public class Manager_Project : MonoBehaviour
 
     public void add_project(string s_name, string s_data)
     {
-        string id_user_login = this.app.carrot.user.get_id_user_login();
+        PlayerPrefs.SetString("p_name_" + this.length, s_name);
+        PlayerPrefs.SetString("p_data_" + this.length, s_data);
+        PlayerPrefs.SetString("p_date_" + this.length, DateTime.Now.ToString());
+        this.length+= 1;
+        PlayerPrefs.SetInt("p_length", this.length);
     }
 
     private void act_add_project(string s_data)
@@ -34,33 +39,36 @@ public class Manager_Project : MonoBehaviour
         this.project_item_temp.s_id_online = s_data;
     }
 
-    public void show_list()
+    public void Show_list_project()
     {
         bool is_login_user = false;
         if (this.app.carrot.user.get_id_user_login() != "") is_login_user = true;
 
         if (this.length == 0 && is_login_user == false)
         {
-            this.app.carrot.show_msg(PlayerPrefs.GetString("open","Open project"),PlayerPrefs.GetString("no_project","You don't have any archived projects yet"),Carrot.Msg_Icon.Error);
+            this.app.carrot.show_msg(app.carrot.lang.Val("open","Open project"), app.carrot.lang.Val("no_project","You don't have any archived projects yet"),Carrot.Msg_Icon.Alert);
             return;
         }
 
-        this.app.carrot.Create_Box(PlayerPrefs.GetString("open", "Open project"), this.sp_icon_open_project);
+        if (this.box != null) this.box.close();
+        this.box=this.app.carrot.Create_Box(PlayerPrefs.GetString("open", "Open project"), this.sp_icon_open_project);
         for (int i = this.length-1; i >=0; i--)
         {
-            if (PlayerPrefs.GetString("p_name_" + i, "") != "")
+            string s_name_project = PlayerPrefs.GetString("p_name_" + i, "");
+            if (s_name_project != "")
             {
-                GameObject obj_project = Instantiate(this.Project_Item_Prefab);
-                //obj_project.transform.SetParent(this.app.carrot.area_body_box);
-                obj_project.transform.localScale = new Vector3(1f, 1f, 1f);
-                obj_project.GetComponent<Project_Item>().txt_name.text = PlayerPrefs.GetString("p_name_" + i);
-                obj_project.GetComponent<Project_Item>().txt_date.text = PlayerPrefs.GetString("p_date_" + i);
-                obj_project.GetComponent<Project_Item>().index_project = i;
-                obj_project.GetComponent<Project_Item>().obj_btn_export_file.SetActive(false);
-                obj_project.GetComponent<Project_Item>().obj_btn_export_web.SetActive(false);
-                obj_project.GetComponent<Project_Item>().obj_btn_share.SetActive(false);
-                if (is_login_user) obj_project.GetComponent<Project_Item>().obj_btn_upload.SetActive(true);
-                else obj_project.GetComponent<Project_Item>().obj_btn_upload.SetActive(false);
+                var index = i;
+                Carrot_Box_Item item_project = this.box.create_item("item_project_" + i);
+                item_project.set_icon(this.app.sp_icon_project);
+                item_project.set_title(s_name_project);
+                item_project.set_tip(PlayerPrefs.GetString("p_date_" + i));
+
+                Carrot_Box_Btn_Item btn_del = item_project.create_item();
+                btn_del.set_icon(app.carrot.sp_icon_del_data);
+                btn_del.set_color(Color.red);
+                btn_del.set_act(() => Delete_project(index));
+
+                item_project.set_act(() => show_project_offline(index));
             }
         }
 
@@ -97,12 +105,11 @@ public class Manager_Project : MonoBehaviour
         }
     }
 
-    public void show_project_offline(Project_Item p_item)
+    public void show_project_offline(int index)
     {
-        this.project_item_temp = p_item;
-        string s_data = PlayerPrefs.GetString("p_data_" + p_item.index_project);
-        string s_name = PlayerPrefs.GetString("p_name_" + p_item.index_project);
-        this.app.sel_project_index = p_item.index_project;
+        string s_data = PlayerPrefs.GetString("p_data_" + index);
+        string s_name = PlayerPrefs.GetString("p_name_" + index);
+        this.app.sel_project_index = index;
         this.show_project(s_name, s_data);
     }
 
@@ -124,12 +131,10 @@ public class Manager_Project : MonoBehaviour
         this.app.update_option_list_obj();
     }
 
-    public void show_project_online(Project_Item p_item)
+    public void show_project_online(string id_project)
     {
-        this.project_item_temp = p_item;
-        this.app.sel_project_index = p_item.index_project;
         StructuredQuery q = new(app.carrot.Carrotstore_AppId);
-        q.Add_where("project_id",Query_OP.EQUAL,p_item.s_id_online);
+        q.Add_where("project_id",Query_OP.EQUAL, id_project);
     }
 
     public void act_show_project_online(string s_data_online)
@@ -239,7 +244,7 @@ public class Manager_Project : MonoBehaviour
         this.app.add_obj_list_main(item_editor);
     }
 
-    public void delete_project(int index)
+    public void Delete_project(int index)
     {
         bool is_null_list = true;
         this.delete_project_data(index);
@@ -253,7 +258,7 @@ public class Manager_Project : MonoBehaviour
             this.app.set_save_status_default();
         }
         else
-            this.show_list();
+            this.Show_list_project();
     }
 
     private void delete_project_data(int index)
@@ -270,7 +275,7 @@ public class Manager_Project : MonoBehaviour
 
     private void Act_delete_project(string s_data)
     {
-        this.show_list();
+        this.Show_list_project();
     }
 
     public void update_project(int index_project,string s_data)
@@ -313,7 +318,7 @@ public class Manager_Project : MonoBehaviour
     {
         this.project_item_temp = new Project_Item();
         this.project_item_temp.index_project = this.length - 1;
-        this.show_project_offline(this.project_item_temp);
+        //this.show_project_offline(this.project_item_temp);
     }
 
     public void upload_project(Project_Item p_item)
@@ -377,16 +382,26 @@ public class Manager_Project : MonoBehaviour
         }
     }
 
-    public void Show_save_project()
+    public void Show_save_project(bool is_save_as)
     {
         box = app.carrot.Create_Box();
         box.set_icon(app.sp_icon_save);
         box.set_title("Project Archives");
 
-        Carrot_Box_Item item_tip = box.create_item("item_tip");
-        item_tip.set_icon(app.sp_icon_save);
-        item_tip.set_title("Project Archives");
-        item_tip.set_tip("Store your json string for easy management and retrieval");
+        if (is_save_as)
+        {
+            Carrot_Box_Item item_tip = box.create_item("item_tip");
+            item_tip.set_icon(app.sp_icon_save);
+            item_tip.set_title("Project Archives");
+            item_tip.set_tip("Store your json string for easy management and retrieval");
+        }
+        else
+        {
+            Carrot_Box_Item item_tip = box.create_item("item_tip");
+            item_tip.set_icon(app.sp_icon_save);
+            item_tip.set_title("Save As...");
+            item_tip.set_tip("Archive this project with another name");
+        }
 
         Carrot_Box_Item item_name_project = box.create_item("item_name");
         item_name_project.set_icon(app.sp_icon_project);
@@ -414,8 +429,22 @@ public class Manager_Project : MonoBehaviour
 
     private void Act_save_project(string s_name)
     {
-        app.carrot.show_msg(s_name);
         app.carrot.play_sound_click();
+        if (s_name.Trim() == "")
+        {
+            this.app.carrot.show_msg(app.carrot.lang.Val("project_name_error", "Project name cannot be empty!"));
+            this.app.carrot.play_vibrate();
+            return;
+        }
+
+        this.add_project(s_name, app.Get_data_cur());
+        if (box != null) box.close();
+        /*
+        if (app.sel_type_save == 1)
+        {
+            if (this.carrot.user.get_id_user_login() == "") this.GetComponent<Manager_Project>().show_project_last();
+        }
+        */
     }
 
     private void Act_close_save()

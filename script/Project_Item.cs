@@ -21,20 +21,12 @@ public class Project_Item : MonoBehaviour
     public GameObject obj_btn_export_file;
     public GameObject obj_btn_share;
 
-    public void click_open()
-    {
-        if(this.s_id_online!="")
-            GameObject.Find("App").GetComponent<Manager_Project>().show_project_online(this);
-        else
-            GameObject.Find("App").GetComponent<Manager_Project>().show_project_offline(this);
-    }
-
     public void delete_project()
     {
         if(this.s_id_online!="")
             GameObject.Find("App").GetComponent<Manager_Project>().delete_project_online(this.s_id_online);
         else
-            GameObject.Find("App").GetComponent<Manager_Project>().delete_project(this.index_project);
+            GameObject.Find("App").GetComponent<Manager_Project>().Delete_project(this.index_project);
     }
 
     public void edit_project()

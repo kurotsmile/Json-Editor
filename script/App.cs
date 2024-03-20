@@ -25,7 +25,7 @@ public class App : MonoBehaviour
     public Text txt_username_login;
 
     public float space_x_item = 25f;
-    private List<GameObject> list_item_obj = new List<GameObject>();
+    private List<GameObject> list_item_obj = new();
     private int index_sel_mode = 0;
     public GameObject[] panel_model;
     public Image[] img_btn_model;
@@ -33,7 +33,6 @@ public class App : MonoBehaviour
     private bool is_change_editor=false;
 
     [Header("Save Project")]
-    public GameObject Panel_save;
     public GameObject[] Panel_save_item;
     public GameObject obj_icon_save_status_new;
     public InputField inp_save_project_name;
@@ -75,7 +74,6 @@ public class App : MonoBehaviour
         this.carrot.act_after_close_all_box = this.check_data_login;
 
         this.Panel_edit_Properties.SetActive(false);
-        this.Panel_save.SetActive(false);
         this.Panel_help.SetActive(false);
         this.panel_import.SetActive(false);
 
@@ -100,16 +98,11 @@ public class App : MonoBehaviour
             this.close_help();
             this.carrot.set_no_check_exit_app();
         }
-        else if(this.Panel_save.activeInHierarchy)
+        else if (this.panel_import.activeInHierarchy)
         {
-            this.close_save();
+            this.btn_close_import();
             this.carrot.set_no_check_exit_app();
         }
-        else if (this.panel_import.activeInHierarchy)
-            {
-                this.btn_close_import();
-                this.carrot.set_no_check_exit_app();
-            }
     }
 
     public void add_obj(js_object o, string s_type)
@@ -165,7 +158,7 @@ public class App : MonoBehaviour
         }
     }
 
-    public void btn_sel_mode(int index_mode)
+    public void Btn_sel_mode(int index_mode)
     {
         this.index_sel_mode = index_mode;
         this.check_mode();
@@ -302,7 +295,7 @@ public class App : MonoBehaviour
     public void show_project()
     {
         this.carrot.play_sound_click();
-        this.GetComponent<Manager_Project>().show_list();
+        this.manager_Project.Show_list_project();
         this.carrot.ads.show_ads_Interstitial();
     }
 
@@ -336,35 +329,12 @@ public class App : MonoBehaviour
         this.Panel_save_item[0].SetActive(false);
         this.Panel_save_item[1].SetActive(false);
         this.Panel_save_item[this.sel_type_save].SetActive(true);
-        this.Panel_save.SetActive(true);
     }
 
     public void Btn_save_project()
     {
         carrot.play_sound_click();
-        manager_Project.Show_save_project();
-    }
-
-    public void btn_done_save()
-    {
-        this.carrot.play_sound_click();
-        if (this.inp_save_project_name.text.Trim() == "")
-        {
-            this.carrot.show_msg(PlayerPrefs.GetString("project_name_error","Project name cannot be empty!"));
-            return;
-        }
-        this.carrot.show_msg(PlayerPrefs.GetString("save_success","Save Project Success!!!"));
-        this.GetComponent<Manager_Project>().add_project(this.inp_save_project_name.text, this.list_item_obj[0].GetComponent<js_object>().get_result());
-        if (this.sel_type_save == 1){
-            if(this.carrot.user.get_id_user_login()=="") this.GetComponent<Manager_Project>().show_project_last();
-        }
-        this.Panel_save.SetActive(false);
-    }
-
-    public void close_save()
-    {
-        this.carrot.play_sound_click();
-        this.Panel_save.SetActive(false);
+        manager_Project.Show_save_project(false);
     }
 
     public void buy_product(int index_p)
@@ -544,5 +514,10 @@ public class App : MonoBehaviour
         string s_inp_url = this.inp_import_url.text;
         if (s_inp_url.Trim() == "") this.carrot.show_msg(PlayerPrefs.GetString("import","Import"),PlayerPrefs.GetString("import_url_error", "Input url cannot be empty"),Carrot.Msg_Icon.Error);
         this.GetComponent<Manager_Project>().import_json_url(s_inp_url);
+    }
+
+    public string Get_data_cur()
+    {
+        return list_item_obj[0].GetComponent<js_object>().get_result();
     }
 }
