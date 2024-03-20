@@ -15,6 +15,8 @@ public class Manager_Project : MonoBehaviour
     public GameObject Project_Item_Prefab;
     private Project_Item project_item_temp;
 
+    private Carrot_Box box = null;
+
     public void load_project()
     {
         this.length = PlayerPrefs.GetInt("p_length", 0);
@@ -23,7 +25,6 @@ public class Manager_Project : MonoBehaviour
     public void add_project(string s_name, string s_data)
     {
         string id_user_login = this.app.carrot.user.get_id_user_login();
-
     }
 
     private void act_add_project(string s_data)
@@ -374,5 +375,52 @@ public class Manager_Project : MonoBehaviour
                 this.app.panel_import.SetActive(false);
             }
         }
+    }
+
+    public void Show_save_project()
+    {
+        box = app.carrot.Create_Box();
+        box.set_icon(app.sp_icon_save);
+        box.set_title("Project Archives");
+
+        Carrot_Box_Item item_tip = box.create_item("item_tip");
+        item_tip.set_icon(app.sp_icon_save);
+        item_tip.set_title("Project Archives");
+        item_tip.set_tip("Store your json string for easy management and retrieval");
+
+        Carrot_Box_Item item_name_project = box.create_item("item_name");
+        item_name_project.set_icon(app.sp_icon_project);
+        item_name_project.set_title("Name of project");
+        item_name_project.set_tip("Name the project you want to save");
+        item_name_project.set_type(Box_Item_Type.box_value_input);
+        item_name_project.check_type();
+
+        Carrot_Box_Btn_Panel panel_btn = box.create_panel_btn();
+
+        Carrot_Button_Item btn_save=panel_btn.create_btn("btn_save");
+        btn_save.set_icon_white(app.carrot.icon_carrot_done);
+        btn_save.set_bk_color(app.carrot.color_highlight);
+        btn_save.set_label_color(Color.white);
+        btn_save.set_label("Done");
+        btn_save.set_act_click(() => Act_save_project(item_name_project.get_val()));
+
+        Carrot_Button_Item btn_cancel = panel_btn.create_btn("btn_cancel");
+        btn_cancel.set_icon_white(app.carrot.icon_carrot_cancel);
+        btn_cancel.set_bk_color(app.carrot.color_highlight);
+        btn_cancel.set_label_color(Color.white);
+        btn_cancel.set_label("Cancel");
+        btn_cancel.set_act_click(() => Act_close_save());
+    }
+
+    private void Act_save_project(string s_name)
+    {
+        app.carrot.show_msg(s_name);
+        app.carrot.play_sound_click();
+    }
+
+    private void Act_close_save()
+    {
+        app.carrot.play_sound_click();
+        if (box != null) box.close();
     }
 }

@@ -5,10 +5,18 @@ using UnityEngine.UI;
 
 public class App : MonoBehaviour
 {
+    [Header("Obj Main")]
     public Carrot.Carrot carrot;
+    public Manager_Project manager_Project;
+
+    [Header("Icon")]
+    public Sprite sp_icon_save;
+    public Sprite sp_icon_save_as;
+    public Sprite sp_icon_project;
+
+    [Header("Obj Json")]
     public GameObject prefab_obj_js;
     public GameObject Panel_edit_Properties;
-    public GameObject Panel_setting;
     public GameObject Panel_help;
     public Color_Board Panel_select_color;
     public Transform area_all_item_editor;
@@ -68,7 +76,6 @@ public class App : MonoBehaviour
 
         this.Panel_edit_Properties.SetActive(false);
         this.Panel_save.SetActive(false);
-        this.Panel_setting.SetActive(false);
         this.Panel_help.SetActive(false);
         this.panel_import.SetActive(false);
 
@@ -330,6 +337,12 @@ public class App : MonoBehaviour
         this.Panel_save_item[1].SetActive(false);
         this.Panel_save_item[this.sel_type_save].SetActive(true);
         this.Panel_save.SetActive(true);
+    }
+
+    public void Btn_save_project()
+    {
+        carrot.play_sound_click();
+        manager_Project.Show_save_project();
     }
 
     public void btn_done_save()
