@@ -125,6 +125,7 @@ public class App : MonoBehaviour
 
     public void new_project()
     {
+        carrot.play_sound_click();
         this.clear_list_item_editor();
         this.txt_save_status.text = PlayerPrefs.GetString("new_file","New File");
         this.manager_Project.Set_new_project();

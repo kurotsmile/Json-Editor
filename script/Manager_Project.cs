@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Xml.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -38,6 +39,7 @@ public class Manager_Project : MonoBehaviour
     private void Add_project(IDictionary data)
     {
         PlayerPrefs.SetString("js_data_" + this.length, Json.Serialize(data));
+        this.sel_project_index = this.length;
         this.length += 1;
         PlayerPrefs.SetInt("js_length", this.length);
     }
@@ -88,6 +90,7 @@ public class Manager_Project : MonoBehaviour
             {
                 var index = i;
                 IDictionary data = (IDictionary) Json.Deserialize(s_data_project);
+                data["index"] = i;
                 Carrot_Box_Item item_project = this.Add_item_to_list_box(data);
 
                 if (s_id_user_login != "")
@@ -98,10 +101,16 @@ public class Manager_Project : MonoBehaviour
                     btn_public.set_act(() => Upload_project(index));
                 }
 
+
+                Carrot_Box_Btn_Item btn_edit = item_project.create_item();
+                btn_edit.set_icon(app.carrot.user.icon_user_edit);
+                btn_edit.set_color(app.carrot.color_highlight);
+                btn_edit.set_act(() => Show_edit_info(data));
+
                 Carrot_Box_Btn_Item btn_del = item_project.create_item();
                 btn_del.set_icon(app.carrot.sp_icon_del_data);
                 btn_del.set_color(Color.red);
-                btn_del.set_act(() => Delete_project_offline(index));
+                btn_del.set_act(() => Delete_project_offline(index, item_project.gameObject));
             }
         }
     }
@@ -151,7 +160,7 @@ public class Manager_Project : MonoBehaviour
                 Carrot_Box_Btn_Item btn_download = item_project.create_item();
                 btn_download.set_color(app.carrot.color_highlight);
                 btn_download.set_icon(app.carrot.icon_carrot_download);
-                btn_download.set_act(()=>Add_project(data));
+                btn_download.set_act(()=>Download_project(data));
 
                 string s_link_share = app.carrot.mainhost+"/?p=code&id="+data["id"].ToString();
                 Carrot_Box_Btn_Item btn_share = item_project.create_item();
@@ -162,7 +171,7 @@ public class Manager_Project : MonoBehaviour
                 Carrot_Box_Btn_Item btn_del = item_project.create_item();
                 btn_del.set_icon(app.carrot.sp_icon_del_data);
                 btn_del.set_color(Color.red);
-                btn_del.set_act(() => delete_project_online(data["id"].ToString()));
+                btn_del.set_act(() => Delete_project_online(data["id"].ToString()));
             }
         }
         else
@@ -176,6 +185,12 @@ public class Manager_Project : MonoBehaviour
     private void Show_share_project(string s_link)
     {
         app.carrot.show_share(s_link, "Share this project with everyone");
+    }
+
+    private void Download_project(IDictionary data)
+    {
+        this.Add_project(data);
+        app.carrot.show_msg("Download and import project success!");
     }
 
     private void Show_project(IDictionary data)
@@ -307,21 +322,20 @@ public class Manager_Project : MonoBehaviour
         this.app.add_obj_list_main(item_editor);
     }
 
-    public void Delete_project_offline(int index)
+    public void Delete_project_offline(int index,GameObject obj_item)
     {
+        PlayerPrefs.DeleteKey("js_data_" + index);
         bool is_null_list = true;
-        this.delete_project_data(index);
-        for (int i = 0; i < this.length; i++) if (PlayerPrefs.GetString("p_name_" + i, "") != "") { is_null_list = false; break; }
+        for (int i = 0; i < this.length; i++) if (PlayerPrefs.GetString("js_data_" + i, "") != "") { is_null_list = false; break; }
 
         if (is_null_list)
         {
             this.length = 0;
             PlayerPrefs.DeleteKey("p_length");
-            this.app.carrot.close();
             this.app.set_save_status_default();
+            if (box != null) box.close();
         }
-        else
-            this.Show_list_project();
+        Destroy(obj_item);
     }
 
     public void Delete_project_online(string s_id_project)
@@ -334,46 +348,6 @@ public class Manager_Project : MonoBehaviour
     {
         app.carrot.hide_loading();
         app.carrot.show_msg("Json Editor", "Delete project online success!", Msg_Icon.Success);
-    }
-
-    private void delete_project_data(int index)
-    {
-        PlayerPrefs.DeleteKey("p_name_" + index);
-        PlayerPrefs.DeleteKey("p_data_" + index);
-        PlayerPrefs.DeleteKey("p_date_" + index);
-    }
-
-    public void delete_project_online(string s_id_project)
-    {
-        app.carrot.server.Delete_Doc(this.app.carrot.Carrotstore_AppId, s_id_project, Act_delete_project);
-    }
-
-    private void Act_delete_project(string s_data)
-    {
-        this.Show_list_project();
-    }
-
-    public void Update_project_curent()
-    {
-        PlayerPrefs.SetString("p_data_" + this.sel_project_index, app.Get_data_cur());
-        PlayerPrefs.SetString("p_date_" + this.sel_project_index, DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
-        this.app.carrot.show_msg(PlayerPrefs.GetString("p_update_success", "Project update successful!"));
-    }
-
-    private void act_update_project_online(string s_data)
-    {
-        this.app.carrot.show_msg(PlayerPrefs.GetString("p_update_success", "Project update successful!"));
-    }
-
-    public void update_project_name(int id_project,string s_new_name)
-    {
-        PlayerPrefs.SetString("p_name_" + id_project, s_new_name);
-        this.app.carrot.show_msg(PlayerPrefs.GetString("p_name_update_success","Project name update successful!"));
-    }
-
-    public void Show_project_last()
-    {
-        this.sel_project_index = this.length - 1;
     }
 
     public void Set_new_project()
@@ -474,6 +448,7 @@ public class Manager_Project : MonoBehaviour
         }
 
         this.app.txt_save_status.text = s_name;
+        this.app.obj_icon_save_status_new.SetActive(false);
         this.Add_project(s_name, app.Get_data_cur());
         if (box != null) box.close();
     }
@@ -491,7 +466,7 @@ public class Manager_Project : MonoBehaviour
         box.set_title("Project Import");
 
         Carrot_Box_Item item_tip = box.create_item("item_tip");
-        item_tip.set_icon(app.sp_icon_save_as);
+        item_tip.set_icon(app.sp_icon_import);
         item_tip.set_title("Import");
         item_tip.set_tip("Import json data from web address");
 
@@ -561,7 +536,7 @@ public class Manager_Project : MonoBehaviour
 
         try
         {
-            File.WriteAllText(filePath, s_data);
+            System.IO.File.WriteAllText(filePath, s_data);
             app.carrot.show_input("Save", "File saved successfully at: ", filePath, Window_Input_value_Type.input_field);
         }
         catch (System.Exception ex)
@@ -598,5 +573,54 @@ public class Manager_Project : MonoBehaviour
         app.carrot.hide_loading();
         app.carrot.show_msg("Error", s_error, Msg_Icon.Error);
         app.carrot.play_vibrate();
+    }
+
+    internal void Update_project_curent()
+    {
+        IDictionary data = (IDictionary)Json.Deserialize(PlayerPrefs.GetString("js_data_"+this.sel_project_index));
+        data["code"] = app.Get_data_cur();
+        data["date"] = DateTime.Now.ToString();
+        PlayerPrefs.SetString("js_data_"+this.sel_project_index, Json.Serialize(data));
+    }
+
+    private void Show_edit_info(IDictionary data)
+    {
+        this.box_menu = app.carrot.Create_Box();
+        this.box_menu.set_icon(app.carrot.user.icon_user_edit);
+        this.box_menu.set_title("Edit project information");
+
+        Carrot_Box_Item item_title = this.box_menu.create_item();
+        item_title.set_title("Title");
+        item_title.set_tip("Your project name");
+        item_title.set_icon(this.app.sp_icon_project);
+        item_title.set_type(Box_Item_Type.box_value_input);
+        item_title.check_type();
+        item_title.set_val(data["title"].ToString());
+
+        Carrot_Box_Item item_describe = this.box_menu.create_item();
+        item_describe.set_title("Describe");
+        item_describe.set_tip("Describe your project");
+        item_describe.set_icon(this.app.carrot.icon_carrot_database);
+        item_describe.set_type(Box_Item_Type.box_value_input);
+        item_describe.check_type();
+        if(data["describe"]!=null) item_describe.set_val(data["describe"].ToString());
+
+        Carrot_Box_Btn_Panel panel_btn = this.box_menu.create_panel_btn();
+        Carrot_Button_Item btn_done=panel_btn.create_btn("btn_done");
+        btn_done.set_icon_white(app.carrot.icon_carrot_done);
+        btn_done.set_bk_color(app.carrot.color_highlight);
+        btn_done.set_label_color(Color.white);
+
+        Carrot_Button_Item btn_cancel = panel_btn.create_btn("btn_done");
+        btn_cancel.set_icon_white(app.carrot.icon_carrot_cancel);
+        btn_cancel.set_bk_color(app.carrot.color_highlight);
+        btn_cancel.set_label_color(Color.white);
+        btn_cancel.set_act_click(() => Act_close_box_edit_info());
+    }
+
+    private void Act_close_box_edit_info()
+    {
+        app.carrot.play_sound_click();
+        if (this.box_menu != null) this.box_menu.close();
     }
 }
