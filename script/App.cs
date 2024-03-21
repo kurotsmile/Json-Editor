@@ -1,4 +1,4 @@
-using System.Collections;
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,7 +36,6 @@ public class App : MonoBehaviour
     [Header("Save Project")]
     public GameObject obj_icon_save_status_new;
     public Text txt_save_status;
-    private int sel_type_save = 0;
 
     [Header("Edit Properties")]
     public Color32 color_properties_nomal;

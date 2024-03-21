@@ -1,8 +1,8 @@
 using Carrot;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -17,6 +17,7 @@ public class Manager_Project : MonoBehaviour
     public Sprite sp_icon_project_online;
 
     private Carrot_Box box = null;
+    private Carrot_Box box_menu = null;
     private int sel_project_index = -1;
 
     public void On_load()
@@ -24,8 +25,9 @@ public class Manager_Project : MonoBehaviour
         this.length = PlayerPrefs.GetInt("p_length", 0);
     }
 
-    public void add_project(string s_name, string s_data)
+    private void Add_project(string s_name, string s_data)
     {
+        PlayerPrefs.SetString("p_id_" + this.length, "code"+app.carrot.generateID()+UnityEngine.Random.Range(1,20));
         PlayerPrefs.SetString("p_name_" + this.length, s_name);
         PlayerPrefs.SetString("p_data_" + this.length, s_data);
         PlayerPrefs.SetString("p_date_" + this.length, DateTime.Now.ToString());
@@ -35,18 +37,44 @@ public class Manager_Project : MonoBehaviour
 
     public void Show_list_project()
     {
-        bool is_login_user = false;
-        if (this.app.carrot.user.get_id_user_login() != "") is_login_user = true;
-
-        if (this.length == 0 && is_login_user == false)
+        string id_user_login= this.app.carrot.user.get_id_user_login();
+        if (id_user_login != "")
         {
-            this.app.carrot.show_msg(app.carrot.lang.Val("open","Open project"), app.carrot.lang.Val("no_project","You don't have any archived projects yet"),Carrot.Msg_Icon.Alert);
+            box_menu = app.carrot.Create_Box();
+            box_menu.set_icon(this.app.sp_icon_project);
+            box_menu.set_title("Select the project archive list");
+
+            Carrot_Box_Item item_list_offline = box_menu.create_item();
+            item_list_offline.set_icon(sp_icon_open_project);
+            item_list_offline.set_title("Offline project");
+            item_list_offline.set_tip("Local security projects are only visible to you");
+            item_list_offline.set_act(()=>Show_list_offline());
+
+            Carrot_Box_Item item_list_online = box_menu.create_item();
+            item_list_online.set_icon(sp_icon_project_online);
+            item_list_online.set_title("Online project");
+            item_list_online.set_tip("Projects you can store online and share with the world");
+            item_list_online.set_act(()=>Show_list_online());
+        }
+        else
+        {
+            this.Show_list_offline();
+        }
+    }
+
+    private void Show_list_offline()
+    {
+        if (this.length == 0)
+        {
+            this.app.carrot.show_msg(app.carrot.lang.Val("open", "Open project"), app.carrot.lang.Val("no_project", "You don't have any archived projects yet"), Carrot.Msg_Icon.Alert);
+            this.app.carrot.play_vibrate();
             return;
         }
 
+        string s_id_user_login = app.carrot.user.get_id_user_login();
         if (this.box != null) this.box.close();
-        this.box=this.app.carrot.Create_Box(PlayerPrefs.GetString("open", "Open project"), this.sp_icon_open_project);
-        for (int i = this.length-1; i >=0; i--)
+        this.box = this.app.carrot.Create_Box(PlayerPrefs.GetString("open", "Open project"), this.sp_icon_open_project);
+        for (int i = this.length - 1; i >= 0; i--)
         {
             string s_name_project = PlayerPrefs.GetString("p_name_" + i, "");
             if (s_name_project != "")
@@ -57,10 +85,14 @@ public class Manager_Project : MonoBehaviour
                 item_project.set_title(s_name_project);
                 item_project.set_tip(PlayerPrefs.GetString("p_date_" + i));
 
-                Carrot_Box_Btn_Item btn_public = item_project.create_item();
-                btn_public.set_icon(sp_icon_project_online);
-                btn_public.set_color(app.carrot.color_highlight);
-                btn_public.set_act(() => Export_file(index));
+                if (s_id_user_login != "")
+                {
+                    Carrot_Box_Btn_Item btn_public = item_project.create_item();
+                    btn_public.set_icon(sp_icon_project_online);
+                    btn_public.set_color(app.carrot.color_highlight);
+                    btn_public.set_act(() => Upload_project(index));
+                }
+
 
                 Carrot_Box_Btn_Item btn_export = item_project.create_item();
                 btn_export.set_icon(app.carrot.icon_carrot_download);
@@ -72,14 +104,12 @@ public class Manager_Project : MonoBehaviour
                 btn_del.set_color(Color.red);
                 btn_del.set_act(() => Delete_project(index));
 
-                item_project.set_act(() => show_project_offline(index));
+                item_project.set_act(() => Show_project_offline(index));
             }
         }
-
-        this.get_list_project_online();
     }
 
-    private void get_list_project_online()
+    private void Show_list_online()
     {
         string id_user_login = this.app.carrot.user.get_id_user_login();
         if (id_user_login != "") {
@@ -88,8 +118,11 @@ public class Manager_Project : MonoBehaviour
         }
     }
 
-    public void show_project_offline(int index)
+    public void Show_project_offline(int index)
     {
+        if (box != null) box.close();
+        if (box_menu != null) box_menu.close();
+
         string s_data = PlayerPrefs.GetString("p_data_" + index);
         string s_name = PlayerPrefs.GetString("p_name_" + index);
         this.sel_project_index = index;
@@ -284,17 +317,6 @@ public class Manager_Project : MonoBehaviour
         this.sel_project_index = this.length - 1;
     }
 
-    public void upload_project(int index)
-    {
-        IDictionary data = (IDictionary) Json.Deserialize("{}");
-        string s_data = PlayerPrefs.GetString("p_data_" + index);
-        string s_name = PlayerPrefs.GetString("p_name_" + index);
-        data["project_name"] = s_name;
-        data["project_data"] = s_data;
-        data["user_id"] = app.carrot.user.get_id_user_login();
-        this.app.carrot.server.Add_Document_To_Collection(app.carrot.Carrotstore_AppId, data["id"].ToString(), Json.Serialize(data));
-    }
-
     public void set_new_project()
     {
         this.sel_project_index = -1;
@@ -392,7 +414,7 @@ public class Manager_Project : MonoBehaviour
             return;
         }
 
-        this.add_project(s_name, app.Get_data_cur());
+        this.Add_project(s_name, app.Get_data_cur());
         if (box != null) box.close();
     }
 
@@ -487,5 +509,39 @@ public class Manager_Project : MonoBehaviour
             app.carrot.show_msg("Error", "Failed to save file: " + ex.Message, Msg_Icon.Error);
         }
 #endif
+    }
+
+    private void Upload_project(int index)
+    {
+        app.carrot.show_loading();
+        string s_id = PlayerPrefs.GetString("p_id_" + index);
+        string s_data = PlayerPrefs.GetString("p_data_" + index);
+        string s_name = PlayerPrefs.GetString("p_name_" + index);
+        string s_date = PlayerPrefs.GetString("p_date_" + index);
+
+        IDictionary data = (IDictionary) Json.Deserialize("{}");
+        data["id"] = s_id;
+        data["title"] = s_name;
+        data["date"] = s_date;
+        data["code_theme"] = "docco.min.css";
+        data["code_type"] = "json";
+        data["code"] = s_data.Replace("\"", "\\\"");
+        data["user_id"] = app.carrot.user.get_id_user_login();
+        data["user_lang"] = app.carrot.user.get_lang_user_login();
+
+        string s_data_json = app.carrot.server.Convert_IDictionary_to_json(data);
+        app.carrot.server.Add_Document_To_Collection("code", s_id, s_data_json, Act_upload_project_done, Act_upload_project_fail);
+    }
+
+    private void Act_upload_project_done(string s_data)
+    {
+        app.carrot.hide_loading();
+        app.carrot.show_msg("Upload Project", "Public project success!", Msg_Icon.Success);
+    }
+
+    private void Act_upload_project_fail(string s_error)
+    {
+        app.carrot.hide_loading();
+        app.carrot.show_msg("Error", s_error, Msg_Icon.Error);
     }
 }
