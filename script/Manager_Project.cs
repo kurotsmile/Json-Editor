@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -309,13 +310,13 @@ public class Manager_Project : MonoBehaviour
     {
         using UnityWebRequest www = UnityWebRequest.Get(url_json);
         yield return www.SendWebRequest();
-        if (www.result == UnityWebRequest.Result.Success)
+        if (www.result == UnityWebRequest.Result.Success) 
         {
             app.carrot.hide_loading();
             Debug.Log(www.downloadHandler.text);
             this.app.clear_list_item_editor();
             this.app.txt_save_status.text ="Import file";
-            IDictionary<string, object> obj_js = (IDictionary<string, object>)Carrot.Json.Deserialize(www.downloadHandler.text);
+            IDictionary<string, object> obj_js = (IDictionary<string, object>)Json.Deserialize(www.downloadHandler.text);
             this.paser_obj(obj_js, this.app.get_root());
             this.app.update_option_list();
             if (this.app.get_index_sel_mode() == 2)
@@ -457,8 +458,24 @@ public class Manager_Project : MonoBehaviour
         string s_data = PlayerPrefs.GetString("p_data_" + index);
         string s_name = PlayerPrefs.GetString("p_name_" + index);
 
-        string filePath = DirectoryHelper.GetAndroidExternalFilesDir() + "/" + s_name + ".json";
+#if UNITY_EDITOR
+        string filePath = EditorUtility.SaveFilePanel("Save File", "", s_name, "json");
+        if (!string.IsNullOrEmpty(filePath))
+        {
+            try
+            {
+                System.IO.File.WriteAllText(filePath, s_data);
+                app.carrot.show_input("Save", "File saved successfully at: ", filePath, Window_Input_value_Type.input_field);
+            }
+            catch (System.Exception ex)
+            {
+                app.carrot.show_msg("Error", "Failed to save file: " + ex.Message, Msg_Icon.Error);
+            }
+        }
+#endif
 
+#if UNITY_ANDROID && !UNITY_EDITOR
+        string filePath = DirectoryHelper.GetAndroidExternalFilesDir() + "/" + s_name + ".json";
 
         try
         {
@@ -469,5 +486,6 @@ public class Manager_Project : MonoBehaviour
         {
             app.carrot.show_msg("Error", "Failed to save file: " + ex.Message, Msg_Icon.Error);
         }
+#endif
     }
 }
