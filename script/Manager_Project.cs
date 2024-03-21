@@ -1,5 +1,4 @@
 using Carrot;
-using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,17 +21,19 @@ public class Manager_Project : MonoBehaviour
 
     public void On_load()
     {
-        this.length = PlayerPrefs.GetInt("p_length", 0);
+        this.length = PlayerPrefs.GetInt("js_length", 0);
     }
 
     private void Add_project(string s_name, string s_data)
     {
-        PlayerPrefs.SetString("p_id_" + this.length, "code"+app.carrot.generateID()+UnityEngine.Random.Range(1,20));
-        PlayerPrefs.SetString("p_name_" + this.length, s_name);
-        PlayerPrefs.SetString("p_data_" + this.length, s_data);
-        PlayerPrefs.SetString("p_date_" + this.length, DateTime.Now.ToString());
+        IDictionary data =(IDictionary) Json.Deserialize("{}");
+        data["id"] = "code" + app.carrot.generateID() + UnityEngine.Random.Range(1, 20);
+        data["title"] = s_name;
+        data["code"] = s_data;
+        data["date"] = DateTime.Now.ToString();
+        PlayerPrefs.SetString("js_data_" + this.length, Json.Serialize(data));
         this.length+= 1;
-        PlayerPrefs.SetInt("p_length", this.length);
+        PlayerPrefs.SetInt("js_length", this.length);
     }
 
     public void Show_list_project()
@@ -76,14 +77,12 @@ public class Manager_Project : MonoBehaviour
         this.box = this.app.carrot.Create_Box(PlayerPrefs.GetString("open", "Open project"), this.sp_icon_open_project);
         for (int i = this.length - 1; i >= 0; i--)
         {
-            string s_name_project = PlayerPrefs.GetString("p_name_" + i, "");
-            if (s_name_project != "")
+            string s_data_project = PlayerPrefs.GetString("js_data_" + i, "");
+            if (s_data_project!="")
             {
                 var index = i;
-                Carrot_Box_Item item_project = this.box.create_item("item_project_" + i);
-                item_project.set_icon(this.app.sp_icon_project);
-                item_project.set_title(s_name_project);
-                item_project.set_tip(PlayerPrefs.GetString("p_date_" + i));
+                IDictionary data = (IDictionary) Json.Deserialize(s_data_project);
+                Carrot_Box_Item item_project = this.Add_item_to_list_box(data);
 
                 if (s_id_user_login != "")
                 {
@@ -92,7 +91,6 @@ public class Manager_Project : MonoBehaviour
                     btn_public.set_color(app.carrot.color_highlight);
                     btn_public.set_act(() => Upload_project(index));
                 }
-
 
                 Carrot_Box_Btn_Item btn_export = item_project.create_item();
                 btn_export.set_icon(app.carrot.icon_carrot_download);
@@ -103,37 +101,63 @@ public class Manager_Project : MonoBehaviour
                 btn_del.set_icon(app.carrot.sp_icon_del_data);
                 btn_del.set_color(Color.red);
                 btn_del.set_act(() => Delete_project(index));
-
-                item_project.set_act(() => Show_project_offline(index));
             }
         }
+    }
+
+    private Carrot_Box_Item Add_item_to_list_box(IDictionary data)
+    {
+        Carrot_Box_Item item_project = box.create_item("item_project");
+        item_project.set_icon(this.app.sp_icon_project);
+        item_project.set_title(data["title"].ToString());
+        item_project.set_tip(data["date"].ToString());
+
+        item_project.set_act(() => Show_project(data));
+        return item_project;
     }
 
     private void Show_list_online()
     {
         string id_user_login = this.app.carrot.user.get_id_user_login();
         if (id_user_login != "") {
-            StructuredQuery q = new(this.app.carrot.Carrotstore_AppId);
+            StructuredQuery q = new("code");
             q.Add_where("user_id", Query_OP.EQUAL, id_user_login);
+            app.carrot.server.Get_doc(q.ToJson(), Act_list_online_done, Act_server_fail);
         }
     }
 
-    public void Show_project_offline(int index)
+    private void Act_list_online_done(string s_data)
+    {
+        Fire_Collection fc = new(s_data);
+        if (!fc.is_null)
+        {
+            this.box = app.carrot.Create_Box();
+            this.box.set_title("List of projects archived online");
+            this.box.set_icon(this.sp_icon_project_online);
+
+            for(int i = 0; i < fc.fire_document.Length; i++)
+            {
+                IDictionary data = fc.fire_document[i].Get_IDictionary();
+                this.Add_item_to_list_box(data);
+            }
+        }
+        else
+        {
+            this.app.carrot.show_msg(app.carrot.lang.Val("open", "Open project"), app.carrot.lang.Val("no_project", "You don't have any archived projects yet"), Carrot.Msg_Icon.Alert);
+            this.app.carrot.play_vibrate();
+            return;
+        }
+    }
+
+    private void Show_project(IDictionary data)
     {
         if (box != null) box.close();
         if (box_menu != null) box_menu.close();
+        if (data["index"] != null) this.sel_project_index = int.Parse(data["index"].ToString());
 
-        string s_data = PlayerPrefs.GetString("p_data_" + index);
-        string s_name = PlayerPrefs.GetString("p_name_" + index);
-        this.sel_project_index = index;
-        this.show_project(s_name, s_data);
-    }
-
-    public void show_project(string s_name,string s_data)
-    {
         this.app.clear_list_item_editor();
-        this.app.txt_save_status.text = s_name;
-        IDictionary<string, object> thanh = (IDictionary<string, object>)Carrot.Json.Deserialize(s_data);
+        this.app.txt_save_status.text = data["title"].ToString();
+        IDictionary<string, object> thanh = (IDictionary<string, object>)Json.Deserialize(data["code"].ToString());
         this.paser_obj(thanh, this.app.get_root());
         this.app.update_option_list();
         if (this.app.get_index_sel_mode() == 2)
@@ -144,19 +168,13 @@ public class Manager_Project : MonoBehaviour
         this.app.carrot.close();
         this.app.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
         this.app.carrot.play_sound_click();
-        this.app.update_option_list_obj();
+        this.app.Update_option_list_obj();
     }
 
-    public void show_project_online(string id_project)
+    public void Show_project_online(string id_project)
     {
         StructuredQuery q = new(app.carrot.Carrotstore_AppId);
         q.Add_where("project_id",Query_OP.EQUAL, id_project);
-    }
-
-    public void act_show_project_online(string s_data_online)
-    {
-        IDictionary data_project =(IDictionary) Carrot.Json.Deserialize(s_data_online);
-        this.show_project(data_project["name"].ToString(), data_project["data"].ToString());
     }
 
     public void paser_obj(IDictionary<string, object> thanh,js_object js_father)
@@ -317,7 +335,7 @@ public class Manager_Project : MonoBehaviour
         this.sel_project_index = this.length - 1;
     }
 
-    public void set_new_project()
+    public void Set_new_project()
     {
         this.sel_project_index = -1;
     }
@@ -325,10 +343,10 @@ public class Manager_Project : MonoBehaviour
     public void Import_json_url(string url_data)
     {
         app.carrot.show_loading();
-        StartCoroutine(get_data_json_by_url(url_data));
+        StartCoroutine(Get_data_json_by_url(url_data));
     }
 
-    IEnumerator get_data_json_by_url(string url_json)
+    IEnumerator Get_data_json_by_url(string url_json)
     {
         using UnityWebRequest www = UnityWebRequest.Get(url_json);
         yield return www.SendWebRequest();
@@ -349,7 +367,7 @@ public class Manager_Project : MonoBehaviour
             this.app.carrot.close();
             this.app.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
             this.app.carrot.play_sound_click();
-            this.app.update_option_list_obj();
+            this.app.Update_option_list_obj();
             if (box != null) box.close();
         }
         else
@@ -514,23 +532,17 @@ public class Manager_Project : MonoBehaviour
     private void Upload_project(int index)
     {
         app.carrot.show_loading();
-        string s_id = PlayerPrefs.GetString("p_id_" + index);
-        string s_data = PlayerPrefs.GetString("p_data_" + index);
-        string s_name = PlayerPrefs.GetString("p_name_" + index);
-        string s_date = PlayerPrefs.GetString("p_date_" + index);
-
-        IDictionary data = (IDictionary) Json.Deserialize("{}");
-        data["id"] = s_id;
-        data["title"] = s_name;
-        data["date"] = s_date;
+        string s_data = PlayerPrefs.GetString("js_data_" + index);
+        IDictionary data = (IDictionary) Json.Deserialize(s_data);
         data["code_theme"] = "docco.min.css";
         data["code_type"] = "json";
-        data["code"] = s_data.Replace("\"", "\\\"");
+        data["code"] = data["code"].ToString().Replace("\"", "\\\"");
         data["user_id"] = app.carrot.user.get_id_user_login();
         data["user_lang"] = app.carrot.user.get_lang_user_login();
+        data["status"] = "pending";
 
         string s_data_json = app.carrot.server.Convert_IDictionary_to_json(data);
-        app.carrot.server.Add_Document_To_Collection("code", s_id, s_data_json, Act_upload_project_done, Act_upload_project_fail);
+        app.carrot.server.Add_Document_To_Collection("code", data["id"].ToString(), s_data_json, Act_upload_project_done, Act_server_fail);
     }
 
     private void Act_upload_project_done(string s_data)
@@ -539,9 +551,10 @@ public class Manager_Project : MonoBehaviour
         app.carrot.show_msg("Upload Project", "Public project success!", Msg_Icon.Success);
     }
 
-    private void Act_upload_project_fail(string s_error)
+    private void Act_server_fail(string s_error)
     {
         app.carrot.hide_loading();
         app.carrot.show_msg("Error", s_error, Msg_Icon.Error);
+        app.carrot.play_vibrate();
     }
 }

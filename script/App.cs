@@ -61,7 +61,7 @@ public class App : MonoBehaviour
 
     private void Start()
     {
-        this.carrot.Load_Carrot(this.check_exit_app);
+        this.carrot.Load_Carrot(this.Check_exit_app);
         this.carrot.change_sound_click(this.soundclip_click);
         this.carrot.game.load_bk_music(this.soundBackground);
         this.carrot.act_after_close_all_box = this.check_data_login;
@@ -78,7 +78,7 @@ public class App : MonoBehaviour
         this.check_data_login();
     }
 
-    public void check_exit_app()
+    private void Check_exit_app()
     {
         if (this.Panel_edit_Properties.activeInHierarchy)
         {
@@ -122,7 +122,7 @@ public class App : MonoBehaviour
     {
         this.clear_list_item_editor();
         this.txt_save_status.text = PlayerPrefs.GetString("new_file","New File");
-        this.manager_Project.set_new_project();
+        this.manager_Project.Set_new_project();
         this.carrot.ads.show_ads_Interstitial();
     }
 
@@ -136,7 +136,7 @@ public class App : MonoBehaviour
         }
     }
 
-    public void update_option_list_obj()
+    public void Update_option_list_obj()
     {
         for(int i = 0; i < this.list_item_obj.Count; i++)
         {
@@ -450,17 +450,17 @@ public class App : MonoBehaviour
         }
         else
         {
-            this.txt_username_login.text = PlayerPrefs.GetString("login","Login");
+            this.txt_username_login.text = "Login";
             this.carrot.img_btn_login.color = Color.black;
         }
     }
 
     public void Btn_show_select_lang()
     {
-        this.carrot.show_list_lang(act_show_select_lang);
+        this.carrot.show_list_lang(Act_show_select_lang);
     }
 
-    private void act_show_select_lang(string s_data)
+    private void Act_show_select_lang(string s_data)
     {
         if(this.get_index_sel_mode()==-1) this.txt_save_status.text = "New File";
         if(this.list_item_obj[0]!=null) this.list_item_obj[0].GetComponent<js_object>().txt_tip.text= "Json Root Object";
