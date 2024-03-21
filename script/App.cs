@@ -7,6 +7,7 @@ public class App : MonoBehaviour
 {
     [Header("Obj Main")]
     public Carrot.Carrot carrot;
+    public Json_Editor json_editor;
     public Manager_Project manager_Project;
 
     [Header("Icon")]
@@ -14,6 +15,7 @@ public class App : MonoBehaviour
     public Sprite sp_icon_save_as;
     public Sprite sp_icon_project;
     public Sprite sp_icon_import;
+    public Sprite sp_icon_export_file;
 
     [Header("Obj Json")]
     public GameObject prefab_obj_js;
@@ -74,7 +76,10 @@ public class App : MonoBehaviour
         this.carrot.clear_contain(this.area_all_item_editor);
         this.add_obj(prefab_obj_js.GetComponent<js_object>(), "root");
         this.check_mode();
+
+        this.json_editor.On_load();
         this.manager_Project.On_load();
+
         this.check_data_login();
     }
 

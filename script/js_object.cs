@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,7 +42,7 @@ public class js_object : MonoBehaviour
     public Image img_type_properties;
 
     private string s_result = "";
-    private List<GameObject> list_child = new List<GameObject>();
+    private List<GameObject> list_child = new();
     private bool is_show_child = true;
 
     public void btn_add_obj()

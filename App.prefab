@@ -5575,7 +5575,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0.29, y: -2.9}
+  m_AnchoredPosition: {x: 0.29, y: -2.8999996}
   m_SizeDelta: {x: 15, y: 15}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5616220588589106838
@@ -7578,6 +7578,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4679576996011170356}
   - component: {fileID: 3247921913830492077}
+  - component: {fileID: 8371764215650113490}
   - component: {fileID: 8446888684771442792}
   m_Layer: 0
   m_Name: App
@@ -7618,11 +7619,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   carrot: {fileID: 0}
+  json_editor: {fileID: 0}
   manager_Project: {fileID: 8446888684771442792}
   sp_icon_save: {fileID: 21300000, guid: 69ebf96cc3d4592429c77c9931d0a8eb, type: 3}
   sp_icon_save_as: {fileID: 21300000, guid: 0988896d74c3b2a44acafbd1fddecf53, type: 3}
   sp_icon_project: {fileID: 21300000, guid: d99adeef468f88b4bb9cec5cd29be0a1, type: 3}
-  sp_icon_import: {fileID: 0}
+  sp_icon_import: {fileID: 21300000, guid: b34b5599774f5464ca9c78d230adcf59, type: 3}
+  sp_icon_export_file: {fileID: 21300000, guid: 44a2e0d95c1cdfe418354395b13455a0, type: 3}
   prefab_obj_js: {fileID: 7925628766117251879, guid: e9150c6971a3e5c4f9f5284d26a4644c, type: 3}
   Panel_edit_Properties: {fileID: 4466990756417944630}
   Panel_help: {fileID: 7142989857889102234}
@@ -7640,13 +7643,8 @@ MonoBehaviour:
   - {fileID: 4713220770410771516}
   - {fileID: 144903971029757456}
   - {fileID: 7053904118813489326}
-  Panel_save_item:
-  - {fileID: 0}
-  - {fileID: 0}
   obj_icon_save_status_new: {fileID: 1300290689547265365}
-  inp_save_project_name: {fileID: 0}
   txt_save_status: {fileID: 5798091516863670132}
-  sel_project_index: -1
   color_properties_nomal:
     serializedVersion: 2
     rgba: 4280857087
@@ -7675,6 +7673,19 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 6a3e4c53429578344975a42194cfd2c9, type: 3}
   - {fileID: 21300000, guid: 8a7608865a50789448aa5f8ffc0bec2a, type: 3}
   img_show_help: {fileID: 5316425422996390433}
+--- !u!114 &8371764215650113490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3495898760829344998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ebcd0f2085943d4cb9f899de357ecb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  app: {fileID: 3247921913830492077}
 --- !u!114 &8446888684771442792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7690,7 +7701,6 @@ MonoBehaviour:
   app: {fileID: 3247921913830492077}
   sp_icon_open_project: {fileID: 21300000, guid: 5eac564a8d85dcd41833a79f255eeda5, type: 3}
   sp_icon_project_online: {fileID: 21300000, guid: 163041396ba21c54da48fbe9fdf66c33, type: 3}
-  Project_Item_Prefab: {fileID: 5473202971650910115, guid: 802fc9fa9b61c0241bfad7f8dfc1516b, type: 3}
 --- !u!1 &3574796394991832655
 GameObject:
   m_ObjectHideFlags: 0
@@ -15774,7 +15784,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0.29, y: -2.9}
+  m_AnchoredPosition: {x: 0.29, y: -2.8999996}
   m_SizeDelta: {x: 15, y: 15}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &4870245580417599158
@@ -17812,7 +17822,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0.29, y: -2.9}
+  m_AnchoredPosition: {x: 0.29, y: -2.8999996}
   m_SizeDelta: {x: 15, y: 15}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &2121826902424169230
