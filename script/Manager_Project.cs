@@ -2,6 +2,7 @@ using Carrot;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -54,6 +55,11 @@ public class Manager_Project : MonoBehaviour
                 item_project.set_icon(this.app.sp_icon_project);
                 item_project.set_title(s_name_project);
                 item_project.set_tip(PlayerPrefs.GetString("p_date_" + i));
+
+                Carrot_Box_Btn_Item btn_public = item_project.create_item();
+                btn_public.set_icon(sp_icon_project_online);
+                btn_public.set_color(app.carrot.color_highlight);
+                btn_public.set_act(() => Export_file(index));
 
                 Carrot_Box_Btn_Item btn_export = item_project.create_item();
                 btn_export.set_icon(app.carrot.icon_carrot_download);
@@ -293,8 +299,9 @@ public class Manager_Project : MonoBehaviour
         this.sel_project_index = -1;
     }
 
-    public void import_json_url(string url_data)
+    public void Import_json_url(string url_data)
     {
+        app.carrot.show_loading();
         StartCoroutine(get_data_json_by_url(url_data));
     }
 
@@ -304,9 +311,10 @@ public class Manager_Project : MonoBehaviour
         yield return www.SendWebRequest();
         if (www.result == UnityWebRequest.Result.Success)
         {
+            app.carrot.hide_loading();
             Debug.Log(www.downloadHandler.text);
             this.app.clear_list_item_editor();
-            this.app.txt_save_status.text = PlayerPrefs.GetString("import_file", "Import file");
+            this.app.txt_save_status.text ="Import file";
             IDictionary<string, object> obj_js = (IDictionary<string, object>)Carrot.Json.Deserialize(www.downloadHandler.text);
             this.paser_obj(obj_js, this.app.get_root());
             this.app.update_option_list();
@@ -320,6 +328,11 @@ public class Manager_Project : MonoBehaviour
             this.app.carrot.play_sound_click();
             this.app.update_option_list_obj();
             if (box != null) box.close();
+        }
+        else
+        {
+            app.carrot.hide_loading();
+            app.carrot.show_msg("Error", www.error.ToString(), Msg_Icon.Error);
         }
     }
 
@@ -431,7 +444,7 @@ public class Manager_Project : MonoBehaviour
             this.app.carrot.play_vibrate();
             return;
         }
-        this.import_json_url(s_data);
+        this.Import_json_url(s_data);
     }
 
     public int Get_Index_project_curent()
@@ -443,21 +456,18 @@ public class Manager_Project : MonoBehaviour
     {
         string s_data = PlayerPrefs.GetString("p_data_" + index);
         string s_name = PlayerPrefs.GetString("p_name_" + index);
-        AndroidJavaClass Environment = new AndroidJavaClass("android.os.Environment");
-        string externalStorageDirectory = Environment.CallStatic<string>("getExternalStorageDirectory");
-        string filePath = System.IO.Path.Combine(externalStorageDirectory, s_name);
+
+        string filePath = DirectoryHelper.GetAndroidExternalFilesDir() + "/" + s_name + ".json";
+
 
         try
         {
-            System.IO.StreamWriter writer = new System.IO.StreamWriter(filePath, false);
-            writer.WriteLine(s_data);
-            writer.Close();
-
-            app.carrot.show_msg("Save", "File saved successfully at: " + filePath, Msg_Icon.Success);
+            File.WriteAllText(filePath, s_data);
+            app.carrot.show_input("Save", "File saved successfully at: ", filePath, Window_Input_value_Type.input_field);
         }
-        catch (System.Exception e)
+        catch (System.Exception ex)
         {
-            app.carrot.show_msg("Error", "Failed to save file: " + e.Message, Msg_Icon.Error);
+            app.carrot.show_msg("Error", "Failed to save file: " + ex.Message, Msg_Icon.Error);
         }
     }
 }
