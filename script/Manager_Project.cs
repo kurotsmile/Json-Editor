@@ -2,8 +2,6 @@ using Carrot;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Xml.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -533,7 +531,6 @@ public class Manager_Project : MonoBehaviour
 
 #if UNITY_ANDROID && !UNITY_EDITOR
         string filePath = DirectoryHelper.GetAndroidExternalFilesDir() + "/" + s_name + ".json";
-
         try
         {
             System.IO.File.WriteAllText(filePath, s_data);

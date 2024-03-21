@@ -9,6 +9,7 @@ public class App : MonoBehaviour
     public Carrot.Carrot carrot;
     public Json_Editor json_editor;
     public Manager_Project manager_Project;
+    public Help help;
 
     [Header("Icon")]
     public Sprite sp_icon_save;
@@ -20,7 +21,6 @@ public class App : MonoBehaviour
     [Header("Obj Json")]
     public GameObject prefab_obj_js;
     public GameObject Panel_edit_Properties;
-    public GameObject Panel_help;
     public Color_Board Panel_select_color;
     public Transform area_all_item_editor;
     public ScrollRect ScrollRect_all_item_editor;
@@ -56,20 +56,14 @@ public class App : MonoBehaviour
     public AudioClip soundclip_click;
     public AudioSource soundBackground;
 
-    [Header("Help")]
-    public Sprite[] sp_help;
-    public Image img_show_help;
-    private int sel_index_help;
-
     private void Start()
     {
         this.carrot.Load_Carrot(this.Check_exit_app);
         this.carrot.change_sound_click(this.soundclip_click);
         this.carrot.game.load_bk_music(this.soundBackground);
-        this.carrot.act_after_close_all_box = this.check_data_login;
+        this.carrot.act_after_close_all_box = this.Check_data_login;
 
         this.Panel_edit_Properties.SetActive(false);
-        this.Panel_help.SetActive(false);
 
         this.Panel_select_color.gameObject.SetActive(false);
         this.obj_icon_save_status_new.SetActive(false);
@@ -80,7 +74,7 @@ public class App : MonoBehaviour
         this.json_editor.On_load();
         this.manager_Project.On_load();
 
-        this.check_data_login();
+        this.Check_data_login();
     }
 
     private void Check_exit_app()
@@ -88,11 +82,6 @@ public class App : MonoBehaviour
         if (this.Panel_edit_Properties.activeInHierarchy)
         {
             this.close_Properties();
-            this.carrot.set_no_check_exit_app();
-        }
-        else if (this.Panel_help.activeInHierarchy)
-        {
-            this.close_help();
             this.carrot.set_no_check_exit_app();
         }
     }
@@ -319,6 +308,12 @@ public class App : MonoBehaviour
         manager_Project.Show_Import();
     }
 
+    public void Btn_show_help()
+    {
+        carrot.play_sound_click();
+        help.Show();
+    }
+
     public void buy_product(int index_p)
     {
         this.carrot.play_sound_click();
@@ -408,46 +403,13 @@ public class App : MonoBehaviour
         return this.index_sel_mode;
     }
 
-    public void show_help()
+    public void Btn_show_login()
     {
-        this.Panel_help.SetActive(true);
+        this.carrot.user.show_login(()=> Check_data_login());
         this.carrot.play_sound_click();
     }
 
-    public void close_help()
-    {
-        this.Panel_help.SetActive(false);
-        this.carrot.play_sound_click();
-    }
-
-    public void btn_help_next()
-    {
-        this.sel_index_help++;
-        if (this.sel_index_help >= this.sp_help.Length) this.sel_index_help = 0;
-        this.img_show_help.sprite = this.sp_help[this.sel_index_help];
-        this.carrot.play_sound_click();
-    }
-    
-    public void btn_help_prev()
-    {
-        this.sel_index_help--;
-        if (this.sel_index_help <0) this.sel_index_help = this.sp_help.Length-1;
-        this.img_show_help.sprite = this.sp_help[this.sel_index_help];
-        this.carrot.play_sound_click();
-    }
-
-    public void btn_show_login()
-    {
-        this.carrot.show_login();
-        this.carrot.play_sound_click();
-    }
-
-    public void act_after_login()
-    {
-        this.check_data_login();
-    }
-
-    private void check_data_login()
+    private void Check_data_login()
     {
         if (this.carrot.user.get_id_user_login() != "")
         {
