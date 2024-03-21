@@ -610,12 +610,23 @@ public class Manager_Project : MonoBehaviour
         btn_done.set_icon_white(app.carrot.icon_carrot_done);
         btn_done.set_bk_color(app.carrot.color_highlight);
         btn_done.set_label_color(Color.white);
+        btn_done.set_act_click(()=>Act_update_info_project(item_title.get_val(), item_describe.get_val(), data));
 
         Carrot_Button_Item btn_cancel = panel_btn.create_btn("btn_done");
         btn_cancel.set_icon_white(app.carrot.icon_carrot_cancel);
         btn_cancel.set_bk_color(app.carrot.color_highlight);
         btn_cancel.set_label_color(Color.white);
         btn_cancel.set_act_click(() => Act_close_box_edit_info());
+    }
+
+    private void Act_update_info_project(string s_title,string s_description,IDictionary data)
+    {
+        data["title"] = s_title;
+        data["describe"] = s_description;
+        data["date"] = DateTime.Now.ToString();
+        PlayerPrefs.SetString("js_data_" + data["index"].ToString(), Json.Serialize(data));
+        app.carrot.show_msg("Json Editor", "Update infomation success!");
+        if (this.box_menu != null) this.box_menu.close();
     }
 
     private void Act_close_box_edit_info()
