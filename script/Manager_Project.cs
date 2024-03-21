@@ -13,12 +13,11 @@ public class Manager_Project : MonoBehaviour
     private int length = 0;
     public Sprite sp_icon_open_project;
     public Sprite sp_icon_project_online;
-    public GameObject Project_Item_Prefab;
-    private Project_Item project_item_temp;
 
     private Carrot_Box box = null;
+    private int sel_project_index = -1;
 
-    public void load_project()
+    public void On_load()
     {
         this.length = PlayerPrefs.GetInt("p_length", 0);
     }
@@ -30,13 +29,6 @@ public class Manager_Project : MonoBehaviour
         PlayerPrefs.SetString("p_date_" + this.length, DateTime.Now.ToString());
         this.length+= 1;
         PlayerPrefs.SetInt("p_length", this.length);
-    }
-
-    private void act_add_project(string s_data)
-    {
-        Debug.Log("Add projec:" + s_data);
-        this.project_item_temp = new Project_Item();
-        this.project_item_temp.s_id_online = s_data;
     }
 
     public void Show_list_project()
@@ -63,6 +55,11 @@ public class Manager_Project : MonoBehaviour
                 item_project.set_title(s_name_project);
                 item_project.set_tip(PlayerPrefs.GetString("p_date_" + i));
 
+                Carrot_Box_Btn_Item btn_export = item_project.create_item();
+                btn_export.set_icon(app.carrot.icon_carrot_download);
+                btn_export.set_color(app.carrot.color_highlight);
+                btn_export.set_act(() => Export_file(index));
+
                 Carrot_Box_Btn_Item btn_del = item_project.create_item();
                 btn_del.set_icon(app.carrot.sp_icon_del_data);
                 btn_del.set_color(Color.red);
@@ -84,32 +81,11 @@ public class Manager_Project : MonoBehaviour
         }
     }
 
-    private void show_list_project_online(string s_data)
-    {
-        IList list_project_online = (IList)Carrot.Json.Deserialize(s_data);
-        for(int i = 0; i < list_project_online.Count; i++)
-        {
-            IDictionary data_project = (IDictionary)list_project_online[i];
-            GameObject obj_project = Instantiate(this.Project_Item_Prefab);
-           // obj_project.transform.SetParent(this.app.carrot.area_body_box);
-            obj_project.transform.localScale = new Vector3(1f, 1f, 1f);
-            obj_project.GetComponent<Project_Item>().txt_name.text = data_project["name"].ToString();
-            obj_project.GetComponent<Project_Item>().txt_date.text = data_project["date"].ToString();
-            obj_project.GetComponent<Project_Item>().s_id_online = data_project["id"].ToString();
-            obj_project.GetComponent<Project_Item>().index_project = -2;
-            obj_project.GetComponent<Project_Item>().img_icon.sprite = this.sp_icon_project_online;
-            obj_project.GetComponent<Project_Item>().obj_btn_export_web.SetActive(true);
-            obj_project.GetComponent<Project_Item>().obj_btn_export_file.SetActive(true);
-            obj_project.GetComponent<Project_Item>().obj_btn_share.SetActive(true);
-            obj_project.GetComponent<Project_Item>().obj_btn_upload.SetActive(false);
-        }
-    }
-
     public void show_project_offline(int index)
     {
         string s_data = PlayerPrefs.GetString("p_data_" + index);
         string s_name = PlayerPrefs.GetString("p_name_" + index);
-        this.app.sel_project_index = index;
+        this.sel_project_index = index;
         this.show_project(s_name, s_data);
     }
 
@@ -278,19 +254,11 @@ public class Manager_Project : MonoBehaviour
         this.Show_list_project();
     }
 
-    public void update_project(int index_project,string s_data)
+    public void Update_project_curent()
     {
-        if (this.project_item_temp.s_id_online != "")
-        {
-            StructuredQuery q = new(app.carrot.Carrotstore_AppId);
-            q.Add_where("project_id", Query_OP.EQUAL, this.project_item_temp.s_id_online);
-        }
-        else
-        {
-            PlayerPrefs.SetString("p_data_" + index_project, s_data);
-            PlayerPrefs.SetString("p_date_" + index_project, System.DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
-            this.app.carrot.show_msg(PlayerPrefs.GetString("p_update_success","Project update successful!"));
-        }
+        PlayerPrefs.SetString("p_data_" + this.sel_project_index, app.Get_data_cur());
+        PlayerPrefs.SetString("p_date_" + this.sel_project_index, DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
+        this.app.carrot.show_msg(PlayerPrefs.GetString("p_update_success", "Project update successful!"));
     }
 
     private void act_update_project_online(string s_data)
@@ -304,50 +272,25 @@ public class Manager_Project : MonoBehaviour
         this.app.carrot.show_msg(PlayerPrefs.GetString("p_name_update_success","Project name update successful!"));
     }
 
-    public void update_project_name_online(string id_project, string s_new_name)
+    public void Show_project_last()
     {
-
+        this.sel_project_index = this.length - 1;
     }
 
-    private void act_update_project_name_online(string s_data)
+    public void upload_project(int index)
     {
-        this.app.carrot.show_msg(PlayerPrefs.GetString("p_name_update_success", "Project name update successful!"));
-    }
-
-    public void show_project_last()
-    {
-        this.project_item_temp = new Project_Item();
-        this.project_item_temp.index_project = this.length - 1;
-        //this.show_project_offline(this.project_item_temp);
-    }
-
-    public void upload_project(Project_Item p_item)
-    {
-        this.project_item_temp = p_item;
         IDictionary data = (IDictionary) Json.Deserialize("{}");
-        string s_data = PlayerPrefs.GetString("p_data_" + p_item.index_project);
-        string s_name = PlayerPrefs.GetString("p_name_" + p_item.index_project);
+        string s_data = PlayerPrefs.GetString("p_data_" + index);
+        string s_name = PlayerPrefs.GetString("p_name_" + index);
         data["project_name"] = s_name;
         data["project_data"] = s_data;
         data["user_id"] = app.carrot.user.get_id_user_login();
         this.app.carrot.server.Add_Document_To_Collection(app.carrot.Carrotstore_AppId, data["id"].ToString(), Json.Serialize(data));
     }
 
-    private void act_upload_project(string s_data)
-    {
-        this.delete_project_data(this.project_item_temp.index_project);
-        this.project_item_temp.s_id_online = s_data;
-        this.project_item_temp.img_icon.sprite = this.sp_icon_project_online;
-        this.project_item_temp.obj_btn_upload.SetActive(false);
-        this.project_item_temp.obj_btn_export_web.SetActive(true);
-        this.project_item_temp.obj_btn_share.SetActive(true);
-        this.project_item_temp.obj_btn_export_file.SetActive(true);
-        this.app.carrot.show_msg(PlayerPrefs.GetString("p_upload_success","Successful online project hosting!"));
-    }
-
     public void set_new_project()
     {
-        this.project_item_temp = null;
+        this.sel_project_index = -1;
     }
 
     public void import_json_url(string url_data)
@@ -357,28 +300,26 @@ public class Manager_Project : MonoBehaviour
 
     IEnumerator get_data_json_by_url(string url_json)
     {
-        using (UnityWebRequest www = UnityWebRequest.Get(url_json))
+        using UnityWebRequest www = UnityWebRequest.Get(url_json);
+        yield return www.SendWebRequest();
+        if (www.result == UnityWebRequest.Result.Success)
         {
-            yield return www.SendWebRequest();
-            if (www.result == UnityWebRequest.Result.Success)
-            {
-                Debug.Log(www.downloadHandler.text);
-                this.app.clear_list_item_editor();
-                this.app.txt_save_status.text =PlayerPrefs.GetString("import_file", "Import file");
-                IDictionary<string, object> obj_js = (IDictionary<string, object>)Carrot.Json.Deserialize(www.downloadHandler.text);
-                this.paser_obj(obj_js, this.app.get_root());
-                this.app.update_option_list();
-                if (this.app.get_index_sel_mode() == 2)
-                    this.app.show_code_json(true);
-                else
-                    this.app.show_code_json(false);
+            Debug.Log(www.downloadHandler.text);
+            this.app.clear_list_item_editor();
+            this.app.txt_save_status.text = PlayerPrefs.GetString("import_file", "Import file");
+            IDictionary<string, object> obj_js = (IDictionary<string, object>)Carrot.Json.Deserialize(www.downloadHandler.text);
+            this.paser_obj(obj_js, this.app.get_root());
+            this.app.update_option_list();
+            if (this.app.get_index_sel_mode() == 2)
+                this.app.show_code_json(true);
+            else
+                this.app.show_code_json(false);
 
-                this.app.carrot.close();
-                this.app.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
-                this.app.carrot.play_sound_click();
-                this.app.update_option_list_obj();
-                this.app.panel_import.SetActive(false);
-            }
+            this.app.carrot.close();
+            this.app.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
+            this.app.carrot.play_sound_click();
+            this.app.update_option_list_obj();
+            if (box != null) box.close();
         }
     }
 
@@ -388,7 +329,7 @@ public class Manager_Project : MonoBehaviour
         box.set_icon(app.sp_icon_save);
         box.set_title("Project Archives");
 
-        if (is_save_as)
+        if (is_save_as==false)
         {
             Carrot_Box_Item item_tip = box.create_item("item_tip");
             item_tip.set_icon(app.sp_icon_save);
@@ -398,7 +339,7 @@ public class Manager_Project : MonoBehaviour
         else
         {
             Carrot_Box_Item item_tip = box.create_item("item_tip");
-            item_tip.set_icon(app.sp_icon_save);
+            item_tip.set_icon(app.sp_icon_save_as);
             item_tip.set_title("Save As...");
             item_tip.set_tip("Archive this project with another name");
         }
@@ -439,17 +380,84 @@ public class Manager_Project : MonoBehaviour
 
         this.add_project(s_name, app.Get_data_cur());
         if (box != null) box.close();
-        /*
-        if (app.sel_type_save == 1)
-        {
-            if (this.carrot.user.get_id_user_login() == "") this.GetComponent<Manager_Project>().show_project_last();
-        }
-        */
     }
 
     private void Act_close_save()
     {
         app.carrot.play_sound_click();
         if (box != null) box.close();
+    }
+
+    public void Show_Import()
+    {
+        box = app.carrot.Create_Box();
+        box.set_icon(app.sp_icon_save);
+        box.set_title("Project Import");
+
+        Carrot_Box_Item item_tip = box.create_item("item_tip");
+        item_tip.set_icon(app.sp_icon_save_as);
+        item_tip.set_title("Import");
+        item_tip.set_tip("Import json data from web address");
+
+        Carrot_Box_Item item_url = box.create_item("item_name");
+        item_url.set_icon(app.sp_icon_project);
+        item_url.set_title("URL");
+        item_url.set_tip("Enter json web url");
+        item_url.set_type(Box_Item_Type.box_value_input);
+        item_url.check_type();
+
+        Carrot_Box_Btn_Panel panel_btn = box.create_panel_btn();
+
+        Carrot_Button_Item btn_save = panel_btn.create_btn("btn_save");
+        btn_save.set_icon_white(app.carrot.icon_carrot_done);
+        btn_save.set_bk_color(app.carrot.color_highlight);
+        btn_save.set_label_color(Color.white);
+        btn_save.set_label("Done");
+        btn_save.set_act_click(() => Act_import_project(item_url.get_val()));
+
+        Carrot_Button_Item btn_cancel = panel_btn.create_btn("btn_cancel");
+        btn_cancel.set_icon_white(app.carrot.icon_carrot_cancel);
+        btn_cancel.set_bk_color(app.carrot.color_highlight);
+        btn_cancel.set_label_color(Color.white);
+        btn_cancel.set_label("Cancel");
+        btn_cancel.set_act_click(() => Act_close_save());
+    }
+
+    private void Act_import_project(string s_data)
+    {
+        if (s_data.Trim() == "")
+        {
+            this.app.carrot.show_msg("Import","Input url cannot be empty", Msg_Icon.Error);
+            this.app.carrot.play_vibrate();
+            return;
+        }
+        this.import_json_url(s_data);
+    }
+
+    public int Get_Index_project_curent()
+    {
+        return this.sel_project_index;
+    }
+
+    private void Export_file(int index)
+    {
+        string s_data = PlayerPrefs.GetString("p_data_" + index);
+        string s_name = PlayerPrefs.GetString("p_name_" + index);
+        AndroidJavaClass Environment = new AndroidJavaClass("android.os.Environment");
+        string externalStorageDirectory = Environment.CallStatic<string>("getExternalStorageDirectory");
+        string filePath = System.IO.Path.Combine(externalStorageDirectory, s_name);
+
+        try
+        {
+            System.IO.StreamWriter writer = new System.IO.StreamWriter(filePath, false);
+            writer.WriteLine(s_data);
+            writer.Close();
+
+            app.carrot.show_msg("Save", "File saved successfully at: " + filePath, Msg_Icon.Success);
+        }
+        catch (System.Exception e)
+        {
+            app.carrot.show_msg("Error", "Failed to save file: " + e.Message, Msg_Icon.Error);
+        }
     }
 }

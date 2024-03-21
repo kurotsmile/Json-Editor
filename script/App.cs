@@ -13,6 +13,7 @@ public class App : MonoBehaviour
     public Sprite sp_icon_save;
     public Sprite sp_icon_save_as;
     public Sprite sp_icon_project;
+    public Sprite sp_icon_import;
 
     [Header("Obj Json")]
     public GameObject prefab_obj_js;
@@ -33,11 +34,8 @@ public class App : MonoBehaviour
     private bool is_change_editor=false;
 
     [Header("Save Project")]
-    public GameObject[] Panel_save_item;
     public GameObject obj_icon_save_status_new;
-    public InputField inp_save_project_name;
     public Text txt_save_status;
-    public int sel_project_index = -1;
     private int sel_type_save = 0;
 
     [Header("Edit Properties")]
@@ -62,10 +60,6 @@ public class App : MonoBehaviour
     public Image img_show_help;
     private int sel_index_help;
 
-    [Header("Import")]
-    public GameObject panel_import;
-    public InputField inp_import_url;
-
     private void Start()
     {
         this.carrot.Load_Carrot(this.check_exit_app);
@@ -75,14 +69,13 @@ public class App : MonoBehaviour
 
         this.Panel_edit_Properties.SetActive(false);
         this.Panel_help.SetActive(false);
-        this.panel_import.SetActive(false);
 
         this.Panel_select_color.gameObject.SetActive(false);
         this.obj_icon_save_status_new.SetActive(false);
         this.carrot.clear_contain(this.area_all_item_editor);
         this.add_obj(prefab_obj_js.GetComponent<js_object>(), "root");
         this.check_mode();
-        this.GetComponent<Manager_Project>().load_project();
+        this.manager_Project.On_load();
         this.check_data_login();
     }
 
@@ -96,11 +89,6 @@ public class App : MonoBehaviour
         else if (this.Panel_help.activeInHierarchy)
         {
             this.close_help();
-            this.carrot.set_no_check_exit_app();
-        }
-        else if (this.panel_import.activeInHierarchy)
-        {
-            this.btn_close_import();
             this.carrot.set_no_check_exit_app();
         }
     }
@@ -135,8 +123,7 @@ public class App : MonoBehaviour
     {
         this.clear_list_item_editor();
         this.txt_save_status.text = PlayerPrefs.GetString("new_file","New File");
-        this.sel_project_index = -1;
-        this.GetComponent<Manager_Project>().set_new_project();
+        this.manager_Project.set_new_project();
         this.carrot.ads.show_ads_Interstitial();
     }
 
@@ -299,42 +286,32 @@ public class App : MonoBehaviour
         this.carrot.ads.show_ads_Interstitial();
     }
 
-    public void show_save()
+    public void Btn_save_project()
     {
-        this.carrot.play_sound_click();
-        if (this.sel_project_index != -1)
+        carrot.play_sound_click();
+        if (this.manager_Project.Get_Index_project_curent() != -1)
         {
-            if (this.is_change_editor) this.GetComponent<Manager_Project>().update_project(this.sel_project_index, this.get_root().get_result());
+            if (this.is_change_editor) this.manager_Project.Update_project_curent();
             this.obj_icon_save_status_new.SetActive(false);
             this.is_change_editor = false;
         }
         else
         {
-            this.sel_type_save = 0;
-            this.check_show_save();
+            manager_Project.Show_save_project(false);
         }
-        this.carrot.ads.show_ads_Interstitial();
+        carrot.ads.show_ads_Interstitial();
     }
 
-    public void show_save_as()
-    {
-        this.carrot.play_sound_click();
-        this.inp_save_project_name.text = "";
-        this.sel_type_save = 1;
-        this.check_show_save();
-    }
-
-    private void check_show_save()
-    {
-        this.Panel_save_item[0].SetActive(false);
-        this.Panel_save_item[1].SetActive(false);
-        this.Panel_save_item[this.sel_type_save].SetActive(true);
-    }
-
-    public void Btn_save_project()
+    public void Btn_save_as_project()
     {
         carrot.play_sound_click();
-        manager_Project.Show_save_project(false);
+        manager_Project.Show_save_project(true);
+    }
+
+    public void Btn_show_import_project()
+    {
+        carrot.play_sound_click();
+        manager_Project.Show_Import();
     }
 
     public void buy_product(int index_p)
@@ -380,7 +357,7 @@ public class App : MonoBehaviour
         this.carrot.show_rate();
     }
 
-    public void show_setting()
+    public void Btn_show_setting()
     {
         this.carrot.Create_Setting();
     }
@@ -407,7 +384,6 @@ public class App : MonoBehaviour
     {
         this.txt_save_status.text = "New File";
         this.obj_icon_save_status_new.SetActive(true);
-        this.sel_project_index = -1;
     }
 
     public void set_save_status_new()
@@ -455,12 +431,6 @@ public class App : MonoBehaviour
         this.carrot.play_sound_click();
     }
 
-    public void btn_show_more_app()
-    {
-        this.carrot.show_list_carrot_app();
-        this.carrot.play_sound_click();
-    }
-
     public void btn_show_login()
     {
         this.carrot.show_login();
@@ -486,34 +456,15 @@ public class App : MonoBehaviour
         }
     }
 
-    public void btn_show_select_lang()
+    public void Btn_show_select_lang()
     {
         this.carrot.show_list_lang(act_show_select_lang);
     }
 
     private void act_show_select_lang(string s_data)
     {
-        if(this.sel_project_index==-1) this.txt_save_status.text = PlayerPrefs.GetString("new_file", "New File");
-        if(this.list_item_obj[0]!=null) this.list_item_obj[0].GetComponent<js_object>().txt_tip.text= PlayerPrefs.GetString("json_root", "Json Root Object");
-    }
-
-    public void btn_show_import()
-    {
-        this.panel_import.SetActive(true);
-        this.carrot.play_sound_click();
-    }
-
-    public void btn_close_import()
-    {
-        this.panel_import.SetActive(false);
-        this.carrot.play_sound_click();
-    }
-
-    public void btn_act_import_url()
-    {
-        string s_inp_url = this.inp_import_url.text;
-        if (s_inp_url.Trim() == "") this.carrot.show_msg(PlayerPrefs.GetString("import","Import"),PlayerPrefs.GetString("import_url_error", "Input url cannot be empty"),Carrot.Msg_Icon.Error);
-        this.GetComponent<Manager_Project>().import_json_url(s_inp_url);
+        if(this.get_index_sel_mode()==-1) this.txt_save_status.text = "New File";
+        if(this.list_item_obj[0]!=null) this.list_item_obj[0].GetComponent<js_object>().txt_tip.text= "Json Root Object";
     }
 
     public string Get_data_cur()
