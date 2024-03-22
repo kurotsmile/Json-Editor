@@ -19,6 +19,7 @@ public class Json_Editor : MonoBehaviour
     public Sprite sp_icon_array_item;
     public Sprite sp_icon_properties;
     public Sprite sp_icon_root;
+    public Sprite sp_icon_clear;
 
     [Header("Obj Json")]
     public GameObject prefab_obj_js;
@@ -51,6 +52,8 @@ public class Json_Editor : MonoBehaviour
     public GameObject panel_edit_Properties_color;
     public GameObject panel_edit_Properties_bool;
 
+    private Carrot_Box box = null;
+
     public void On_load()
     {
         this.Panel_edit_Properties.SetActive(false);
@@ -78,6 +81,7 @@ public class Json_Editor : MonoBehaviour
             js_obj.x = obj_father.x + 1;
             js_obj.y = obj_father.y + 1;
             js_obj.area_body.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, x_space, js_obj.area_body.rect.height);
+            is_change_editor = true;
         }
         else
         {
@@ -103,7 +107,7 @@ public class Json_Editor : MonoBehaviour
             btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
 
             Carrot_Box_Btn_Item btn_clear = js_obj.Create_btn("btn_clear");
-            btn_clear.set_icon(this.app.carrot.sp_icon_del_data);
+            btn_clear.set_icon(this.sp_icon_clear);
             btn_clear.set_act(() => Clear_child_in_node(js_obj));
         }
 
@@ -145,6 +149,10 @@ public class Json_Editor : MonoBehaviour
             btn_add_propertie.set_icon(this.sp_icon_properties);
             btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
 
+            Carrot_Box_Btn_Item btn_edit = js_obj.Create_btn("btn_edit");
+            btn_edit.set_icon(this.app.carrot.user.icon_user_edit);
+            btn_edit.set_act(() => Show_edit_key(js_obj));
+
             Carrot_Box_Btn_Item btn_clear = js_obj.Create_btn("btn_clear");
             btn_clear.set_icon(this.app.carrot.sp_icon_del_data);
             btn_clear.set_act(() => Delete_node(js_obj));
@@ -154,11 +162,53 @@ public class Json_Editor : MonoBehaviour
         if (s_type == "propertie")
         {
             js_obj.Set_icon(sp_icon_properties);
+
+            Carrot_Box_Btn_Item btn_edit = js_obj.Create_btn("btn_edit");
+            btn_edit.set_icon(this.app.carrot.user.icon_user_edit);
+            btn_edit.set_act(() => Show_edit_key(js_obj));
+
+            Carrot_Box_Btn_Item btn_clear = js_obj.Create_btn("btn_clear");
+            btn_clear.set_icon(this.app.carrot.sp_icon_del_data);
+            btn_clear.set_act(() => Delete_node(js_obj));
         }
+
+        Carrot_Box_Btn_Item btn_menu = js_obj.Create_btn("btn_menu");
+        btn_menu.set_icon(this.app.carrot.icon_carrot_all_category);
+        btn_menu.set_act(() => Show_menu(js_obj));
 
         this.list_item_obj.Add(js_obj);
         this.Update_index_list();
-    } 
+    }
+
+    private void Show_edit_key(js_object obj)
+    {
+        box = app.carrot.Create_Box();
+        box.set_icon(app.carrot.user.icon_user_edit);
+        box.set_title("Edit key");
+
+        Carrot_Box_Item item_key = box.create_item();
+        item_key.set_icon(app.carrot.icon_carrot_write);
+        item_key.set_title("Key name");
+        item_key.set_tip("The name of the object or property");
+        item_key.set_type(Box_Item_Type.box_value_input);
+        item_key.check_type();
+        item_key.set_val(obj.txt_name.text);
+    }
+
+    private void Show_menu(js_object obj)
+    {
+        box = app.carrot.Create_Box();
+        box.set_icon(app.carrot.icon_carrot_all_category);
+        box.set_title("Menu");
+
+        if (obj.get_length_item() > 0)
+        {
+            Carrot_Box_Item item_clear = box.create_item();
+            item_clear.set_icon(sp_icon_clear);
+            item_clear.set_title("Clean up");
+            item_clear.set_tip("Delete all data of sub-blocks");
+        }
+    }
 
     private void Update_index_list()
     {

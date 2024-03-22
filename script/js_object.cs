@@ -49,6 +49,7 @@ public class js_object : MonoBehaviour
         if (this.list_child.Count > 0) s_count_child = " (" + this.list_child.Count + ")";
         else s_count_child = " (None)";
         this.txt_tip.text = this.s_type+" "+s_count_child;
+        this.txt_name.text = this.s_type.ToUpper();
     }
 
     public void Add_child(js_object obj)
