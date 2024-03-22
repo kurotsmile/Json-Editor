@@ -44,20 +44,26 @@ public class js_object : MonoBehaviour
     private string s_result = "";
     private List<GameObject> list_child = new();
     private bool is_show_child = true;
+    private Json_Editor json_editor;
+
+    public void On_load(Json_Editor json_editor)
+    {
+        this.json_editor = json_editor;
+    }
 
     public void btn_add_obj()
     {
-        GameObject.Find("App").GetComponent<App>().add_obj(this,"object");
+        this.json_editor.add_obj(this,"object");
     }
 
     public void btn_add_array()
     {
-        GameObject.Find("App").GetComponent<App>().add_obj(this,"array");
+        this.json_editor.add_obj(this,"array");
     }
 
     public void btn_add_properties()
     {
-        GameObject.Find("App").GetComponent<App>().add_obj(this, "properties");
+        this.json_editor.add_obj(this, "properties");
     }
 
     public void load_obj(string type,string s_name_set=null,int count_new=0)
@@ -319,10 +325,10 @@ public class js_object : MonoBehaviour
 
         if (this.s_type == "properties")
         {
-            GameObject.Find("App").GetComponent<App>().show_Properties(this);
+            GameObject.Find("App").GetComponent<App>().json_editor.show_Properties(this);
             return;
         }
-        GameObject.Find("App").GetComponent<App>().block_all_btn_edit(false);
+        json_editor.block_all_btn_edit(false);
         this.obj_menu_btn.SetActive(true);
         this.inp_name.text = this.txt_name.text;
         this.inp_name.gameObject.SetActive(true);
@@ -338,7 +344,7 @@ public class js_object : MonoBehaviour
 
     public void btn_close_edit()
     {
-        GameObject.Find("App").GetComponent<App>().block_all_btn_edit(true);
+        json_editor.block_all_btn_edit(true);
         this.txt_tip.gameObject.SetActive(true);
         this.load_obj_default();
     }

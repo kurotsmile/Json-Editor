@@ -1709,7 +1709,7 @@ MonoBehaviour:
   inp_name: {fileID: 8395778661419348002}
   obj_btn_edit_done: {fileID: 8982558233495920548}
   obj_btn_edit_close: {fileID: 9184577287373265536}
-  sp_expanded_on: {fileID: 21300000, guid: a041ac317dc416a4db1c62a5311cc8c0, type: 3}
+  sp_expanded_on: {fileID: 21300000, guid: 4532c085723b27e47a09e72204379608, type: 3}
   sp_expanded_off: {fileID: 21300000, guid: afde671f81d062241a9520e4ecf22460, type: 3}
   sp_icon_object: {fileID: 21300000, guid: 430e94d992b3c6a4ebae4cba860cf472, type: 3}
   sp_icon_array: {fileID: 21300000, guid: c1ed1ebae0456e44cbfff74c9e854a37, type: 3}

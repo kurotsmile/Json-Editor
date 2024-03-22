@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -98,10 +96,10 @@ public class Color_Board : MonoBehaviour
 
     private void check_model()
     {
-        this.img_btn_sel[0].color = this.app.color_properties_nomal;
-        this.img_btn_sel[1].color = this.app.color_properties_nomal;
-        this.img_btn_sel[2].color = this.app.color_properties_nomal;
-        this.img_btn_sel[this.index_sel_model].color = this.app.color_properties_select;
+        this.img_btn_sel[0].color = this.app.json_editor.color_properties_nomal;
+        this.img_btn_sel[1].color = this.app.json_editor.color_properties_nomal;
+        this.img_btn_sel[2].color = this.app.json_editor.color_properties_nomal;
+        this.img_btn_sel[this.index_sel_model].color = this.app.json_editor.color_properties_select;
         this.create_color();
     }
 

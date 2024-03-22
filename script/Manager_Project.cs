@@ -116,7 +116,7 @@ public class Manager_Project : MonoBehaviour
     private Carrot_Box_Item Add_item_to_list_box(IDictionary data)
     {
         Carrot_Box_Item item_project = box.create_item("item_project");
-        item_project.set_icon(this.app.sp_icon_project);
+        item_project.set_icon(this.app.sp_icon_project); 
         item_project.set_title(data["title"].ToString());
         item_project.set_tip(data["date"].ToString());
 
@@ -197,20 +197,20 @@ public class Manager_Project : MonoBehaviour
         if (box_menu != null) box_menu.close();
         if (data["index"] != null) this.sel_project_index = int.Parse(data["index"].ToString());
 
-        this.app.clear_list_item_editor();
+        this.app.json_editor.clear_list_item_editor();
         this.app.txt_save_status.text = data["title"].ToString();
         IDictionary<string, object> thanh = (IDictionary<string, object>)Json.Deserialize(data["code"].ToString());
-        this.paser_obj(thanh, this.app.get_root());
-        this.app.update_option_list();
+        this.paser_obj(thanh, this.app.json_editor.get_root());
+        this.app.json_editor.update_option_list();
         if (this.app.get_index_sel_mode() == 2)
-            this.app.show_code_json(true);
+            this.app.json_editor.show_code_json(true);
         else
-            this.app.show_code_json(false);
+            this.app.json_editor.show_code_json(false);
 
         this.app.carrot.close();
-        this.app.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
+        this.app.json_editor.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
         this.app.carrot.play_sound_click();
-        this.app.Update_option_list_obj();
+        this.app.json_editor.Update_option_list_obj();
     }
 
     public void Show_project_online(string id_project)
@@ -221,103 +221,7 @@ public class Manager_Project : MonoBehaviour
 
     public void paser_obj(IDictionary<string, object> thanh,js_object js_father)
     {
-        if (thanh is  object)
-        foreach (var obj_js in thanh)
-        {
-            GameObject item_editor = Instantiate(this.app.prefab_obj_js);
-            item_editor.transform.SetParent(this.app.area_all_item_editor);
-            item_editor.transform.localScale = new Vector3(1f, 1f, 1f);
-            item_editor.GetComponent<js_object>().txt_name.text = obj_js.Key;
-            float x_space = this.app.space_x_item * js_father.index;
-            item_editor.GetComponent<js_object>().index = js_father.index + 1;
-            item_editor.GetComponent<js_object>().index_list = js_father.index_list + 1;
-            item_editor.GetComponent<js_object>().area_body.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, x_space, item_editor.GetComponent<js_object>().area_body.rect.height);
-
-            if (obj_js.Value is string)
-            {
-                if (obj_js.Value.ToString().IndexOf("#")==0)
-                {
-                    item_editor.GetComponent<js_object>().load_obj("properties", obj_js.Key);
-                    item_editor.GetComponent<js_object>().set_properties_value(2, obj_js.Value.ToString());
-                }
-                else
-                {
-                    int obj_number;
-                    if (int.TryParse(obj_js.Value.ToString(), out obj_number))
-                    {
-                        item_editor.GetComponent<js_object>().load_obj("properties", obj_js.Key);
-                        item_editor.GetComponent<js_object>().set_properties_value(1, obj_number.ToString());
-                    }
-                    else
-                    {
-                        item_editor.GetComponent<js_object>().load_obj("properties", obj_js.Key);
-                        item_editor.GetComponent<js_object>().set_properties_value(0, obj_js.Value.ToString());
-                    }
-                }
-
-            }
-            else if (obj_js.Value is bool)
-            {
-                item_editor.GetComponent<js_object>().load_obj("properties", obj_js.Key);
-                item_editor.GetComponent<js_object>().set_properties_value(4, obj_js.Value.ToString());
-            }
-            else if (obj_js.Value is IList<object>)
-            {
-                item_editor.GetComponent<js_object>().load_obj("array", obj_js.Key);
-                IList<object> l = (IList<object>)obj_js.Value;
-                for (int y = 0; y < l.Count;y++)
-                {
-                    if (l[y] is string)
-                    {
-                        this.add_item_array(l[y].ToString(),y, item_editor.GetComponent<js_object>());
-                    }
-                    else
-                    {
-                        IDictionary<string, object> child_obj = (IDictionary<string, object>)l[y];
-                        paser_obj(child_obj, item_editor.GetComponent<js_object>());
-                    }
-                }
-            }
-            else
-            {
-                if (obj_js.Value != null)
-                {
-                    try {
-                        IDictionary<string, object> obj_child = (IDictionary<string, object>)obj_js.Value;
-                        item_editor.GetComponent<js_object>().load_obj("object", obj_js.Key);
-                        this.paser_obj(obj_child, item_editor.GetComponent<js_object>());
-                    } catch
-                    {
-                        item_editor.GetComponent<js_object>().load_obj("properties", obj_js.Key);
-                        item_editor.GetComponent<js_object>().set_properties_value(1, obj_js.Value.ToString());
-                    }
-                }
-                else
-                {
-                    item_editor.GetComponent<js_object>().load_obj("properties", obj_js.Key);
-                    item_editor.GetComponent<js_object>().set_properties_value(3,"Null");
-                }
-            }
-            item_editor.GetComponent<js_object>().check_child_expanded();
-            item_editor.GetComponent<js_object>().load_obj_default();
-            js_father.add_child(item_editor);
-            this.app.add_obj_list_main(item_editor);
-        }
-    }
-
-    private void add_item_array(string s_val,int index_item, js_object js_father)
-    {
-        GameObject item_editor = Instantiate(this.app.prefab_obj_js);
-        item_editor.transform.SetParent(this.app.area_all_item_editor);
-        item_editor.transform.localScale = new Vector3(1f, 1f, 1f);
-        float x_space = this.app.space_x_item * js_father.index;
-        item_editor.GetComponent<js_object>().index = js_father.index + 1;
-        item_editor.GetComponent<js_object>().area_body.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, x_space, item_editor.GetComponent<js_object>().area_body.rect.height);
-        item_editor.GetComponent<js_object>().load_obj("array_item", s_val, index_item);
-        item_editor.GetComponent<js_object>().check_child_expanded();
-        item_editor.GetComponent<js_object>().load_obj_default();
-        js_father.add_child(item_editor);
-        this.app.add_obj_list_main(item_editor);
+        this.app.json_editor.paser_obj(thanh, js_father);
     }
 
     public void Delete_project_offline(int index,GameObject obj_item)
@@ -367,20 +271,20 @@ public class Manager_Project : MonoBehaviour
         {
             app.carrot.hide_loading();
             Debug.Log(www.downloadHandler.text);
-            this.app.clear_list_item_editor();
+            this.app.json_editor.clear_list_item_editor();
             this.app.txt_save_status.text ="Import file";
             IDictionary<string, object> obj_js = (IDictionary<string, object>)Json.Deserialize(www.downloadHandler.text);
-            this.paser_obj(obj_js, this.app.get_root());
-            this.app.update_option_list();
+            this.paser_obj(obj_js, this.app.json_editor.get_root());
+            this.app.json_editor.update_option_list();
             if (this.app.get_index_sel_mode() == 2)
-                this.app.show_code_json(true);
+                this.app.json_editor.show_code_json(true);
             else
-                this.app.show_code_json(false);
+                this.app.json_editor.show_code_json(false);
 
             this.app.carrot.close();
-            this.app.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
+            this.app.json_editor.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
             this.app.carrot.play_sound_click();
-            this.app.Update_option_list_obj();
+            this.app.json_editor.Update_option_list_obj();
             if (box != null) box.close();
         }
         else
@@ -447,7 +351,7 @@ public class Manager_Project : MonoBehaviour
 
         this.app.txt_save_status.text = s_name;
         this.app.obj_icon_save_status_new.SetActive(false);
-        this.Add_project(s_name, app.Get_data_cur());
+        this.Add_project(s_name, app.json_editor.Get_data_cur());
         if (box != null) box.close();
     }
 
@@ -575,7 +479,7 @@ public class Manager_Project : MonoBehaviour
     internal void Update_project_curent()
     {
         IDictionary data = (IDictionary)Json.Deserialize(PlayerPrefs.GetString("js_data_"+this.sel_project_index));
-        data["code"] = app.Get_data_cur();
+        data["code"] = app.json_editor.Get_data_cur();
         data["date"] = DateTime.Now.ToString();
         PlayerPrefs.SetString("js_data_"+this.sel_project_index, Json.Serialize(data));
     }

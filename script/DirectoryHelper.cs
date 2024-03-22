@@ -18,7 +18,7 @@ public static class DirectoryHelper
 				for (int i = 0; i < externalFilesDirectories.Length; i++)
 				{
                     AndroidJavaObject directory = externalFilesDirectories[i];
-                    using (AndroidJavaClass environment = new AndroidJavaClass("android.os.Environment"))
+                    using (AndroidJavaClass environment = new("android.os.Environment"))
 					{
 						bool isRemovable = environment.CallStatic<bool>
 										  ("isExternalStorageRemovable", directory);
