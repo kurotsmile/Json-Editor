@@ -197,7 +197,7 @@ public class Manager_Project : MonoBehaviour
         if (box_menu != null) box_menu.close();
         if (data["index"] != null) this.sel_project_index = int.Parse(data["index"].ToString());
 
-        this.app.json_editor.clear_list_item_editor();
+        this.app.json_editor.Clear_list_item_editor();
         this.app.txt_save_status.text = data["title"].ToString();
         IDictionary<string, object> thanh = (IDictionary<string, object>)Json.Deserialize(data["code"].ToString());
         this.paser_obj(thanh, this.app.json_editor.get_root());
@@ -269,7 +269,7 @@ public class Manager_Project : MonoBehaviour
         {
             app.carrot.hide_loading();
             Debug.Log(www.downloadHandler.text);
-            this.app.json_editor.clear_list_item_editor();
+            this.app.json_editor.Clear_list_item_editor();
             this.app.txt_save_status.text ="Import file";
             IDictionary<string, object> obj_js = (IDictionary<string, object>)Json.Deserialize(www.downloadHandler.text);
             this.paser_obj(obj_js, this.app.json_editor.get_root());

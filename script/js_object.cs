@@ -288,13 +288,14 @@ public class js_object : MonoBehaviour
         return this.list_child.Count;
     }
 
-    public void set_properties_value(int type,string s_val)
+    public js_object set_properties_value(int type,string s_val)
     {
         this.index_Properties_type = type;
         this.txt_tip.text = s_val;
         this.txt_tip.color = Color.blue;
         this.s_Properties_value = s_val;
         this.img_type_properties.sprite = this.icon_type_properties[type];
+        return this;
     }
 
     public Carrot_Box_Btn_Item Create_btn(string s_name = "btn_item")

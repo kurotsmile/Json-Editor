@@ -2835,8 +2835,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3247921913830492077}
-        m_TargetAssemblyTypeName: App, Assembly-CSharp
+      - m_Target: {fileID: 8371764215650113490}
+        m_TargetAssemblyTypeName: Json_Editor, Assembly-CSharp
         m_MethodName: Btn_sel_mode
         m_Mode: 3
         m_Arguments:
@@ -5037,8 +5037,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3247921913830492077}
-        m_TargetAssemblyTypeName: App, Assembly-CSharp
+      - m_Target: {fileID: 8371764215650113490}
+        m_TargetAssemblyTypeName: Json_Editor, Assembly-CSharp
         m_MethodName: Btn_sel_mode
         m_Mode: 3
         m_Arguments:
@@ -14719,7 +14719,19 @@ MonoBehaviour:
         m_CallState: 2
   m_OnDidEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3247921913830492077}
+        m_TargetAssemblyTypeName: App, Assembly-CSharp
+        m_MethodName: check_change_coder_viewer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -15566,8 +15578,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3247921913830492077}
-        m_TargetAssemblyTypeName: App, Assembly-CSharp
+      - m_Target: {fileID: 8371764215650113490}
+        m_TargetAssemblyTypeName: Json_Editor, Assembly-CSharp
         m_MethodName: Btn_sel_mode
         m_Mode: 3
         m_Arguments:

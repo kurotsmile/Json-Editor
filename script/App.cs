@@ -59,7 +59,7 @@ public class App : MonoBehaviour
     public void new_project()
     {
         carrot.play_sound_click();
-        this.json_editor.clear_list_item_editor();
+        this.json_editor.Clear_list_item_editor();
         this.txt_save_status.text = PlayerPrefs.GetString("new_file","New File");
         this.manager_Project.Set_new_project();
         this.carrot.ads.show_ads_Interstitial();
@@ -117,6 +117,7 @@ public class App : MonoBehaviour
     public void check_change_coder_viewer()
     {
         this.set_save_status_new();
+        this.json_editor.Change_coder_in_view();
     }
 
     public void app_rate()

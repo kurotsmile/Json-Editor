@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Xml;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class Json_Editor : MonoBehaviour
 {
@@ -63,7 +64,7 @@ public class Json_Editor : MonoBehaviour
         this.check_mode();
     }
 
-    public void Add_node(js_object obj_father=null,string s_type="root")
+    public js_object Add_node(js_object obj_father=null,string s_type="root")
     {
         GameObject obj_node = Instantiate(this.prefab_obj_js);
         obj_node.transform.SetParent(this.area_all_item_editor);
@@ -75,7 +76,6 @@ public class Json_Editor : MonoBehaviour
         js_obj.On_load(s_type);
         if (obj_father != null)
         {
-            app.carrot.play_sound_click();
             obj_father.Add_child(js_obj);
             float x_space = this.space_x_item * obj_father.x;
             js_obj.x = obj_father.x + 1;
@@ -97,7 +97,7 @@ public class Json_Editor : MonoBehaviour
 
             Carrot_Box_Btn_Item btn_add_obj=js_obj.Create_btn("btn_add_obj");
             btn_add_obj.set_icon(this.sp_icon_object);
-            btn_add_obj.set_act(() => this.Add_node(js_obj,"object"));
+            btn_add_obj.set_act(() => this.Show_add_obj_to_node(js_obj));
 
             Carrot_Box_Btn_Item btn_add_array = js_obj.Create_btn("btn_add_array");
             btn_add_array.set_icon(this.sp_icon_array);
@@ -118,7 +118,7 @@ public class Json_Editor : MonoBehaviour
 
             Carrot_Box_Btn_Item btn_add_obj = js_obj.Create_btn("btn_add_obj");
             btn_add_obj.set_icon(this.sp_icon_object);
-            btn_add_obj.set_act(() => this.Add_node(js_obj, "object"));
+            btn_add_obj.set_act(() => this.Show_add_obj_to_node(js_obj));
 
             Carrot_Box_Btn_Item btn_add_array = js_obj.Create_btn("btn_add_array");
             btn_add_array.set_icon(this.sp_icon_array);
@@ -140,7 +140,7 @@ public class Json_Editor : MonoBehaviour
 
             Carrot_Box_Btn_Item btn_add_obj = js_obj.Create_btn("btn_add_obj");
             btn_add_obj.set_icon(this.sp_icon_object);
-            btn_add_obj.set_act(() => this.Add_node(js_obj, "object"));
+            btn_add_obj.set_act(() => this.Show_add_obj_to_node(js_obj));
 
             Carrot_Box_Btn_Item btn_add_array = js_obj.Create_btn("btn_add_array");
             btn_add_array.set_icon(this.sp_icon_array);
@@ -159,7 +159,6 @@ public class Json_Editor : MonoBehaviour
             btn_clear.set_act(() => Delete_node(js_obj));
         }
 
-
         if (s_type == "propertie")
         {
             js_obj.Set_icon(sp_icon_properties);
@@ -173,10 +172,53 @@ public class Json_Editor : MonoBehaviour
             btn_clear.set_act(() => Delete_node(js_obj));
         }
 
+        if(s_type== "array_item")
+        {
+            js_obj.Set_icon(sp_icon_array_item);
+        }
+
         Carrot_Box_Btn_Item btn_menu = js_obj.Create_btn("btn_menu");
         btn_menu.set_icon(this.app.carrot.icon_carrot_all_category);
         btn_menu.set_act(() => Show_menu(js_obj));
         this.Update_index_list();
+        return js_obj;
+    }
+
+    private void Show_add_obj_to_node(js_object obj)
+    {
+        app.carrot.play_sound_click();
+        box = app.carrot.Create_Box();
+        box.set_icon(sp_icon_object);
+        box.set_title("Add Object");
+
+        Carrot_Box_Item item_key = box.create_item();
+        item_key.set_icon(app.carrot.icon_carrot_write);
+        item_key.set_title("Name Object");
+        item_key.set_tip("The name of the object");
+        item_key.set_type(Box_Item_Type.box_value_input);
+        item_key.check_type();
+        item_key.set_val(obj.txt_name.text);
+
+        Carrot_Box_Btn_Panel panel_btn = box.create_panel_btn();
+        Carrot_Button_Item btn_done = panel_btn.create_btn("btn_done");
+        btn_done.set_bk_color(app.carrot.color_highlight);
+        btn_done.set_icon_white(app.carrot.icon_carrot_done);
+        btn_done.set_label_color(Color.white);
+        btn_done.set_label("Done");
+        btn_done.set_act_click(() => Act_add_emp_to_node_done(item_key.get_val(), obj));
+
+        Carrot_Button_Item btn_cancel = panel_btn.create_btn("btn_cancel");
+        btn_cancel.set_bk_color(app.carrot.color_highlight);
+        btn_cancel.set_icon_white(app.carrot.icon_carrot_cancel);
+        btn_cancel.set_label_color(Color.white);
+        btn_cancel.set_label("Cancel");
+        btn_cancel.set_act_click(() => Act_close_box());
+    }
+
+    private void Act_add_emp_to_node_done(string s_name,js_object obj)
+    {
+        Add_node(obj,"object").txt_name.text=s_name;
+        this.Act_close_box();
     }
 
     private void Show_edit_key(js_object obj)
@@ -262,7 +304,7 @@ public class Json_Editor : MonoBehaviour
     {
         this.index_sel_mode = index_mode;
         this.check_mode();
-        if (this.index_sel_mode == 0) this.show_editor_by_coder();
+        if (this.index_sel_mode == 0) this.Show_editor_by_coder();
         if (this.index_sel_mode == 1) this.show_code_json(false);
         if (this.index_sel_mode == 2) this.show_code_json(true);
         this.app.carrot.play_sound_click();
@@ -290,10 +332,10 @@ public class Json_Editor : MonoBehaviour
         this.is_change_coderviewer = false;
     }
 
-    public void show_editor_by_coder()
+    public void Show_editor_by_coder()
     {
         if (!this.is_change_coderviewer) return;
-        this.clear_list_item_editor();
+        this.Clear_list_item_editor();
         IDictionary<string, object> thanh = (IDictionary<string, object>)Carrot.Json.Deserialize(this.inp_coder_viewer.text);
         this.GetComponent<Manager_Project>().paser_obj(thanh, this.get_root());
     }
@@ -303,7 +345,7 @@ public class Json_Editor : MonoBehaviour
         return this.js_object_root;
     }
 
-    public void clear_list_item_editor()
+    public void Clear_list_item_editor()
     {
         this.is_change_coderviewer = false;
         this.app.carrot.clear_contain(this.area_all_item_editor);
@@ -320,57 +362,46 @@ public class Json_Editor : MonoBehaviour
         if (thanh is object)
             foreach (var obj_js in thanh)
             {
-                GameObject item_editor = Instantiate(this.prefab_obj_js);
-                item_editor.transform.SetParent(this.area_all_item_editor);
-                item_editor.transform.localScale = new Vector3(1f, 1f, 1f);
-                item_editor.GetComponent<js_object>().txt_name.text = obj_js.Key;
-                float x_space = this.app.space_x_item * js_father.x;
-                item_editor.GetComponent<js_object>().x = js_father.x + 1;
-                item_editor.GetComponent<js_object>().y = js_father.y + 1;
-                item_editor.GetComponent<js_object>().area_body.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, x_space, item_editor.GetComponent<js_object>().area_body.rect.height);
 
                 if (obj_js.Value is string)
                 {
                     if (obj_js.Value.ToString().IndexOf("#") == 0)
                     {
-                        item_editor.GetComponent<js_object>().load_obj("properties", obj_js.Key);
-                        item_editor.GetComponent<js_object>().set_properties_value(2, obj_js.Value.ToString());
+                        this.Add_node(js_father, "propertie").set_properties_value(2, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
                     }
                     else
                     {
                         int obj_number;
                         if (int.TryParse(obj_js.Value.ToString(), out obj_number))
                         {
-                            item_editor.GetComponent<js_object>().load_obj("properties", obj_js.Key);
-                            item_editor.GetComponent<js_object>().set_properties_value(1, obj_number.ToString());
+                            this.Add_node(js_father, "propertie").set_properties_value(1, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
                         }
                         else
                         {
-                            item_editor.GetComponent<js_object>().load_obj("properties", obj_js.Key);
-                            item_editor.GetComponent<js_object>().set_properties_value(0, obj_js.Value.ToString());
+                            this.Add_node(js_father, "propertie").set_properties_value(0, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
                         }
                     }
 
                 }
                 else if (obj_js.Value is bool)
                 {
-                    item_editor.GetComponent<js_object>().load_obj("properties", obj_js.Key);
-                    item_editor.GetComponent<js_object>().set_properties_value(4, obj_js.Value.ToString());
+                    this.Add_node(js_father, "propertie").set_properties_value(4, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
                 }
                 else if (obj_js.Value is IList<object>)
                 {
-                    item_editor.GetComponent<js_object>().load_obj("array", obj_js.Key);
+                    js_object obj_array = this.Add_node(js_father, "array");
+                    obj_array.set_properties_value(1, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
                     IList<object> l = (IList<object>)obj_js.Value;
                     for (int y = 0; y < l.Count; y++)
                     {
                         if (l[y] is string)
                         {
-                            this.add_item_array(l[y].ToString(), y, item_editor.GetComponent<js_object>());
+                            Add_node(obj_array,"array_item").set_properties_value(0, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
                         }
                         else
                         {
                             IDictionary<string, object> child_obj = (IDictionary<string, object>)l[y];
-                            paser_obj(child_obj, item_editor.GetComponent<js_object>());
+                            paser_obj(child_obj, obj_array);
                         }
                     }
                 }
@@ -381,39 +412,108 @@ public class Json_Editor : MonoBehaviour
                         try
                         {
                             IDictionary<string, object> obj_child = (IDictionary<string, object>)obj_js.Value;
-                            item_editor.GetComponent<js_object>().load_obj("object", obj_js.Key);
-                            this.paser_obj(obj_child, item_editor.GetComponent<js_object>());
+                            js_object obj_paser = this.Add_node(js_father, "object");
+                            obj_paser.txt_name.text = obj_js.Key;
+                            this.paser_obj(obj_child, obj_paser);
                         }
                         catch
                         {
-                            item_editor.GetComponent<js_object>().load_obj("properties", obj_js.Key);
-                            item_editor.GetComponent<js_object>().set_properties_value(1, obj_js.Value.ToString());
+                            this.Add_node(js_father, "propertie").set_properties_value(1, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
                         }
                     }
                     else
                     {
-                        item_editor.GetComponent<js_object>().load_obj("properties", obj_js.Key);
-                        item_editor.GetComponent<js_object>().set_properties_value(3, "Null");
+                        this.Add_node(js_father, "propertie").set_properties_value(1, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
                     }
                 }
-                item_editor.GetComponent<js_object>().check_child_expanded();
-                js_father.Add_child(item_editor.GetComponent<js_object>());
             }
     }
 
-    private void add_item_array(string s_val, int index_item, js_object js_father)
+    public void Paser(IDictionary myDict,js_object obj_father)
     {
-        GameObject item_editor = Instantiate(this.prefab_obj_js);
-        item_editor.transform.SetParent(this.area_all_item_editor);
-        item_editor.transform.localScale = new Vector3(1f, 1f, 1f);
-        float x_space = this.app.space_x_item * js_father.x;
-        item_editor.GetComponent<js_object>().x = js_father.x + 1;
-        item_editor.GetComponent<js_object>().area_body.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, x_space, item_editor.GetComponent<js_object>().area_body.rect.height);
-        item_editor.GetComponent<js_object>().load_obj("array_item", s_val, index_item);
-        item_editor.GetComponent<js_object>().check_child_expanded();
-        js_father.Add_child(item_editor.GetComponent<js_object>());
+        foreach (DictionaryEntry entry in myDict)
+        {
+            if (myDict == null)
+            {
+                Add_node(obj_father, "propertie").txt_tip.text=entry.Key.ToString();
+            }
+            else if (entry.Value is IDictionary)
+            {
+                js_object js_object = Add_node(obj_father, "object");
+                js_object.txt_tip.text = entry.Key.ToString();
+                IDictionary datas = (IDictionary) entry.Value;
+                Paser(datas, js_object);
+            }
+            else if (entry.Value is Array)
+            {
+                js_object js_array = Add_node(obj_father, "array");
+                Paser_Array(entry.Value, js_array);
+            }
+            else if (entry.Value is string)
+            {
+                Debug.Log(entry.Key + " is a string");
+                Add_node(obj_father, "propertie").txt_tip.text = entry.Key.ToString();
+            }
+            else if (entry.Value is int || entry.Value is float || entry.Value is double)
+            {
+                Debug.Log(entry.Key + " is a number");
+                Add_node(obj_father, "propertie").txt_tip.text = entry.Key.ToString();
+            }
+            else if (entry.Value is Color)
+            {
+                Debug.Log(entry.Key + " is a Color");
+                Add_node(obj_father, "propertie").txt_tip.text = entry.Key.ToString();
+            }
+            else if (entry.Value is DateTime)
+            {
+                Debug.Log(entry.Key + " is a Date");
+                Add_node(obj_father, "propertie").txt_tip.text = entry.Key.ToString();
+            }
+            else
+            {
+                Debug.Log(entry.Key + " is of unknown type");
+                Add_node(obj_father, "propertie").txt_name.text = entry.Key.ToString();
+            }
+        }
     }
 
+    private void Paser_Array(object myDict,js_object obj_father)
+    {
+        if (myDict == null)
+        {
+            Add_node(obj_father, "array_item").txt_tip.text = myDict.ToString();
+        }
+        else if (myDict is IDictionary)
+        {
+            js_object js_object = Add_node(obj_father, "object");
+            IDictionary datas = (IDictionary)myDict;
+            Paser(datas, js_object);
+        }
+        else if (myDict is Array)
+        {
+            Paser_Array(myDict, obj_father);
+        }
+        else if (myDict is string)
+        {
+            Add_node(obj_father, "array_item").txt_tip.text = myDict.ToString();
+        }
+        else if (myDict is int || myDict is float || myDict is double)
+        {
+            Add_node(obj_father, "array_item").txt_tip.text = myDict.ToString();
+        }
+        else if (myDict is Color)
+        {
+            Add_node(obj_father, "array_item").txt_tip.text = myDict.ToString();
+        }
+        else if (myDict is DateTime)
+        {
+            Add_node(obj_father, "array_item").txt_tip.text = myDict.ToString();
+        }
+        else
+        {
+            Add_node(obj_father, "array_item").txt_name.text = myDict.ToString();
+        }
+    }
 
     public void close_Properties()
     {
@@ -559,6 +659,13 @@ public class Json_Editor : MonoBehaviour
         {
             Debug.Log(key + " is of unknown type");
         }
+    }
+
+    public void Change_coder_in_view()
+    {
+        this.Clear_list_item_editor();
+        IDictionary data= (IDictionary)Carrot.Json.Deserialize(this.inp_coder_viewer.text);
+        this.Paser(data, this.get_root());
     }
 
 }
