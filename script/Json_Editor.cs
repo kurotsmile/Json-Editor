@@ -31,7 +31,6 @@ public class Json_Editor : MonoBehaviour
     public Text txt_username_login;
 
     public float space_x_item = 25f;
-    private List<js_object> list_item_obj = new();
     public GameObject[] panel_model;
     public Image[] img_btn_model;
 
@@ -53,13 +52,14 @@ public class Json_Editor : MonoBehaviour
     public GameObject panel_edit_Properties_bool;
 
     private Carrot_Box box = null;
+    private js_object js_object_root = null;
 
     public void On_load()
     {
         this.Panel_edit_Properties.SetActive(false);
         this.Panel_select_color.gameObject.SetActive(false);
         this.app.carrot.clear_contain(this.area_all_item_editor);
-        this.Add_node(null,"root");
+        this.Add_node();
         this.check_mode();
     }
 
@@ -86,6 +86,7 @@ public class Json_Editor : MonoBehaviour
         else
         {
             js_obj.x = +1;
+            js_object_root = js_obj;
         }
 
         obj_node.transform.SetSiblingIndex(js_obj.y);
@@ -175,8 +176,6 @@ public class Json_Editor : MonoBehaviour
         Carrot_Box_Btn_Item btn_menu = js_obj.Create_btn("btn_menu");
         btn_menu.set_icon(this.app.carrot.icon_carrot_all_category);
         btn_menu.set_act(() => Show_menu(js_obj));
-
-        this.list_item_obj.Add(js_obj);
         this.Update_index_list();
     }
 
@@ -193,6 +192,33 @@ public class Json_Editor : MonoBehaviour
         item_key.set_type(Box_Item_Type.box_value_input);
         item_key.check_type();
         item_key.set_val(obj.txt_name.text);
+
+        Carrot_Box_Btn_Panel panel_btn = box.create_panel_btn();
+        Carrot_Button_Item btn_done=panel_btn.create_btn("btn_done");
+        btn_done.set_bk_color(app.carrot.color_highlight);
+        btn_done.set_icon_white(app.carrot.icon_carrot_done);
+        btn_done.set_label_color(Color.white);
+        btn_done.set_label("Done");
+        btn_done.set_act_click(() => Act_edit_key_done(item_key.get_val(), obj));
+
+        Carrot_Button_Item btn_cancel = panel_btn.create_btn("btn_cancel");
+        btn_cancel.set_bk_color(app.carrot.color_highlight);
+        btn_cancel.set_icon_white(app.carrot.icon_carrot_cancel);
+        btn_cancel.set_label_color(Color.white);
+        btn_cancel.set_label("Cancel");
+        btn_cancel.set_act_click(() => Act_close_box());
+    }
+
+    private void Act_edit_key_done(string s_name,js_object obj)
+    {
+        obj.txt_name.text = s_name;
+        this.Act_close_box();
+    }
+
+    private void Act_close_box()
+    {
+        app.carrot.play_sound_click();
+        if (box != null) box.close();
     }
 
     private void Show_menu(js_object obj)
@@ -232,34 +258,6 @@ public class Json_Editor : MonoBehaviour
         app.carrot.show_msg("Json Editor", "Clear al child in node data " + obj.txt_name.text + " success!", Msg_Icon.Alert);
     }
 
-    public void add_obj(js_object o, string s_type)
-    {
-        GameObject obj = Instantiate(this.prefab_obj_js);
-        js_object js_obj = obj.GetComponent<js_object>();
-        js_obj.On_load(s_type);
-        float x_space = this.space_x_item * o.x;
-        js_obj.x = o.x + 1;
-        js_obj.area_body.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, x_space, js_obj.area_body.rect.height);
-        obj.transform.SetParent(this.area_all_item_editor);
-        obj.transform.localScale = new Vector3(1f, 1f, 0f);
-        obj.transform.localPosition = new Vector3(0f, 0f, 0f);
-        obj.transform.localRotation = Quaternion.identity;
-        obj.transform.SetSiblingIndex(o.y + 1);
-        js_obj.load_obj(s_type, null, o.get_length_item() + 1);
-        if (this.list_item_obj.Count > 0) o.Add_child(js_obj);
-        js_obj.check_child_expanded();
-        this.list_item_obj.Add(js_obj);
-        this.update_option_list();
-        if (s_type != "root")
-        {
-            this.is_change_coderviewer = true;
-            this.is_change_editor = true;
-            this.app.obj_icon_save_status_new.SetActive(true);
-            this.app.carrot.play_sound_click();
-        }
-        this.app.carrot.ads.show_ads_Interstitial();
-    }
-
     public void Btn_sel_mode(int index_mode)
     {
         this.index_sel_mode = index_mode;
@@ -281,17 +279,6 @@ public class Json_Editor : MonoBehaviour
         this.panel_model[this.index_sel_mode].SetActive(true);
     }
 
-    public void update_option_list()
-    {
-        int i = 0;
-        foreach (Transform c in this.area_all_item_editor)
-        {
-            c.GetComponent<js_object>().y = i;
-            i++;
-        }
-    }
-
-
     public void show_code_json(bool is_no_space)
     {
         string s_json = "";
@@ -309,30 +296,23 @@ public class Json_Editor : MonoBehaviour
         this.clear_list_item_editor();
         IDictionary<string, object> thanh = (IDictionary<string, object>)Carrot.Json.Deserialize(this.inp_coder_viewer.text);
         this.GetComponent<Manager_Project>().paser_obj(thanh, this.get_root());
-        this.update_option_list();
     }
 
     public js_object get_root()
     {
-        return this.list_item_obj[0].GetComponent<js_object>();
+        return this.js_object_root;
     }
 
     public void clear_list_item_editor()
     {
         this.is_change_coderviewer = false;
-        this.list_item_obj = new();
         this.app.carrot.clear_contain(this.area_all_item_editor);
-        this.add_obj(prefab_obj_js.GetComponent<js_object>(), "root");
-    }
-
-    public void Act_check_lang()
-    {
-        if (this.list_item_obj[0] != null) this.list_item_obj[0].GetComponent<js_object>().txt_tip.text = "Json Root Object";
+        this.Add_node();
     }
 
     public string Get_data_cur()
     {
-        return list_item_obj[0].GetComponent<js_object>().get_result();
+        return js_object_root.get_result();
     }
 
     public void paser_obj(IDictionary<string, object> thanh, js_object js_father)

@@ -185,6 +185,5 @@ public class App : MonoBehaviour
     private void Act_show_select_lang(string s_data)
     {
         if(this.get_index_sel_mode()==-1) this.txt_save_status.text = "New File";
-        json_editor.Act_check_lang();
     }
 }
