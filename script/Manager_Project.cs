@@ -210,7 +210,7 @@ public class Manager_Project : MonoBehaviour
         this.app.carrot.close();
         this.app.json_editor.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
         this.app.carrot.play_sound_click();
-        this.app.json_editor.Update_option_list_obj();
+        this.app.json_editor.update_option_list();
     }
 
     public void Show_project_online(string id_project)
@@ -284,7 +284,7 @@ public class Manager_Project : MonoBehaviour
             this.app.carrot.close();
             this.app.json_editor.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
             this.app.carrot.play_sound_click();
-            this.app.json_editor.Update_option_list_obj();
+            this.app.json_editor.update_option_list();
             if (box != null) box.close();
         }
         else

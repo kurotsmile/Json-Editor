@@ -1,3 +1,4 @@
+using Carrot;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,26 +6,17 @@ using UnityEngine.UI;
 public class js_object : MonoBehaviour
 {
     [Header("Obj Main")]
+    public GameObject btn_carrot_prefab;
     public RectTransform area_body;
+    public Transform area_btn_extension;
     public Image img_icon_expanded;
     public Image img_icon_obj;
     public Text txt_name;
     public Text txt_tip;
-    public GameObject obj_btn_edit;
-    public GameObject obj_btn_add_obj;
-    public GameObject obj_btn_add_array;
-    public GameObject obj_btn_add_properties;
-    public GameObject obj_btn_delete;
-    public GameObject obj_menu_btn;
     
     public string s_type = "object";
-    public int index = 0;
-    public int index_list = 0;
-
-    [Header("Obj Update")]
-    public InputField inp_name;
-    public GameObject obj_btn_edit_done;
-    public GameObject obj_btn_edit_close;
+    public int x = 0;
+    public int y = 0;
 
     [Header("Icon")]
     public Sprite sp_expanded_on;
@@ -42,28 +34,27 @@ public class js_object : MonoBehaviour
     public Image img_type_properties;
 
     private string s_result = "";
-    private List<GameObject> list_child = new();
+    private List<js_object> list_child = new();
     private bool is_show_child = true;
-    private Json_Editor json_editor;
 
-    public void On_load(Json_Editor json_editor)
+    public void On_load(string s_type)
     {
-        this.json_editor = json_editor;
+        this.s_type = s_type;
+        this.Load_info();
     }
 
-    public void btn_add_obj()
+    private void Load_info()
     {
-        this.json_editor.add_obj(this,"object");
+        string s_count_child;
+        if (this.list_child.Count > 0) s_count_child = " (" + this.list_child.Count + ")";
+        else s_count_child = " (None)";
+        this.txt_tip.text = this.s_type+" "+s_count_child;
     }
 
-    public void btn_add_array()
+    public void Add_child(js_object obj)
     {
-        this.json_editor.add_obj(this,"array");
-    }
-
-    public void btn_add_properties()
-    {
-        this.json_editor.add_obj(this, "properties");
+        this.list_child.Add(obj);
+        this.check_child_expanded();
     }
 
     public void load_obj(string type,string s_name_set=null,int count_new=0)
@@ -105,22 +96,11 @@ public class js_object : MonoBehaviour
         if (s_name_set != null) this.txt_name.text = s_name_set;
     }
 
-    public void btn_delete_obj()
-    {
-        this.delete_all_child();
-        Destroy(this.gameObject);
-        this.check_child_expanded();
-        GameObject.Find("App").GetComponent<App>().set_save_status_new();
-    }
 
-    public void delete_all_child()
+    public void Delete_all_child()
     {
         for (int i = 0; i < this.list_child.Count; i++) {
-            if (this.list_child[i] != null)
-            {
-                this.list_child[i].GetComponent<js_object>().delete_all_child();
-                Destroy(this.list_child[i].gameObject);
-            }
+            if (this.list_child[i] != null) this.list_child[i].Delete();
         }
     }
 
@@ -138,19 +118,19 @@ public class js_object : MonoBehaviour
         }
         else if(this.s_type=="object")
         {
-            if(this.index>1) for(int i=1;i<this.index;i++) s_json = s_json + "\t";
+            if(this.x>1) for(int i=1;i<this.x;i++) s_json = s_json + "\t";
             s_json = s_json + "\""+this.txt_name.text+"\":{";
             for (int i = 0; i < this.list_child.Count; i++)
             {
                 if (i == 0) s_json = s_json + "\n";
                 if (this.list_child[i]!=null)s_json = s_json+this.list_child[i].GetComponent<js_object>().get_result();
             }
-            if (this.index > 1&& this.list_child.Count>0) for (int i = 1; i < this.index; i++) s_json = s_json + "\t";
+            if (this.x > 1&& this.list_child.Count>0) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
             s_json = s_json + "},\n";
         }
         else if (this.s_type == "array")
         {
-            if (this.index > 1) for (int i = 1; i < this.index; i++) s_json = s_json + "\t";
+            if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
             s_json = s_json + "\"" + this.txt_name.text + "\":[";
             for (int i = 0; i < this.list_child.Count; i++)
             {
@@ -163,12 +143,12 @@ public class js_object : MonoBehaviour
                 }
             }
             s_json=s_json.Replace(",}", "}");
-            if (this.index > 1) for (int i = 1; i < this.index; i++) s_json = s_json + "\t";
+            if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
             s_json = s_json + "],\n";
         }
         else if (this.s_type == "array_item")
         {
-            if (this.index > 1) for (int i = 1; i < this.index; i++) s_json = s_json + "\t";
+            if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
             s_json = s_json + "\"" + this.txt_name.text + "\",";
         }
         else if (this.s_type == "properties")
@@ -178,7 +158,7 @@ public class js_object : MonoBehaviour
             else if (this.index_Properties_type == 4) s_val = this.s_Properties_value;
             else if (this.index_Properties_type == 1) s_val = this.s_Properties_value;
             else s_val = "\"" + this.s_Properties_value + "\"";
-            if (this.index > 1) for (int i = 1; i < this.index; i++) s_json = s_json + "\t";
+            if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
             s_json = s_json + "\"" + this.txt_name.text + "\":"+s_val+",\n";
         }
 
@@ -263,15 +243,8 @@ public class js_object : MonoBehaviour
         return this.s_result;
     }
 
-    public void add_child(GameObject o_child)
-    {
-        this.list_child.Add(o_child);
-        this.check_child_expanded();
-    }
-
     public void show_or_hide_child()
     {
-        if (this.inp_name.gameObject.activeInHierarchy) return;
         if (this.is_show_child)
             this.is_show_child = false;
         else
@@ -285,17 +258,10 @@ public class js_object : MonoBehaviour
     public void check_child_expanded()
     {
         if (this.list_child.Count > 0)
-        {
             this.img_icon_expanded.gameObject.SetActive(true);
-            if (this.s_type == "object") this.txt_tip.text = "Object (" + this.list_child.Count + " Item)";
-            if (this.s_type == "array") this.txt_tip.text = "Array (" + this.list_child.Count + " Item)";
-        }
         else
-        {
             this.img_icon_expanded.gameObject.SetActive(false);
-            if (this.s_type == "object") this.txt_tip.text = "Object (None)";
-            if (this.s_type == "array") this.txt_tip.text = "Array (None)";
-        }
+        this.Load_info();
     }
 
     public void hide_or_show_all_child(bool is_show)
@@ -309,76 +275,10 @@ public class js_object : MonoBehaviour
         {
             if (this.list_child[i] != null)
             {
-                this.list_child[i].GetComponent<js_object>().hide_or_show_all_child(is_show);
-                this.list_child[i].SetActive(is_show);
+                this.list_child[i].hide_or_show_all_child(is_show);
+                this.list_child[i].gameObject.SetActive(is_show);
             }
         }
-    }
-
-    public void btn_show_edit()
-    {
-        if (this.s_type == "root")
-        {
-            this.show_or_hide_child();
-            return;
-        }
-
-        if (this.s_type == "properties")
-        {
-            GameObject.Find("App").GetComponent<App>().json_editor.show_Properties(this);
-            return;
-        }
-        json_editor.block_all_btn_edit(false);
-        this.obj_menu_btn.SetActive(true);
-        this.inp_name.text = this.txt_name.text;
-        this.inp_name.gameObject.SetActive(true);
-        this.obj_btn_edit_done.SetActive(true);
-        this.obj_btn_edit_close.SetActive(true);
-        this.obj_btn_add_array.SetActive(false);
-        this.obj_btn_add_obj.SetActive(false);
-        this.obj_btn_edit.SetActive(false);
-        this.obj_btn_delete.SetActive(false);
-        this.obj_btn_add_properties.SetActive(false);
-        this.txt_tip.gameObject.SetActive(false);
-    }
-
-    public void btn_close_edit()
-    {
-        json_editor.block_all_btn_edit(true);
-        this.txt_tip.gameObject.SetActive(true);
-        this.load_obj_default();
-    }
-
-    public void load_obj_default()
-    {
-        this.inp_name.gameObject.SetActive(false);
-        this.obj_btn_edit_done.SetActive(false);
-        this.obj_btn_edit_close.SetActive(false);
-        this.obj_btn_edit.SetActive(true);
-        this.obj_btn_delete.SetActive(true);
-        if (this.s_type == "properties")
-        {
-            this.obj_btn_add_array.SetActive(false);
-            this.obj_btn_add_obj.SetActive(false);
-            this.obj_btn_add_properties.SetActive(false);
-        }
-        else if (this.s_type == "root")
-        {
-            this.obj_btn_delete.SetActive(false);
-            this.obj_btn_edit.SetActive(false);
-        }
-        else
-        {
-            this.obj_btn_add_array.SetActive(true);
-            this.obj_btn_add_obj.SetActive(true);
-            this.obj_btn_add_properties.SetActive(true);
-        }
-    }
-
-    public void btn_done_edit()
-    {
-        this.txt_name.text = this.inp_name.text;
-        this.btn_close_edit();
     }
 
     public int get_length_item()
@@ -395,4 +295,27 @@ public class js_object : MonoBehaviour
         this.img_type_properties.sprite = this.icon_type_properties[type];
     }
 
+    public Carrot_Box_Btn_Item Create_btn(string s_name = "btn_item")
+    {
+        GameObject bnt_footer = Instantiate(btn_carrot_prefab);
+        bnt_footer.name = s_name;
+        bnt_footer.transform.SetParent(this.area_btn_extension);
+        bnt_footer.transform.localPosition = new Vector3(bnt_footer.transform.position.x, bnt_footer.transform.position.y, 0f);
+        bnt_footer.transform.localScale = new Vector3(1f, 1f, 1f);
+        bnt_footer.transform.localRotation = Quaternion.Euler(Vector3.zero);
+
+        Carrot_Box_Btn_Item btn_item = bnt_footer.GetComponent<Carrot_Box_Btn_Item>();
+        return btn_item;
+    }
+
+    public void Set_icon(Sprite sp_icon)
+    {
+        this.img_icon_obj.sprite = sp_icon;
+    }
+
+    public void Delete()
+    {
+        this.Delete_all_child();
+        Destroy(this.gameObject);
+    }
 }

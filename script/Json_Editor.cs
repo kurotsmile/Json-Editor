@@ -1,4 +1,8 @@
+using Carrot;
+using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Xml;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +10,15 @@ public class Json_Editor : MonoBehaviour
 {
     [Header("Obj Main")]
     public App app;
+
+    [Header("Icon")]
+    public Sprite sp_expanded_on;
+    public Sprite sp_expanded_off;
+    public Sprite sp_icon_object;
+    public Sprite sp_icon_array;
+    public Sprite sp_icon_array_item;
+    public Sprite sp_icon_properties;
+    public Sprite sp_icon_root;
 
     [Header("Obj Json")]
     public GameObject prefab_obj_js;
@@ -17,7 +30,7 @@ public class Json_Editor : MonoBehaviour
     public Text txt_username_login;
 
     public float space_x_item = 25f;
-    private List<GameObject> list_item_obj = new();
+    private List<js_object> list_item_obj = new();
     public GameObject[] panel_model;
     public Image[] img_btn_model;
 
@@ -43,25 +56,149 @@ public class Json_Editor : MonoBehaviour
         this.Panel_edit_Properties.SetActive(false);
         this.Panel_select_color.gameObject.SetActive(false);
         this.app.carrot.clear_contain(this.area_all_item_editor);
-        this.add_obj(prefab_obj_js.GetComponent<js_object>(), "root");
+        this.Add_node(null,"root");
         this.check_mode();
+    }
+
+    public void Add_node(js_object obj_father=null,string s_type="root")
+    {
+        GameObject obj_node = Instantiate(this.prefab_obj_js);
+        obj_node.transform.SetParent(this.area_all_item_editor);
+        obj_node.transform.localPosition = new Vector3(0f, 0f, 0f); 
+        obj_node.transform.localScale = new Vector3(1f, 1f, 0f);
+        obj_node.transform.localRotation = Quaternion.identity;
+
+        js_object js_obj = obj_node.GetComponent<js_object>();
+        js_obj.On_load(s_type);
+        if (obj_father != null)
+        {
+            app.carrot.play_sound_click();
+            obj_father.Add_child(js_obj);
+            float x_space = this.space_x_item * obj_father.x;
+            js_obj.x = obj_father.x + 1;
+            js_obj.y = obj_father.y + 1;
+            js_obj.area_body.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, x_space, js_obj.area_body.rect.height);
+        }
+        else
+        {
+            js_obj.x = +1;
+        }
+
+        obj_node.transform.SetSiblingIndex(js_obj.y);
+
+        if (s_type == "root")
+        {
+            js_obj.Set_icon(sp_icon_root);
+
+            Carrot_Box_Btn_Item btn_add_obj=js_obj.Create_btn("btn_add_obj");
+            btn_add_obj.set_icon(this.sp_icon_object);
+            btn_add_obj.set_act(() => this.Add_node(js_obj,"object"));
+
+            Carrot_Box_Btn_Item btn_add_array = js_obj.Create_btn("btn_add_array");
+            btn_add_array.set_icon(this.sp_icon_array);
+            btn_add_array.set_act(() => this.Add_node(js_obj, "array"));
+
+            Carrot_Box_Btn_Item btn_add_propertie= js_obj.Create_btn("btn_add_propertie");
+            btn_add_propertie.set_icon(this.sp_icon_properties);
+            btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
+
+            Carrot_Box_Btn_Item btn_clear = js_obj.Create_btn("btn_clear");
+            btn_clear.set_icon(this.app.carrot.sp_icon_del_data);
+            btn_clear.set_act(() => Clear_child_in_node(js_obj));
+        }
+
+        if (s_type == "array")
+        {
+            js_obj.Set_icon(sp_icon_array);
+
+            Carrot_Box_Btn_Item btn_add_obj = js_obj.Create_btn("btn_add_obj");
+            btn_add_obj.set_icon(this.sp_icon_object);
+            btn_add_obj.set_act(() => this.Add_node(js_obj, "object"));
+
+            Carrot_Box_Btn_Item btn_add_array = js_obj.Create_btn("btn_add_array");
+            btn_add_array.set_icon(this.sp_icon_array);
+            btn_add_array.set_act(() => this.Add_node(js_obj, "array"));
+
+            Carrot_Box_Btn_Item btn_add_propertie = js_obj.Create_btn("btn_add_propertie");
+            btn_add_propertie.set_icon(this.sp_icon_properties);
+            btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
+
+
+            Carrot_Box_Btn_Item btn_clear = js_obj.Create_btn("btn_clear");
+            btn_clear.set_icon(this.app.carrot.sp_icon_del_data);
+            btn_clear.set_act(() => Delete_node(js_obj));
+        }
+
+        if (s_type == "object")
+        {
+            js_obj.Set_icon(sp_icon_object);
+
+            Carrot_Box_Btn_Item btn_add_obj = js_obj.Create_btn("btn_add_obj");
+            btn_add_obj.set_icon(this.sp_icon_object);
+            btn_add_obj.set_act(() => this.Add_node(js_obj, "object"));
+
+            Carrot_Box_Btn_Item btn_add_array = js_obj.Create_btn("btn_add_array");
+            btn_add_array.set_icon(this.sp_icon_array);
+            btn_add_array.set_act(() => this.Add_node(js_obj, "array"));
+
+            Carrot_Box_Btn_Item btn_add_propertie = js_obj.Create_btn("btn_add_propertie");
+            btn_add_propertie.set_icon(this.sp_icon_properties);
+            btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
+
+            Carrot_Box_Btn_Item btn_clear = js_obj.Create_btn("btn_clear");
+            btn_clear.set_icon(this.app.carrot.sp_icon_del_data);
+            btn_clear.set_act(() => Delete_node(js_obj));
+        }
+
+
+        if (s_type == "propertie")
+        {
+            js_obj.Set_icon(sp_icon_properties);
+        }
+
+        this.list_item_obj.Add(js_obj);
+        this.Update_index_list();
+    } 
+
+    private void Update_index_list()
+    {
+        foreach(Transform tr in this.area_all_item_editor)
+        {
+            tr.GetComponent<js_object>().y=tr.GetSiblingIndex();
+        }
+    }
+
+    private void Delete_node(js_object obj)
+    {
+        app.carrot.play_sound_click();
+        obj.Delete();
+        app.carrot.show_msg("Json Editor", "Delete node " + obj.txt_name.text + " success!", Msg_Icon.Alert);
+    }
+
+    private void Clear_child_in_node(js_object obj)
+    {
+        app.carrot.play_sound_click();
+        obj.Delete_all_child();
+        app.carrot.show_msg("Json Editor", "Clear al child in node data " + obj.txt_name.text + " success!", Msg_Icon.Alert);
     }
 
     public void add_obj(js_object o, string s_type)
     {
         GameObject obj = Instantiate(this.prefab_obj_js);
         js_object js_obj = obj.GetComponent<js_object>();
-        float x_space = this.space_x_item * o.index;
-        js_obj.index = o.index + 1;
+        js_obj.On_load(s_type);
+        float x_space = this.space_x_item * o.x;
+        js_obj.x = o.x + 1;
         js_obj.area_body.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, x_space, js_obj.area_body.rect.height);
         obj.transform.SetParent(this.area_all_item_editor);
-        obj.transform.localScale = new Vector3(1f, 1f, 1f);
-        obj.transform.SetSiblingIndex(o.index_list + 1);
+        obj.transform.localScale = new Vector3(1f, 1f, 0f);
+        obj.transform.localPosition = new Vector3(0f, 0f, 0f);
+        obj.transform.localRotation = Quaternion.identity;
+        obj.transform.SetSiblingIndex(o.y + 1);
         js_obj.load_obj(s_type, null, o.get_length_item() + 1);
-        if (this.list_item_obj.Count > 0) o.add_child(obj);
+        if (this.list_item_obj.Count > 0) o.Add_child(js_obj);
         js_obj.check_child_expanded();
-        js_obj.load_obj_default();
-        this.list_item_obj.Add(obj);
+        this.list_item_obj.Add(js_obj);
         this.update_option_list();
         if (s_type != "root")
         {
@@ -71,15 +208,6 @@ public class Json_Editor : MonoBehaviour
             this.app.carrot.play_sound_click();
         }
         this.app.carrot.ads.show_ads_Interstitial();
-    }
-
-
-    public void Update_option_list_obj()
-    {
-        for (int i = 0; i < this.list_item_obj.Count; i++)
-        {
-            this.list_item_obj[i].GetComponent<js_object>().index_list = i;
-        }
     }
 
     public void Btn_sel_mode(int index_mode)
@@ -108,7 +236,7 @@ public class Json_Editor : MonoBehaviour
         int i = 0;
         foreach (Transform c in this.area_all_item_editor)
         {
-            c.GetComponent<js_object>().index_list = i;
+            c.GetComponent<js_object>().y = i;
             i++;
         }
     }
@@ -142,19 +270,9 @@ public class Json_Editor : MonoBehaviour
     public void clear_list_item_editor()
     {
         this.is_change_coderviewer = false;
-        this.list_item_obj = new List<GameObject>();
+        this.list_item_obj = new();
         this.app.carrot.clear_contain(this.area_all_item_editor);
         this.add_obj(prefab_obj_js.GetComponent<js_object>(), "root");
-    }
-
-    public void block_all_btn_edit(bool is_show)
-    {
-        for (int i = 0; i < this.list_item_obj.Count; i++) if (this.list_item_obj[i] != null) this.list_item_obj[i].GetComponent<js_object>().obj_menu_btn.SetActive(is_show);
-    }
-
-    public void add_obj_list_main(GameObject obj_new_js)
-    {
-        this.list_item_obj.Add(obj_new_js);
     }
 
     public void Act_check_lang()
@@ -176,9 +294,9 @@ public class Json_Editor : MonoBehaviour
                 item_editor.transform.SetParent(this.area_all_item_editor);
                 item_editor.transform.localScale = new Vector3(1f, 1f, 1f);
                 item_editor.GetComponent<js_object>().txt_name.text = obj_js.Key;
-                float x_space = this.app.space_x_item * js_father.index;
-                item_editor.GetComponent<js_object>().index = js_father.index + 1;
-                item_editor.GetComponent<js_object>().index_list = js_father.index_list + 1;
+                float x_space = this.app.space_x_item * js_father.x;
+                item_editor.GetComponent<js_object>().x = js_father.x + 1;
+                item_editor.GetComponent<js_object>().y = js_father.y + 1;
                 item_editor.GetComponent<js_object>().area_body.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, x_space, item_editor.GetComponent<js_object>().area_body.rect.height);
 
                 if (obj_js.Value is string)
@@ -249,9 +367,7 @@ public class Json_Editor : MonoBehaviour
                     }
                 }
                 item_editor.GetComponent<js_object>().check_child_expanded();
-                item_editor.GetComponent<js_object>().load_obj_default();
-                js_father.add_child(item_editor);
-                this.app.json_editor.add_obj_list_main(item_editor);
+                js_father.Add_child(item_editor.GetComponent<js_object>());
             }
     }
 
@@ -260,14 +376,12 @@ public class Json_Editor : MonoBehaviour
         GameObject item_editor = Instantiate(this.prefab_obj_js);
         item_editor.transform.SetParent(this.area_all_item_editor);
         item_editor.transform.localScale = new Vector3(1f, 1f, 1f);
-        float x_space = this.app.space_x_item * js_father.index;
-        item_editor.GetComponent<js_object>().index = js_father.index + 1;
+        float x_space = this.app.space_x_item * js_father.x;
+        item_editor.GetComponent<js_object>().x = js_father.x + 1;
         item_editor.GetComponent<js_object>().area_body.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, x_space, item_editor.GetComponent<js_object>().area_body.rect.height);
         item_editor.GetComponent<js_object>().load_obj("array_item", s_val, index_item);
         item_editor.GetComponent<js_object>().check_child_expanded();
-        item_editor.GetComponent<js_object>().load_obj_default();
-        js_father.add_child(item_editor);
-        this.app.json_editor.add_obj_list_main(item_editor);
+        js_father.Add_child(item_editor.GetComponent<js_object>());
     }
 
 
@@ -335,7 +449,7 @@ public class Json_Editor : MonoBehaviour
         {
             this.panel_edit_Properties_bool.SetActive(true);
             this.inp_edit_Properties_value.contentType = InputField.ContentType.Standard;
-            this.check_val_bool_properties();
+            this.Check_val_bool_properties();
         }
     }
 
@@ -360,11 +474,11 @@ public class Json_Editor : MonoBehaviour
         else
             this.inp_edit_Properties_value.text = "false";
 
-        this.check_val_bool_properties();
+        this.Check_val_bool_properties();
         this.app.carrot.play_sound_click();
     }
 
-    private void check_val_bool_properties()
+    private void Check_val_bool_properties()
     {
         this.img_btn_Properties_bool[0].color = this.color_properties_nomal;
         this.img_btn_Properties_bool[1].color = this.color_properties_nomal;
@@ -379,6 +493,42 @@ public class Json_Editor : MonoBehaviour
     {
         this.app.carrot.play_sound_click();
         this.Panel_select_color.close();
+    }
+
+    void CheckValueType(string key, object value)
+    {
+        if (value == null)
+        {
+            Debug.Log(key + " is null");
+        }
+        else if (value is IDictionary)
+        {
+            Debug.Log(key + " is an IDictionary");
+        }
+        else if (value is Array)
+        {
+            Debug.Log(key + " is an Array");
+        }
+        else if (value is string)
+        {
+            Debug.Log(key + " is a string");
+        }
+        else if (value is int || value is float || value is double)
+        {
+            Debug.Log(key + " is a number");
+        }
+        else if (value is Color)
+        {
+            Debug.Log(key + " is a Color");
+        }
+        else if (value is DateTime)
+        {
+            Debug.Log(key + " is a Date");
+        }
+        else
+        {
+            Debug.Log(key + " is of unknown type");
+        }
     }
 
 }
