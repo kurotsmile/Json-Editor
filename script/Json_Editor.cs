@@ -359,121 +359,56 @@ public class Json_Editor : MonoBehaviour
 
     public void paser_obj(IDictionary<string, object> thanh, js_object js_father)
     {
-        if (thanh is object)
-            foreach (var obj_js in thanh)
+
+        foreach (var obj_js in thanh)
+        {
+
+            if (obj_js.Value is string)
             {
-
-                if (obj_js.Value is string)
+                if (obj_js.Value.ToString().IndexOf("#") == 0)
                 {
-                    if (obj_js.Value.ToString().IndexOf("#") == 0)
-                    {
-                        this.Add_node(js_father, "propertie").set_properties_value(2, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
-                    }
-                    else
-                    {
-                        int obj_number;
-                        if (int.TryParse(obj_js.Value.ToString(), out obj_number))
-                        {
-                            this.Add_node(js_father, "propertie").set_properties_value(1, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
-                        }
-                        else
-                        {
-                            this.Add_node(js_father, "propertie").set_properties_value(0, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
-                        }
-                    }
-
-                }
-                else if (obj_js.Value is bool)
-                {
-                    this.Add_node(js_father, "propertie").set_properties_value(4, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
-                }
-                else if (obj_js.Value is IList<object>)
-                {
-                    js_object obj_array = this.Add_node(js_father, "array");
-                    obj_array.set_properties_value(1, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
-                    IList<object> l = (IList<object>)obj_js.Value;
-                    for (int y = 0; y < l.Count; y++)
-                    {
-                        if (l[y] is string)
-                        {
-                            Add_node(obj_array,"array_item").set_properties_value(0, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
-                        }
-                        else
-                        {
-                            IDictionary<string, object> child_obj = (IDictionary<string, object>)l[y];
-                            paser_obj(child_obj, obj_array);
-                        }
-                    }
+                    this.Add_node(js_father, "propertie").set_properties_value(2, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
                 }
                 else
                 {
-                    if (obj_js.Value != null)
-                    {
-                        try
-                        {
-                            IDictionary<string, object> obj_child = (IDictionary<string, object>)obj_js.Value;
-                            js_object obj_paser = this.Add_node(js_father, "object");
-                            obj_paser.txt_name.text = obj_js.Key;
-                            this.paser_obj(obj_child, obj_paser);
-                        }
-                        catch
-                        {
-                            this.Add_node(js_father, "propertie").set_properties_value(1, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
-                        }
-                    }
-                    else
+                    int obj_number;
+                    if (int.TryParse(obj_js.Value.ToString(), out obj_number))
                     {
                         this.Add_node(js_father, "propertie").set_properties_value(1, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
                     }
+                    else
+                    {
+                        this.Add_node(js_father, "propertie").set_properties_value(0, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
+                    }
                 }
-            }
-    }
 
-    public void Paser(IDictionary myDict,js_object obj_father)
-    {
-        foreach (DictionaryEntry entry in myDict)
-        {
-            if (myDict == null)
-            {
-                Add_node(obj_father, "propertie").txt_tip.text=entry.Key.ToString();
             }
-            else if (entry.Value is IDictionary)
+            else if (obj_js.Value is bool)
             {
-                js_object js_object = Add_node(obj_father, "object");
-                js_object.txt_tip.text = entry.Key.ToString();
-                IDictionary datas = (IDictionary) entry.Value;
-                Paser(datas, js_object);
+                this.Add_node(js_father, "propertie").set_properties_value(4, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
             }
-            else if (entry.Value is Array)
+            else if (obj_js.Value is IList<object>)
             {
-                js_object js_array = Add_node(obj_father, "array");
-                Paser_Array(entry.Value, js_array);
-            }
-            else if (entry.Value is string)
+                js_object obj_array = this.Add_node(js_father, "array");
+                obj_array.set_properties_value(1, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
+                IList<object> l = (IList<object>)obj_js.Value;
+                for (int y = 0; y < l.Count; y++)
+                {
+                    this.Paser_Array(l[y],obj_array);
+                }
+            }else if(obj_js.Value is IDictionary)
             {
-                Debug.Log(entry.Key + " is a string");
-                Add_node(obj_father, "propertie").txt_tip.text = entry.Key.ToString();
-            }
-            else if (entry.Value is int || entry.Value is float || entry.Value is double)
-            {
-                Debug.Log(entry.Key + " is a number");
-                Add_node(obj_father, "propertie").txt_tip.text = entry.Key.ToString();
-            }
-            else if (entry.Value is Color)
-            {
-                Debug.Log(entry.Key + " is a Color");
-                Add_node(obj_father, "propertie").txt_tip.text = entry.Key.ToString();
-            }
-            else if (entry.Value is DateTime)
-            {
-                Debug.Log(entry.Key + " is a Date");
-                Add_node(obj_father, "propertie").txt_tip.text = entry.Key.ToString();
+                IDictionary<string, object> obj_child = (IDictionary<string, object>)obj_js.Value;
+                js_object obj_paser = this.Add_node(js_father, "object");
+                this.paser_obj(obj_child, obj_paser);
             }
             else
             {
-                Debug.Log(entry.Key + " is of unknown type");
-                Add_node(obj_father, "propertie").txt_name.text = entry.Key.ToString();
+
+                this.Add_node(js_father, "propertie").set_properties_value(1, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
+
             }
+
         }
     }
 
@@ -486,8 +421,8 @@ public class Json_Editor : MonoBehaviour
         else if (myDict is IDictionary)
         {
             js_object js_object = Add_node(obj_father, "object");
-            IDictionary datas = (IDictionary)myDict;
-            Paser(datas, js_object);
+            IDictionary<string,object> datas = (IDictionary<string, object>)myDict;
+            paser_obj(datas, js_object);
         }
         else if (myDict is Array)
         {
@@ -625,47 +560,11 @@ public class Json_Editor : MonoBehaviour
         this.Panel_select_color.close();
     }
 
-    void CheckValueType(string key, object value)
-    {
-        if (value == null)
-        {
-            Debug.Log(key + " is null");
-        }
-        else if (value is IDictionary)
-        {
-            Debug.Log(key + " is an IDictionary");
-        }
-        else if (value is Array)
-        {
-            Debug.Log(key + " is an Array");
-        }
-        else if (value is string)
-        {
-            Debug.Log(key + " is a string");
-        }
-        else if (value is int || value is float || value is double)
-        {
-            Debug.Log(key + " is a number");
-        }
-        else if (value is Color)
-        {
-            Debug.Log(key + " is a Color");
-        }
-        else if (value is DateTime)
-        {
-            Debug.Log(key + " is a Date");
-        }
-        else
-        {
-            Debug.Log(key + " is of unknown type");
-        }
-    }
-
     public void Change_coder_in_view()
     {
         this.Clear_list_item_editor();
-        IDictionary data= (IDictionary)Carrot.Json.Deserialize(this.inp_coder_viewer.text);
-        this.Paser(data, this.get_root());
+        IDictionary<string,object> data= (IDictionary<string,object>)Carrot.Json.Deserialize(this.inp_coder_viewer.text);
+        this.paser_obj(data, this.get_root());
     }
 
 }

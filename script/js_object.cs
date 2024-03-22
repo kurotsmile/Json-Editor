@@ -59,46 +59,6 @@ public class js_object : MonoBehaviour
         this.check_child_expanded();
     }
 
-    public void load_obj(string type,string s_name_set=null,int count_new=0)
-    {
-        this.s_type = type;
-        if (this.s_type== "object")
-        {
-            this.img_icon_obj.sprite = this.sp_icon_object;
-            if(s_name_set==null) this.txt_name.text = "Object "+count_new;
-            this.txt_tip.text = "Object (0)";
-        }
-
-        if (this.s_type == "array")
-        {
-            this.img_icon_obj.sprite = this.sp_icon_array;
-            if (s_name_set == null) this.txt_name.text = "Array " + count_new;
-            this.txt_tip.text = "Array (0)";
-        }
-
-        if (this.s_type == "array_item")
-        {
-            this.img_icon_obj.sprite = this.sp_icon_array_item;
-            this.txt_tip.text = "Array Item :"+ count_new;
-        }
-
-        if (this.s_type == "properties")
-        {
-            this.img_icon_obj.sprite = this.sp_icon_properties;
-            if (s_name_set == null) this.txt_name.text = "Properties " + count_new;
-            this.txt_tip.text = "Null";
-        }
-
-        if (this.s_type == "root")
-        {
-            this.img_icon_obj.sprite = this.sp_icon_root;
-            if (s_name_set == null) this.txt_name.text = "Json";
-            this.txt_tip.text = PlayerPrefs.GetString("json_root","Json Root Object");
-        }
-        if (s_name_set != null) this.txt_name.text = s_name_set;
-    }
-
-
     public void Delete_all_child()
     {
         for (int i = 0; i < this.list_child.Count; i++) {
