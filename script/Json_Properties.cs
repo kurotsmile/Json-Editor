@@ -198,5 +198,16 @@ public class Json_Properties : MonoBehaviour
         if (box_sub != null) box_sub.close();
         app.carrot.play_sound_click();
         box_sub = app.carrot.Create_Box();
+        box_sub.set_icon(app.carrot.icon_carrot_add);
+
+        Carrot_Box_Item item_color = box_sub.create_item();
+        item_color.set_icon(sp_icon_properties_color);
+        item_color.set_title("Add value color");
+        item_color.set_tip("Add color value in hexa color table");
+
+        Carrot_Box_Item item_date = box_sub.create_item();
+        item_date.set_icon(sp_icon_properties_date);
+        item_date.set_title("Add value date");
+        item_date.set_tip("Add the current time price to the data field");
     }
 }
