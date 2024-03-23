@@ -37,6 +37,7 @@ public class js_object : MonoBehaviour
     {
         this.txt_name.text = this.s_type;
         this.s_type = s_type;
+        this.s_name = s_type;
         this.Load_info();
         this.img_icon_expanded.gameObject.SetActive(false);
         if (s_type == "propertie") this.s_val = null;
@@ -303,5 +304,10 @@ public class js_object : MonoBehaviour
     {
         this.Delete_all_child();
         Destroy(this.gameObject);
+    }
+
+    public Type_Properties_val get_Type_Properties()
+    {
+        return this.type_Propertie;
     }
 }

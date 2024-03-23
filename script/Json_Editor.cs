@@ -105,13 +105,8 @@ public class Json_Editor : MonoBehaviour
         {
             js_obj.Set_icon(sp_icon_root_object);
 
-            Carrot_Box_Btn_Item btn_add_obj=js_obj.Create_btn("btn_add_obj");
-            btn_add_obj.set_icon(this.sp_icon_object);
-            btn_add_obj.set_act(() => this.Show_add_obj_to_node(js_obj));
-
-            Carrot_Box_Btn_Item btn_add_array = js_obj.Create_btn("btn_add_array");
-            btn_add_array.set_icon(this.sp_icon_array);
-            btn_add_array.set_act(() => this.Add_node(js_obj, "array"));
+            this.Create_btn_add_obj(js_obj);
+            this.Create_btn_add_array(js_obj);
 
             Carrot_Box_Btn_Item btn_add_propertie= js_obj.Create_btn("btn_add_propertie");
             btn_add_propertie.set_icon(this.sp_icon_properties);
@@ -124,13 +119,8 @@ public class Json_Editor : MonoBehaviour
         {
             js_obj.Set_icon(sp_icon_root_array);
 
-            Carrot_Box_Btn_Item btn_add_obj = js_obj.Create_btn("btn_add_obj");
-            btn_add_obj.set_icon(this.sp_icon_object);
-            btn_add_obj.set_act(() => this.Show_add_obj_to_node(js_obj));
-
-            Carrot_Box_Btn_Item btn_add_array = js_obj.Create_btn("btn_add_array");
-            btn_add_array.set_icon(this.sp_icon_array);
-            btn_add_array.set_act(() => this.Add_node(js_obj, "array"));
+            this.Create_btn_add_obj(js_obj);
+            this.Create_btn_add_array(js_obj);
 
             Carrot_Box_Btn_Item btn_add_propertie = js_obj.Create_btn("btn_add_propertie");
             btn_add_propertie.set_icon(this.sp_icon_properties);
@@ -143,13 +133,8 @@ public class Json_Editor : MonoBehaviour
         {
             js_obj.Set_icon(sp_icon_array);
 
-            Carrot_Box_Btn_Item btn_add_obj = js_obj.Create_btn("btn_add_obj");
-            btn_add_obj.set_icon(this.sp_icon_object);
-            btn_add_obj.set_act(() => this.Show_add_obj_to_node(js_obj));
-
-            Carrot_Box_Btn_Item btn_add_array = js_obj.Create_btn("btn_add_array");
-            btn_add_array.set_icon(this.sp_icon_array);
-            btn_add_array.set_act(() => this.Add_node(js_obj, "array"));
+            this.Create_btn_add_obj(js_obj);
+            this.Create_btn_add_array(js_obj);
 
             Carrot_Box_Btn_Item btn_add_propertie = js_obj.Create_btn("btn_add_propertie");
             btn_add_propertie.set_icon(this.sp_icon_properties);
@@ -163,9 +148,7 @@ public class Json_Editor : MonoBehaviour
         {
             js_obj.Set_icon(sp_icon_object);
 
-            Carrot_Box_Btn_Item btn_add_obj = js_obj.Create_btn("btn_add_obj");
-            btn_add_obj.set_icon(this.sp_icon_object);
-            btn_add_obj.set_act(() => this.Show_add_obj_to_node(js_obj));
+            this.Create_btn_add_obj(js_obj);
 
             Carrot_Box_Btn_Item btn_add_array = js_obj.Create_btn("btn_add_array");
             btn_add_array.set_icon(this.sp_icon_array);
@@ -175,7 +158,6 @@ public class Json_Editor : MonoBehaviour
             btn_add_propertie.set_icon(this.sp_icon_properties);
             btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
 
-
             this.Create_btn_edit_key(js_obj);
             this.Create_btn_delete(js_obj);
         }
@@ -184,7 +166,6 @@ public class Json_Editor : MonoBehaviour
         {
             js_obj.Set_icon(sp_icon_properties);
 
-            this.Create_btn_edit_key(js_obj);
             this.Create_btn_edit_val(js_obj);
             this.Create_btn_delete(js_obj);
         }
@@ -199,16 +180,31 @@ public class Json_Editor : MonoBehaviour
 
         Carrot_Box_Btn_Item btn_menu = js_obj.Create_btn("btn_menu");
         btn_menu.set_icon(this.app.carrot.icon_carrot_all_category);
+        btn_menu.set_color(this.app.carrot.color_highlight);
         btn_menu.set_act(() => Show_menu(js_obj));
         this.Update_index_list();
         return js_obj;
+    }
+
+    private void Create_btn_add_obj(js_object js_obj)
+    {
+        Carrot_Box_Btn_Item btn_add_obj = js_obj.Create_btn("btn_add_obj");
+        btn_add_obj.set_icon(this.sp_icon_object);
+        btn_add_obj.set_act(() => Show_add_obj_to_node(js_obj));
+    }
+
+    private void Create_btn_add_array(js_object js_obj)
+    {
+        Carrot_Box_Btn_Item btn_add_array = js_obj.Create_btn("btn_add_array");
+        btn_add_array.set_icon(this.sp_icon_array);
+        btn_add_array.set_act(() => Show_add_obj_to_node(js_obj));
     }
 
     private void Create_btn_edit_val(js_object js_obj)
     {
         Carrot_Box_Btn_Item btn_edit_val = js_obj.Create_btn("btn_edit_val");
         btn_edit_val.set_icon(this.sp_icon_edit_properties);
-        btn_edit_val.set_act(() => Show_edit_key(js_obj));
+        btn_edit_val.set_act(() => Show_edit_val(js_obj));
     }
 
     private void Create_btn_edit_key(js_object js_obj)
@@ -268,7 +264,7 @@ public class Json_Editor : MonoBehaviour
 
     private void Act_add_emp_to_node_done(string s_name,js_object obj)
     {
-        Add_node(obj,"object").txt_name.text=s_name;
+        Add_node(obj, "object").Set_name_key(s_name);
         this.Act_close_box();
     }
 
@@ -276,7 +272,7 @@ public class Json_Editor : MonoBehaviour
     {
         box = app.carrot.Create_Box();
         box.set_icon(app.carrot.user.icon_user_edit);
-        box.set_title("Edit key");
+        box.set_title("Edit key ("+obj.s_type+")");
 
         Carrot_Box_Item item_key = box.create_item();
         item_key.set_icon(app.carrot.icon_carrot_write);
@@ -284,7 +280,7 @@ public class Json_Editor : MonoBehaviour
         item_key.set_tip("The name of the object or property");
         item_key.set_type(Box_Item_Type.box_value_input);
         item_key.check_type();
-        item_key.set_val(obj.txt_name.text);
+        item_key.set_val(obj.s_name);
 
         Carrot_Box_Btn_Panel panel_btn = box.create_panel_btn();
         Carrot_Button_Item btn_done=panel_btn.create_btn("btn_done");
@@ -312,6 +308,52 @@ public class Json_Editor : MonoBehaviour
     {
         app.carrot.play_sound_click();
         if (box != null) box.close();
+    }
+
+    private void Show_edit_val(js_object obj)
+    {
+        box = app.carrot.Create_Box();
+        box.set_icon(app.sp_icon_project);
+        box.set_title("Edit value (" + obj.s_name + ")");
+
+        Carrot_Box_Item item_key = box.create_item();
+        item_key.set_icon(app.carrot.icon_carrot_write);
+        item_key.set_title("Key name");
+        item_key.set_tip("The name of the object or property");
+        item_key.set_type(Box_Item_Type.box_value_input);
+        item_key.check_type();
+        item_key.set_val(obj.s_name);
+
+        Carrot_Box_Item item_val = box.create_item();
+        item_val.set_icon(app.carrot.icon_carrot_database);
+        item_val.set_title("Value");
+        item_val.set_tip("The value of the object or property");
+        item_val.set_type(Box_Item_Type.box_value_input);
+        item_val.check_type();
+        item_val.set_val(obj.s_val);
+
+        Carrot_Box_Btn_Panel panel_btn = box.create_panel_btn();
+        Carrot_Button_Item btn_done = panel_btn.create_btn("btn_done");
+        btn_done.set_bk_color(app.carrot.color_highlight);
+        btn_done.set_icon_white(app.carrot.icon_carrot_done);
+        btn_done.set_label_color(Color.white);
+        btn_done.set_label("Done");
+        btn_done.set_act_click(() => Act_edit_val_done(item_key.get_val(),item_val.get_val(), obj));
+
+        Carrot_Button_Item btn_cancel = panel_btn.create_btn("btn_cancel");
+        btn_cancel.set_bk_color(app.carrot.color_highlight);
+        btn_cancel.set_icon_white(app.carrot.icon_carrot_cancel);
+        btn_cancel.set_label_color(Color.white);
+        btn_cancel.set_label("Cancel");
+        btn_cancel.set_act_click(() => Act_close_box());
+    }
+
+    private void Act_edit_val_done(string s_key,string s_val,js_object js_obj)
+    {
+        js_obj.Set_name_key(s_key);
+        js_obj.Set_val(s_val,js_obj.get_Type_Properties(),this);
+        app.carrot.show_msg("Json Editor", "Update json propertie success",Msg_Icon.Success);
+        this.Act_close_box();
     }
 
     private void Show_menu(js_object obj)
@@ -389,7 +431,6 @@ public class Json_Editor : MonoBehaviour
             s_json = this.Get_root().get_result_shortened();
         else
             s_json = this.Get_root().get_result();
-        Debug.Log("View code:" + s_json);
         this.inp_coder_viewer.text = s_json;
         this.is_change_coderviewer = false;
     }
