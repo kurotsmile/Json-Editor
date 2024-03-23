@@ -67,11 +67,11 @@ public class js_object : MonoBehaviour
     public void Set_val(string s_val,Type_Properties_val type_properties, Json_Editor js_edit)
     {
         this.type_Propertie = type_properties;
-        if (this.type_Propertie == Type_Properties_val.string_val) this.img_type_properties.sprite = js_edit.sp_icon_properties_string;
-        if (this.type_Propertie == Type_Properties_val.number_val) this.img_type_properties.sprite = js_edit.sp_icon_properties_number;
-        if (this.type_Propertie == Type_Properties_val.color_val) this.img_type_properties.sprite = js_edit.sp_icon_properties_color;
-        if (this.type_Propertie == Type_Properties_val.date_val) this.img_type_properties.sprite = js_edit.sp_icon_properties_date;
-        if (this.type_Propertie == Type_Properties_val.null_val) this.img_type_properties.sprite = js_edit.sp_icon_properties_null;
+        if (this.type_Propertie == Type_Properties_val.string_val) this.img_type_properties.sprite = js_edit.app.json_properties.sp_icon_properties_string;
+        if (this.type_Propertie == Type_Properties_val.number_val) this.img_type_properties.sprite = js_edit.app.json_properties.sp_icon_properties_number;
+        if (this.type_Propertie == Type_Properties_val.color_val) this.img_type_properties.sprite = js_edit.app.json_properties.sp_icon_properties_color;
+        if (this.type_Propertie == Type_Properties_val.date_val) this.img_type_properties.sprite = js_edit.app.json_properties.sp_icon_properties_date;
+        if (this.type_Propertie == Type_Properties_val.null_val) this.img_type_properties.sprite = js_edit.app.json_properties.sp_icon_properties_null;
         this.txt_tip.text = s_val;
         this.s_val = s_val;
         this.txt_tip.color = Color.blue;

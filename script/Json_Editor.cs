@@ -24,13 +24,6 @@ public class Json_Editor : MonoBehaviour
     public Sprite sp_icon_clear;
     public Sprite sp_icon_edit_properties;
 
-    public Sprite sp_icon_properties_string;
-    public Sprite sp_icon_properties_number;
-    public Sprite sp_icon_properties_date;
-    public Sprite sp_icon_properties_color;
-    public Sprite sp_icon_properties_null;
-    public Sprite sp_icon_properties_bool;
-
     [Header("Color")]
     public Color32 color_properties_nomal;
     public Color32 color_properties_select;
@@ -107,11 +100,7 @@ public class Json_Editor : MonoBehaviour
 
             this.Create_btn_add_obj(js_obj);
             this.Create_btn_add_array(js_obj);
-
-            Carrot_Box_Btn_Item btn_add_propertie= js_obj.Create_btn("btn_add_propertie");
-            btn_add_propertie.set_icon(this.sp_icon_properties);
-            btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
-
+            this.Create_btn_add_propertie(js_obj);
             this.Create_btn_delete(js_obj,false);
         }
 
@@ -121,11 +110,7 @@ public class Json_Editor : MonoBehaviour
 
             this.Create_btn_add_obj(js_obj);
             this.Create_btn_add_array(js_obj);
-
-            Carrot_Box_Btn_Item btn_add_propertie = js_obj.Create_btn("btn_add_propertie");
-            btn_add_propertie.set_icon(this.sp_icon_properties);
-            btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
-
+            this.Create_btn_add_propertie(js_obj);
             this.Create_btn_delete(js_obj, false);
         }
 
@@ -135,12 +120,8 @@ public class Json_Editor : MonoBehaviour
 
             this.Create_btn_add_obj(js_obj);
             this.Create_btn_add_array(js_obj);
-
-            Carrot_Box_Btn_Item btn_add_propertie = js_obj.Create_btn("btn_add_propertie");
-            btn_add_propertie.set_icon(this.sp_icon_properties);
-            btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
-
-            this.Create_btn_edit_key(js_obj);
+            this.Create_btn_add_propertie(js_obj);
+            this.Create_btn_edit_array(js_obj);
             this.Create_btn_delete(js_obj);
         }
 
@@ -149,16 +130,9 @@ public class Json_Editor : MonoBehaviour
             js_obj.Set_icon(sp_icon_object);
 
             this.Create_btn_add_obj(js_obj);
-
-            Carrot_Box_Btn_Item btn_add_array = js_obj.Create_btn("btn_add_array");
-            btn_add_array.set_icon(this.sp_icon_array);
-            btn_add_array.set_act(() => this.Add_node(js_obj, "array"));
-
-            Carrot_Box_Btn_Item btn_add_propertie = js_obj.Create_btn("btn_add_propertie");
-            btn_add_propertie.set_icon(this.sp_icon_properties);
-            btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
-
-            this.Create_btn_edit_key(js_obj);
+            this.Create_btn_add_array(js_obj);
+            this.Create_btn_add_propertie(js_obj);
+            this.Create_btn_edit_object(js_obj);
             this.Create_btn_delete(js_obj);
         }
 
@@ -166,14 +140,14 @@ public class Json_Editor : MonoBehaviour
         {
             js_obj.Set_icon(sp_icon_properties);
 
-            this.Create_btn_edit_val(js_obj);
+            this.Create_btn_edit_propertie(js_obj);
             this.Create_btn_delete(js_obj);
         }
 
         if(s_type== "array_item")
         {
             js_obj.Set_icon(sp_icon_array_item);
-            this.Create_btn_edit_val(js_obj);
+            this.Create_btn_edit_array(js_obj);
             this.Create_btn_delete(js_obj);
         }
 
@@ -189,28 +163,42 @@ public class Json_Editor : MonoBehaviour
     {
         Carrot_Box_Btn_Item btn_add_obj = js_obj.Create_btn("btn_add_obj");
         btn_add_obj.set_icon(this.sp_icon_object);
-        btn_add_obj.set_act(() => Show_add_obj_to_node(js_obj));
+        btn_add_obj.set_act(() => app.json_properties.Show(js_obj,Type_box.add_object));
     }
 
     private void Create_btn_add_array(js_object js_obj)
     {
         Carrot_Box_Btn_Item btn_add_array = js_obj.Create_btn("btn_add_array");
         btn_add_array.set_icon(this.sp_icon_array);
-        btn_add_array.set_act(() => Show_add_obj_to_node(js_obj));
+        btn_add_array.set_act(() => app.json_properties.Show(js_obj, Type_box.add_array));
     }
 
-    private void Create_btn_edit_val(js_object js_obj)
+    private void Create_btn_add_propertie(js_object js_obj)
     {
-        Carrot_Box_Btn_Item btn_edit_val = js_obj.Create_btn("btn_edit_val");
-        btn_edit_val.set_icon(this.sp_icon_edit_properties);
-        btn_edit_val.set_act(() => app.json_properties.Show_edit_val(js_obj));
+        Carrot_Box_Btn_Item btn_add_propertie = js_obj.Create_btn("btn_add_propertie");
+        btn_add_propertie.set_icon(this.sp_icon_properties);
+        btn_add_propertie.set_act(() => app.json_properties.Show(js_obj, Type_box.add_properties));
     }
 
-    private void Create_btn_edit_key(js_object js_obj)
+    private void Create_btn_edit_propertie(js_object js_obj)
     {
-        Carrot_Box_Btn_Item btn_edit = js_obj.Create_btn("btn_edit_key");
+        Carrot_Box_Btn_Item btn_edit = js_obj.Create_btn("btn_edit");
+        btn_edit.set_icon(this.sp_icon_edit_properties);
+        btn_edit.set_act(() => app.json_properties.Show(js_obj,Type_box.edit_properties));
+    }
+
+    private void Create_btn_edit_object(js_object js_obj)
+    {
+        Carrot_Box_Btn_Item btn_edit = js_obj.Create_btn("btn_edit");
         btn_edit.set_icon(this.app.carrot.user.icon_user_edit);
-        btn_edit.set_act(() => Show_edit_key(js_obj));
+        btn_edit.set_act(() => app.json_properties.Show(js_obj, Type_box.edit_object));
+    }
+
+    private void Create_btn_edit_array(js_object js_obj)
+    {
+        Carrot_Box_Btn_Item btn_edit = js_obj.Create_btn("btn_edit");
+        btn_edit.set_icon(this.app.carrot.user.icon_user_edit);
+        btn_edit.set_act(() => app.json_properties.Show(js_obj, Type_box.edit_array));
     }
 
     private void Create_btn_delete(js_object js_obj,bool is_delete=true)
@@ -228,93 +216,6 @@ public class Json_Editor : MonoBehaviour
             btn_del.set_color(this.color_btn_clear);
             btn_del.set_act(() => Clear_child_in_node(js_obj));
         }
-    }
-
-    private void Show_add_obj_to_node(js_object obj)
-    {
-        app.carrot.play_sound_click();
-        box = app.carrot.Create_Box();
-        box.set_icon(sp_icon_object);
-        box.set_title("Add Object");
-
-        Carrot_Box_Item item_key = box.create_item();
-        item_key.set_icon(app.carrot.icon_carrot_write);
-        item_key.set_title("Name Object");
-        item_key.set_tip("The name of the object");
-        item_key.set_type(Box_Item_Type.box_value_input);
-        item_key.check_type();
-        item_key.set_val(obj.txt_name.text);
-
-        Carrot_Box_Btn_Panel panel_btn = box.create_panel_btn();
-        Carrot_Button_Item btn_done = panel_btn.create_btn("btn_done");
-        btn_done.set_bk_color(app.carrot.color_highlight);
-        btn_done.set_icon_white(app.carrot.icon_carrot_done);
-        btn_done.set_label_color(Color.white);
-        btn_done.set_label("Done");
-        btn_done.set_act_click(() => Act_add_emp_to_node_done(item_key.get_val(), obj));
-
-        Carrot_Button_Item btn_cancel = panel_btn.create_btn("btn_cancel");
-        btn_cancel.set_bk_color(app.carrot.color_highlight);
-        btn_cancel.set_icon_white(app.carrot.icon_carrot_cancel);
-        btn_cancel.set_label_color(Color.white);
-        btn_cancel.set_label("Cancel");
-        btn_cancel.set_act_click(() => Act_close_box());
-    }
-
-    private void Act_add_emp_to_node_done(string s_name,js_object obj)
-    {
-        Add_node(obj, "object").Set_name_key(s_name);
-        this.Act_close_box();
-    }
-
-    private void Show_edit_key(js_object obj)
-    {
-        box = app.carrot.Create_Box();
-        box.set_icon(app.carrot.user.icon_user_edit);
-        box.set_title("Edit key ("+obj.s_type+")");
-
-        Carrot_Box_Item item_key = box.create_item();
-        item_key.set_icon(app.carrot.icon_carrot_write);
-        item_key.set_title("Key name");
-        item_key.set_tip("The name of the object or property");
-        item_key.set_type(Box_Item_Type.box_value_input);
-        item_key.check_type();
-        item_key.set_val(obj.s_name);
-
-        Carrot_Box_Btn_Panel panel_btn = box.create_panel_btn();
-        Carrot_Button_Item btn_done=panel_btn.create_btn("btn_done");
-        btn_done.set_bk_color(app.carrot.color_highlight);
-        btn_done.set_icon_white(app.carrot.icon_carrot_done);
-        btn_done.set_label_color(Color.white);
-        btn_done.set_label("Done");
-        btn_done.set_act_click(() => Act_edit_key_done(item_key.get_val(), obj));
-
-        Carrot_Button_Item btn_cancel = panel_btn.create_btn("btn_cancel");
-        btn_cancel.set_bk_color(app.carrot.color_highlight);
-        btn_cancel.set_icon_white(app.carrot.icon_carrot_cancel);
-        btn_cancel.set_label_color(Color.white);
-        btn_cancel.set_label("Cancel");
-        btn_cancel.set_act_click(() => Act_close_box());
-    }
-
-    private void Act_edit_key_done(string s_name,js_object obj)
-    {
-        obj.Set_name_key(s_name);
-        this.Act_close_box();
-    }
-
-    private void Act_close_box()
-    {
-        app.carrot.play_sound_click();
-        if (box != null) box.close();
-    }
-
-    private void Act_edit_val_done(string s_key,string s_val,js_object js_obj)
-    {
-        js_obj.Set_name_key(s_key);
-        js_obj.Set_val(s_val,js_obj.get_Type_Properties(),this);
-        app.carrot.show_msg("Json Editor", "Update json propertie success",Msg_Icon.Success);
-        this.Act_close_box();
     }
 
     private void Show_menu(js_object obj)

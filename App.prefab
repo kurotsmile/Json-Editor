@@ -7245,12 +7245,6 @@ MonoBehaviour:
   sp_icon_root_array: {fileID: 21300000, guid: 6686f6e14917b75449ff67cc85892a1a, type: 3}
   sp_icon_clear: {fileID: 21300000, guid: 4e89e44a66d650540af00fe55de01b0e, type: 3}
   sp_icon_edit_properties: {fileID: 21300000, guid: d009280925d027a4da341e2a8ba9b67e, type: 3}
-  sp_icon_properties_string: {fileID: 21300000, guid: 76989a6779c4d2a4aa1be1192a661359, type: 3}
-  sp_icon_properties_number: {fileID: 21300000, guid: d902cfa1b19042b4b8ee4c82c03c66c4, type: 3}
-  sp_icon_properties_date: {fileID: 21300000, guid: e9abdbe9c7b8c13448ab61ba7d59c44a, type: 3}
-  sp_icon_properties_color: {fileID: 21300000, guid: 0a382b6beac8e7f43a80a538c365428f, type: 3}
-  sp_icon_properties_null: {fileID: 21300000, guid: 9f5a8eb831cce8b428da6a084b01db5f, type: 3}
-  sp_icon_properties_bool: {fileID: 21300000, guid: 0367ab9f79dbb2e4ea7b25fedb18400e, type: 3}
   color_properties_nomal:
     serializedVersion: 2
     rgba: 4280857087
@@ -7302,6 +7296,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   app: {fileID: 3247921913830492077}
+  sp_icon_properties_string: {fileID: 21300000, guid: 76989a6779c4d2a4aa1be1192a661359, type: 3}
+  sp_icon_properties_number: {fileID: 21300000, guid: d902cfa1b19042b4b8ee4c82c03c66c4, type: 3}
+  sp_icon_properties_date: {fileID: 21300000, guid: e9abdbe9c7b8c13448ab61ba7d59c44a, type: 3}
+  sp_icon_properties_color: {fileID: 21300000, guid: 0a382b6beac8e7f43a80a538c365428f, type: 3}
+  sp_icon_properties_null: {fileID: 21300000, guid: 9f5a8eb831cce8b428da6a084b01db5f, type: 3}
+  sp_icon_properties_bool: {fileID: 21300000, guid: 0367ab9f79dbb2e4ea7b25fedb18400e, type: 3}
 --- !u!114 &8446888684771442792
 MonoBehaviour:
   m_ObjectHideFlags: 0
