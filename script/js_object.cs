@@ -82,6 +82,7 @@ public class js_object : MonoBehaviour
         for (int i = 0; i < this.list_child.Count; i++) {
             if (this.list_child[i] != null) this.list_child[i].Delete();
         }
+        this.list_child = new();
     }
 
     public string get_result()
