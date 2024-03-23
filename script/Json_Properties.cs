@@ -28,39 +28,42 @@ public class Json_Properties : MonoBehaviour
         string s_name = "";
         if (type_box == Type_box.add_object)
         {
-            s_name = "Object" + obj.get_length_item() + 1;
+            s_name = "Object" + (obj.get_length_item() + 1);
             box.set_icon(app.sp_icon_project);
             box.set_title("Add Object");
         }
 
         if (type_box == Type_box.edit_object)
         {
+            s_name = obj.s_name;
             box.set_icon(app.sp_icon_project);
             box.set_title("Edit Object ("+obj.s_name+")");
         }
 
         if (type_box == Type_box.add_properties)
         {
-            s_name = "Propertie" + obj.get_length_item() + 1;
+            s_name = "Propertie" + (obj.get_length_item() + 1);
             box.set_icon(app.json_editor.sp_icon_properties);
             box.set_title("Add Propertie");
         }
 
         if (type_box == Type_box.edit_properties)
         {
+            s_name = obj.s_name;
             box.set_icon(app.json_editor.sp_icon_properties);
             box.set_title("Edit Propertie ("+obj.s_name+")");
         }
 
         if (type_box == Type_box.add_array)
         {
-            s_name = "Array" + obj.get_length_item() + 1;
+            s_name = "Array" + (obj.get_length_item() + 1);
             box.set_icon(app.json_editor.sp_icon_root_array);
             box.set_title("Add Array");
         }
 
         if (type_box == Type_box.edit_array)
         {
+            s_name = obj.s_name;
             box.set_icon(app.json_editor.sp_icon_root_array);
             box.set_title("Edit Array ("+obj.s_name+")");
         }
