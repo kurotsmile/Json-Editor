@@ -7209,6 +7209,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   carrot: {fileID: 0}
   json_editor: {fileID: 8371764215650113490}
+  json_properties: {fileID: 4083590794276066021}
   manager_Project: {fileID: 8446888684771442792}
   help: {fileID: 6230230060965458044}
   sp_icon_save: {fileID: 21300000, guid: 69ebf96cc3d4592429c77c9931d0a8eb, type: 3}
@@ -7300,6 +7301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c2f70783bc59b84ea7d6c1adbdb5083, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  app: {fileID: 3247921913830492077}
 --- !u!114 &8446888684771442792
 MonoBehaviour:
   m_ObjectHideFlags: 0

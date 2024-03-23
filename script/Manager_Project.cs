@@ -217,11 +217,6 @@ public class Manager_Project : MonoBehaviour
         q.Add_where("project_id",Query_OP.EQUAL, id_project);
     }
 
-    public void paser_obj(IDictionary<string, object> thanh,js_object js_father)
-    {
-        this.app.json_editor.Paser_obj(thanh, js_father);
-    }
-
     public void Delete_project_offline(int index,GameObject obj_item)
     {
         PlayerPrefs.DeleteKey("js_data_" + index);
@@ -268,11 +263,9 @@ public class Manager_Project : MonoBehaviour
         if (www.result == UnityWebRequest.Result.Success) 
         {
             app.carrot.hide_loading();
-            Debug.Log(www.downloadHandler.text);
             this.app.json_editor.Clear_list_item_editor();
             this.app.txt_save_status.text ="Import file";
-            IDictionary<string, object> obj_js = (IDictionary<string, object>)Json.Deserialize(www.downloadHandler.text);
-            this.paser_obj(obj_js, this.app.json_editor.Get_root());
+            this.app.json_editor.Paser(www.downloadHandler.text);
             if (this.app.get_index_sel_mode() == 2)
                 this.app.json_editor.Show_code_json(true);
             else

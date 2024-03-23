@@ -7,6 +7,7 @@ public class App : MonoBehaviour
     [Header("Obj Main")]
     public Carrot.Carrot carrot;
     public Json_Editor json_editor;
+    public Json_Properties json_properties;
     public Manager_Project manager_Project;
     public Help help;
 
