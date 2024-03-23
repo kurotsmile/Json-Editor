@@ -14,27 +14,23 @@ public class js_object : MonoBehaviour
     public Text txt_name;
     public Text txt_tip;
     
-    public string s_type = "object";
+    public string s_type = "";
+    public string s_name = "";
+    public string s_val = "";
+
     public int x = 0;
     public int y = 0;
 
     [Header("Icon")]
     public Sprite sp_expanded_on;
     public Sprite sp_expanded_off;
-    public Sprite sp_icon_object;
-    public Sprite sp_icon_array;
-    public Sprite sp_icon_array_item;
-    public Sprite sp_icon_properties;
-    public Sprite sp_icon_root;
 
     [Header("Properties")]
-    public string s_Properties_value = "";
-    public int index_Properties_type = 0;
-    public Sprite[] icon_type_properties;
     public Image img_type_properties;
 
     private string s_result = "";
     private List<js_object> list_child = new();
+    private Type_Properties_val type_Propertie;
     private bool is_show_child = true;
 
     public void On_load(string s_type)
@@ -43,6 +39,7 @@ public class js_object : MonoBehaviour
         this.s_type = s_type;
         this.Load_info();
         this.img_icon_expanded.gameObject.SetActive(false);
+        if (s_type == "propertie") this.s_val = null;
     }
 
     private void Load_info()
@@ -57,16 +54,26 @@ public class js_object : MonoBehaviour
     {
         this.list_child.Add(obj);
         this.check_child_expanded();
+        this.Load_info();
     }
 
     public void Set_name_key(string s_name)
     {
         this.txt_name.text = s_name;
+        this.s_name = s_name;
     }
 
-    public void Set_tip(string s_tip)
+    public void Set_val(string s_val,Type_Properties_val type_properties, Json_Editor js_edit)
     {
-        this.txt_tip.text = s_tip;
+        this.type_Propertie = type_properties;
+        if (this.type_Propertie == Type_Properties_val.string_val) this.img_type_properties.sprite = js_edit.sp_icon_properties_string;
+        if (this.type_Propertie == Type_Properties_val.number_val) this.img_type_properties.sprite = js_edit.sp_icon_properties_number;
+        if (this.type_Propertie == Type_Properties_val.color_val) this.img_type_properties.sprite = js_edit.sp_icon_properties_color;
+        if (this.type_Propertie == Type_Properties_val.date_val) this.img_type_properties.sprite = js_edit.sp_icon_properties_date;
+        if (this.type_Propertie == Type_Properties_val.null_val) this.img_type_properties.sprite = js_edit.sp_icon_properties_null;
+        this.txt_tip.text = s_val;
+        this.s_val = s_val;
+        this.txt_tip.color = Color.blue;
     }
 
     public void Delete_all_child()
@@ -80,58 +87,67 @@ public class js_object : MonoBehaviour
     {
         string s_json = "";
 
-        if (this.s_type == "root") {
+        if (this.s_type == "root_object")
+        {
             s_json = s_json + "{\n";
-            for(int i = 0; i < this.list_child.Count; i++)
+            for (int i = 0; i < this.list_child.Count; i++)
             {
-                if (this.list_child[i] != null) s_json = s_json + this.list_child[i].GetComponent<js_object>().get_result();
+                if (this.list_child[i] != null) s_json = s_json + this.list_child[i].get_result();
             }
             s_json = s_json + "}";
         }
-        else if(this.s_type=="object")
+        else if (this.s_type == "root_array")
         {
-            if(this.x>1) for(int i=1;i<this.x;i++) s_json = s_json + "\t";
-            s_json = s_json + "\""+this.txt_name.text+"\":{";
+            s_json = s_json + "[\n";
+            for (int i = 0; i < this.list_child.Count; i++)
+            {
+                if (this.list_child[i] != null) s_json = s_json + this.list_child[i].get_result();
+            }
+            s_json = s_json + "]";
+        }
+        else if (this.s_type == "object")
+        {
+            if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
+            s_json = s_json + "\"" + this.s_name + "\":{";
             for (int i = 0; i < this.list_child.Count; i++)
             {
                 if (i == 0) s_json = s_json + "\n";
-                if (this.list_child[i]!=null)s_json = s_json+this.list_child[i].GetComponent<js_object>().get_result();
+                if (this.list_child[i] != null) s_json = s_json + this.list_child[i].get_result();
             }
-            if (this.x > 1&& this.list_child.Count>0) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
+            if (this.x > 1 && this.list_child.Count > 0) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
             s_json = s_json + "},\n";
         }
         else if (this.s_type == "array")
         {
             if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
-            s_json = s_json + "\"" + this.txt_name.text + "\":[";
+            s_json = s_json + "\"" + this.s_name + "\":[";
             for (int i = 0; i < this.list_child.Count; i++)
             {
                 if (this.list_child[i] != null)
                 {
-                    if(this.list_child[i].GetComponent<js_object>().s_type== "array_item")
-                        s_json = s_json + this.list_child[i].GetComponent<js_object>().get_result();
+                    if (this.list_child[i].s_type == "array_item")
+                        s_json = s_json + this.list_child[i].get_result();
                     else
-                        s_json = s_json + "{" + this.list_child[i].GetComponent<js_object>().get_result() + "},";
+                        s_json = s_json + "{" + this.list_child[i].get_result() + "},";
                 }
             }
-            s_json=s_json.Replace(",}", "}");
+            s_json = s_json.Replace(",}", "}");
             if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
             s_json = s_json + "],\n";
         }
         else if (this.s_type == "array_item")
         {
             if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
-            s_json = s_json + "\"" + this.txt_name.text + "\",";
+            s_json = s_json + "\"" + this.s_name + "\",";
         }
-        else if (this.s_type == "properties")
+        else if (this.s_type == "propertie")
         {
-            string s_val = "";
-            if (this.s_Properties_value == "") s_val = "null";
-            else if (this.index_Properties_type == 4) s_val = this.s_Properties_value;
-            else if (this.index_Properties_type == 1) s_val = this.s_Properties_value;
-            else s_val = "\"" + this.s_Properties_value + "\"";
+            string s_val_propertie = "";
+            if (this.type_Propertie==Type_Properties_val.null_val) s_val = "null";
+            else if (this.type_Propertie==Type_Properties_val.number_val) s_val_propertie = this.s_val;
+            else s_val_propertie = "\"" + this.s_val + "\"";
             if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
-            s_json = s_json + "\"" + this.txt_name.text + "\":"+s_val+",\n";
+            s_json = s_json + "\"" + this.s_name + "\":" + s_val_propertie + ",\n";
         }
 
         this.s_result = s_json;
@@ -157,35 +173,44 @@ public class js_object : MonoBehaviour
     {
         string s_json = "";
 
-        if (this.s_type == "root")
+        if (this.s_type == "root_object")
         {
-            s_json = s_json + "{";
+            s_json += "{";
             for (int i = 0; i < this.list_child.Count; i++)
             {
-                if (this.list_child[i] != null) s_json = s_json + this.list_child[i].GetComponent<js_object>().get_result_shortened();
+                if (this.list_child[i] != null) s_json += this.list_child[i].get_result_shortened();
             }
-            s_json = s_json + "}";
+            s_json += "}";
+        }
+        else if (this.s_type == "root_array")
+        {
+            s_json += "[";
+            for (int i = 0; i < this.list_child.Count; i++)
+            {
+                if (this.list_child[i] != null) s_json += this.list_child[i].get_result_shortened();
+            }
+            s_json += "]";
         }
         else if (this.s_type == "object")
         {
-            s_json = s_json + "\"" + this.txt_name.text + "\":{";
+            s_json +="\"" + this.txt_name.text + "\":{";
             for (int i = 0; i < this.list_child.Count; i++)
             {
-                if (this.list_child[i] != null) s_json = s_json + this.list_child[i].GetComponent<js_object>().get_result_shortened();
+                if (this.list_child[i] != null) s_json += this.list_child[i].get_result_shortened();
             }
-            s_json = s_json + "},";
+            s_json += "},";
         }
         else if (this.s_type == "array")
         {
-            s_json = s_json + "\"" + this.txt_name.text + "\":[";
+            s_json = s_json + "\"" + this.s_name + "\":[";
             for (int i = 0; i < this.list_child.Count; i++)
             {
                 if (this.list_child[i] != null)
                 {
-                    if (this.list_child[i].GetComponent<js_object>().s_type == "array_item")
-                        s_json = s_json + this.list_child[i].GetComponent<js_object>().get_result_shortened();
+                    if (this.list_child[i].s_type == "array_item")
+                        s_json += this.list_child[i].get_result_shortened();
                     else
-                        s_json = s_json + "{" + this.list_child[i].GetComponent<js_object>().get_result_shortened() + "},";
+                        s_json = s_json + "{" + this.list_child[i].get_result_shortened() + "},";
                 }
             }
             s_json = s_json.Replace(",}", "}");
@@ -193,16 +218,15 @@ public class js_object : MonoBehaviour
         }
         else if (this.s_type == "array_item")
         {
-            s_json = s_json + "\"" + this.txt_name.text + "\",";
+            s_json = s_json + "\"" + this.s_name + "\",";
         }
-        else if (this.s_type == "properties")
+        else if (this.s_type == "propertie")
         {
-            string s_val;
-            if (this.index_Properties_type == 3) s_val = "null";
-            else if (this.index_Properties_type == 4) s_val = this.s_Properties_value;
-            else if (this.index_Properties_type == 1) s_val = this.s_Properties_value;
-            else s_val = "\"" + this.s_Properties_value + "\"";
-            s_json = s_json + "\"" + this.txt_name.text + "\":" + s_val + ",";
+            string s_val_propertie = "";
+            if (this.type_Propertie == Type_Properties_val.null_val) s_val = "null";
+            else if (this.type_Propertie == Type_Properties_val.number_val) s_val_propertie = this.s_val;
+            else s_val_propertie = "\"" + this.s_val + "\"";
+            s_json +="\"" + this.s_name + "\":" + s_val_propertie + ",";
         }
 
         this.s_result = s_json;
@@ -222,7 +246,6 @@ public class js_object : MonoBehaviour
         else
             this.is_show_child = true;
 
-       
         this.hide_or_show_all_child(this.is_show_child);
         this.check_child_expanded();
     }
@@ -233,7 +256,6 @@ public class js_object : MonoBehaviour
             this.img_icon_expanded.gameObject.SetActive(true);
         else
             this.img_icon_expanded.gameObject.SetActive(false);
-        this.Load_info();
     }
 
     public void hide_or_show_all_child(bool is_show)
@@ -256,16 +278,6 @@ public class js_object : MonoBehaviour
     public int get_length_item()
     {
         return this.list_child.Count;
-    }
-
-    public js_object set_properties_value(int type,string s_val)
-    {
-        this.index_Properties_type = type;
-        this.txt_tip.text = s_val;
-        this.txt_tip.color = Color.blue;
-        this.s_Properties_value = s_val;
-        this.img_type_properties.sprite = this.icon_type_properties[type];
-        return this;
     }
 
     public Carrot_Box_Btn_Item Create_btn(string s_name = "btn_item")

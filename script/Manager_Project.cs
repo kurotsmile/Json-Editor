@@ -200,7 +200,7 @@ public class Manager_Project : MonoBehaviour
         this.app.json_editor.Clear_list_item_editor();
         this.app.txt_save_status.text = data["title"].ToString();
         IDictionary<string, object> thanh = (IDictionary<string, object>)Json.Deserialize(data["code"].ToString());
-        this.paser_obj(thanh, this.app.json_editor.get_root());
+        this.paser_obj(thanh, this.app.json_editor.Get_root());
         if (this.app.get_index_sel_mode() == 2)
             this.app.json_editor.Show_code_json(true);
         else
@@ -219,7 +219,7 @@ public class Manager_Project : MonoBehaviour
 
     public void paser_obj(IDictionary<string, object> thanh,js_object js_father)
     {
-        this.app.json_editor.paser_obj(thanh, js_father);
+        this.app.json_editor.Paser_obj(thanh, js_father);
     }
 
     public void Delete_project_offline(int index,GameObject obj_item)
@@ -272,7 +272,7 @@ public class Manager_Project : MonoBehaviour
             this.app.json_editor.Clear_list_item_editor();
             this.app.txt_save_status.text ="Import file";
             IDictionary<string, object> obj_js = (IDictionary<string, object>)Json.Deserialize(www.downloadHandler.text);
-            this.paser_obj(obj_js, this.app.json_editor.get_root());
+            this.paser_obj(obj_js, this.app.json_editor.Get_root());
             if (this.app.get_index_sel_mode() == 2)
                 this.app.json_editor.Show_code_json(true);
             else
