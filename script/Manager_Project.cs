@@ -202,9 +202,9 @@ public class Manager_Project : MonoBehaviour
         IDictionary<string, object> thanh = (IDictionary<string, object>)Json.Deserialize(data["code"].ToString());
         this.paser_obj(thanh, this.app.json_editor.get_root());
         if (this.app.get_index_sel_mode() == 2)
-            this.app.json_editor.show_code_json(true);
+            this.app.json_editor.Show_code_json(true);
         else
-            this.app.json_editor.show_code_json(false);
+            this.app.json_editor.Show_code_json(false);
 
         this.app.carrot.close();
         this.app.json_editor.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
@@ -274,9 +274,9 @@ public class Manager_Project : MonoBehaviour
             IDictionary<string, object> obj_js = (IDictionary<string, object>)Json.Deserialize(www.downloadHandler.text);
             this.paser_obj(obj_js, this.app.json_editor.get_root());
             if (this.app.get_index_sel_mode() == 2)
-                this.app.json_editor.show_code_json(true);
+                this.app.json_editor.Show_code_json(true);
             else
-                this.app.json_editor.show_code_json(false);
+                this.app.json_editor.Show_code_json(false);
             this.app.json_editor.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
             this.app.carrot.play_sound_click();
             if (box != null) box.close();

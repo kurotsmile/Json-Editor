@@ -7241,7 +7241,21 @@ MonoBehaviour:
   sp_icon_array_item: {fileID: 21300000, guid: dbc9b24a7961c9c4c9b428d38e910ec4, type: 3}
   sp_icon_properties: {fileID: 21300000, guid: 0058043165cbc1948a9fce8d6dc65c4b, type: 3}
   sp_icon_root: {fileID: 21300000, guid: c22a4ee773c89f84c93950103fb6804b, type: 3}
+  sp_icon_root_object: {fileID: 21300000, guid: c22a4ee773c89f84c93950103fb6804b, type: 3}
+  sp_icon_root_array: {fileID: 21300000, guid: 6686f6e14917b75449ff67cc85892a1a, type: 3}
   sp_icon_clear: {fileID: 21300000, guid: 4e89e44a66d650540af00fe55de01b0e, type: 3}
+  color_properties_nomal:
+    serializedVersion: 2
+    rgba: 4280857087
+  color_properties_select:
+    serializedVersion: 2
+    rgba: 4280843519
+  color_btn_delete:
+    serializedVersion: 2
+    rgba: 4278190268
+  color_btn_clear:
+    serializedVersion: 2
+    rgba: 4278190282
   prefab_obj_js: {fileID: 7925628766117251879, guid: e9150c6971a3e5c4f9f5284d26a4644c, type: 3}
   Panel_edit_Properties: {fileID: 4466990756417944630}
   Panel_select_color: {fileID: 6420655425770780894}
@@ -7262,12 +7276,6 @@ MonoBehaviour:
   - {fileID: 4391032867664584923}
   img_btn_Properties: []
   img_btn_Properties_bool: []
-  color_properties_nomal:
-    serializedVersion: 2
-    rgba: 4280857087
-  color_properties_select:
-    serializedVersion: 2
-    rgba: 4280843519
   inp_edit_Properties_name: {fileID: 6473143271314051318}
   inp_edit_Properties_value: {fileID: 6465356750640210826}
   index_edit_Properties_type: 0

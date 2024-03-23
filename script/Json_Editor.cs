@@ -2,10 +2,8 @@ using Carrot;
 using System.Collections;
 using System;
 using System.Collections.Generic;
-using System.Xml;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class Json_Editor : MonoBehaviour
 {
@@ -19,8 +17,15 @@ public class Json_Editor : MonoBehaviour
     public Sprite sp_icon_array;
     public Sprite sp_icon_array_item;
     public Sprite sp_icon_properties;
-    public Sprite sp_icon_root;
+    public Sprite sp_icon_root_object;
+    public Sprite sp_icon_root_array;
     public Sprite sp_icon_clear;
+
+    [Header("Color")]
+    public Color32 color_properties_nomal;
+    public Color32 color_properties_select;
+    public Color32 color_btn_delete;
+    public Color32 color_btn_clear;
 
     [Header("Obj Json")]
     public GameObject prefab_obj_js;
@@ -43,8 +48,6 @@ public class Json_Editor : MonoBehaviour
     [Header("Edit Properties")]
     public Image[] img_btn_Properties;
     public Image[] img_btn_Properties_bool;
-    public Color32 color_properties_nomal;
-    public Color32 color_properties_select;
     public InputField inp_edit_Properties_name;
     public InputField inp_edit_Properties_value;
     public int index_edit_Properties_type;
@@ -61,10 +64,10 @@ public class Json_Editor : MonoBehaviour
         this.Panel_select_color.gameObject.SetActive(false);
         this.app.carrot.clear_contain(this.area_all_item_editor);
         this.Add_node();
-        this.check_mode();
+        this.Check_mode();
     }
 
-    public js_object Add_node(js_object obj_father=null,string s_type="root")
+    public js_object Add_node(js_object obj_father=null,string s_type="root_object")
     {
         GameObject obj_node = Instantiate(this.prefab_obj_js);
         obj_node.transform.SetParent(this.area_all_item_editor);
@@ -91,9 +94,9 @@ public class Json_Editor : MonoBehaviour
 
         obj_node.transform.SetSiblingIndex(js_obj.y);
 
-        if (s_type == "root")
+        if (s_type == "root_object")
         {
-            js_obj.Set_icon(sp_icon_root);
+            js_obj.Set_icon(sp_icon_root_object);
 
             Carrot_Box_Btn_Item btn_add_obj=js_obj.Create_btn("btn_add_obj");
             btn_add_obj.set_icon(this.sp_icon_object);
@@ -107,9 +110,26 @@ public class Json_Editor : MonoBehaviour
             btn_add_propertie.set_icon(this.sp_icon_properties);
             btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
 
-            Carrot_Box_Btn_Item btn_clear = js_obj.Create_btn("btn_clear");
-            btn_clear.set_icon(this.sp_icon_clear);
-            btn_clear.set_act(() => Clear_child_in_node(js_obj));
+            this.Create_btn_delete(js_obj,false);
+        }
+
+        if (s_type == "root_array")
+        {
+            js_obj.Set_icon(sp_icon_root_array);
+
+            Carrot_Box_Btn_Item btn_add_obj = js_obj.Create_btn("btn_add_obj");
+            btn_add_obj.set_icon(this.sp_icon_object);
+            btn_add_obj.set_act(() => this.Show_add_obj_to_node(js_obj));
+
+            Carrot_Box_Btn_Item btn_add_array = js_obj.Create_btn("btn_add_array");
+            btn_add_array.set_icon(this.sp_icon_array);
+            btn_add_array.set_act(() => this.Add_node(js_obj, "array"));
+
+            Carrot_Box_Btn_Item btn_add_propertie = js_obj.Create_btn("btn_add_propertie");
+            btn_add_propertie.set_icon(this.sp_icon_properties);
+            btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
+
+            this.Create_btn_delete(js_obj, false);
         }
 
         if (s_type == "array")
@@ -128,10 +148,7 @@ public class Json_Editor : MonoBehaviour
             btn_add_propertie.set_icon(this.sp_icon_properties);
             btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
 
-
-            Carrot_Box_Btn_Item btn_clear = js_obj.Create_btn("btn_clear");
-            btn_clear.set_icon(this.app.carrot.sp_icon_del_data);
-            btn_clear.set_act(() => Delete_node(js_obj));
+            this.Create_btn_delete(js_obj);
         }
 
         if (s_type == "object")
@@ -154,9 +171,7 @@ public class Json_Editor : MonoBehaviour
             btn_edit.set_icon(this.app.carrot.user.icon_user_edit);
             btn_edit.set_act(() => Show_edit_key(js_obj));
 
-            Carrot_Box_Btn_Item btn_clear = js_obj.Create_btn("btn_clear");
-            btn_clear.set_icon(this.app.carrot.sp_icon_del_data);
-            btn_clear.set_act(() => Delete_node(js_obj));
+            this.Create_btn_delete(js_obj);
         }
 
         if (s_type == "propertie")
@@ -167,14 +182,13 @@ public class Json_Editor : MonoBehaviour
             btn_edit.set_icon(this.app.carrot.user.icon_user_edit);
             btn_edit.set_act(() => Show_edit_key(js_obj));
 
-            Carrot_Box_Btn_Item btn_clear = js_obj.Create_btn("btn_clear");
-            btn_clear.set_icon(this.app.carrot.sp_icon_del_data);
-            btn_clear.set_act(() => Delete_node(js_obj));
+            this.Create_btn_delete(js_obj);
         }
 
         if(s_type== "array_item")
         {
             js_obj.Set_icon(sp_icon_array_item);
+            this.Create_btn_delete(js_obj);
         }
 
         Carrot_Box_Btn_Item btn_menu = js_obj.Create_btn("btn_menu");
@@ -182,6 +196,23 @@ public class Json_Editor : MonoBehaviour
         btn_menu.set_act(() => Show_menu(js_obj));
         this.Update_index_list();
         return js_obj;
+    }
+
+    private void Create_btn_delete(js_object js_obj,bool is_delete=true)
+    {
+        Carrot_Box_Btn_Item btn_del = js_obj.Create_btn("btn_del");
+        if (is_delete)
+        {
+            btn_del.set_icon(this.app.carrot.sp_icon_del_data);
+            btn_del.set_color(this.color_btn_delete);
+            btn_del.set_act(() => Delete_node(js_obj));
+        }
+        else
+        {
+            btn_del.set_icon(this.sp_icon_clear);
+            btn_del.set_color(this.color_btn_clear);
+            btn_del.set_act(() => Clear_child_in_node(js_obj));
+        }
     }
 
     private void Show_add_obj_to_node(js_object obj)
@@ -303,14 +334,14 @@ public class Json_Editor : MonoBehaviour
     public void Btn_sel_mode(int index_mode)
     {
         this.index_sel_mode = index_mode;
-        this.check_mode();
+        this.Check_mode();
         if (this.index_sel_mode == 0) this.Show_editor_by_coder();
-        if (this.index_sel_mode == 1) this.show_code_json(false);
-        if (this.index_sel_mode == 2) this.show_code_json(true);
+        if (this.index_sel_mode == 1) this.Show_code_json(false);
+        if (this.index_sel_mode == 2) this.Show_code_json(true);
         this.app.carrot.play_sound_click();
     }
 
-    public void check_mode()
+    public void Check_mode()
     {
         this.img_btn_model[0].color = this.color_properties_nomal;
         this.img_btn_model[1].color = this.color_properties_nomal;
@@ -321,9 +352,9 @@ public class Json_Editor : MonoBehaviour
         this.panel_model[this.index_sel_mode].SetActive(true);
     }
 
-    public void show_code_json(bool is_no_space)
+    public void Show_code_json(bool is_no_space)
     {
-        string s_json = "";
+        string s_json;
         if (is_no_space)
             s_json = this.get_root().get_result_shortened();
         else
@@ -334,10 +365,9 @@ public class Json_Editor : MonoBehaviour
 
     public void Show_editor_by_coder()
     {
-        if (!this.is_change_coderviewer) return;
+        if (this.is_change_coderviewer==false) return;
         this.Clear_list_item_editor();
-        IDictionary<string, object> thanh = (IDictionary<string, object>)Carrot.Json.Deserialize(this.inp_coder_viewer.text);
-        this.GetComponent<Manager_Project>().paser_obj(thanh, this.get_root());
+        this.Paser(this.inp_coder_viewer.text);
     }
 
     public js_object get_root()
@@ -349,7 +379,6 @@ public class Json_Editor : MonoBehaviour
     {
         this.is_change_coderviewer = false;
         this.app.carrot.clear_contain(this.area_all_item_editor);
-        this.Add_node();
     }
 
     public string Get_data_cur()
@@ -357,10 +386,10 @@ public class Json_Editor : MonoBehaviour
         return js_object_root.get_result();
     }
 
-    public void paser_obj(IDictionary<string, object> thanh, js_object js_father)
+    public void paser_obj(IDictionary<string, object> obj_code, js_object js_father)
     {
 
-        foreach (var obj_js in thanh)
+        foreach (var obj_js in obj_code)
         {
 
             if (obj_js.Value is string)
@@ -374,7 +403,7 @@ public class Json_Editor : MonoBehaviour
                     int obj_number;
                     if (int.TryParse(obj_js.Value.ToString(), out obj_number))
                     {
-                        this.Add_node(js_father, "propertie").set_properties_value(1, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
+                        this.Add_node(js_father, "propertie").set_properties_value(1, obj_js.Value.ToString()).txt_name.text = obj_number.ToString();
                     }
                     else
                     {
@@ -392,10 +421,7 @@ public class Json_Editor : MonoBehaviour
                 js_object obj_array = this.Add_node(js_father, "array");
                 obj_array.set_properties_value(1, obj_js.Value.ToString()).txt_name.text = obj_js.Key;
                 IList<object> l = (IList<object>)obj_js.Value;
-                for (int y = 0; y < l.Count; y++)
-                {
-                    this.Paser_Array(l[y],obj_array);
-                }
+                this.Paser_Array(l,obj_array);
             }else if(obj_js.Value is IDictionary)
             {
                 IDictionary<string, object> obj_child = (IDictionary<string, object>)obj_js.Value;
@@ -412,41 +438,57 @@ public class Json_Editor : MonoBehaviour
         }
     }
 
-    private void Paser_Array(object myDict,js_object obj_father)
+    private void Paser_Array(IList<object> list_obj,js_object obj_father)
     {
-        if (myDict == null)
+        for (int y = 0; y < list_obj.Count; y++)
         {
-            Add_node(obj_father, "array_item").txt_tip.text = myDict.ToString();
-        }
-        else if (myDict is IDictionary)
-        {
-            js_object js_object = Add_node(obj_father, "object");
-            IDictionary<string,object> datas = (IDictionary<string, object>)myDict;
-            paser_obj(datas, js_object);
-        }
-        else if (myDict is Array)
-        {
-            Paser_Array(myDict, obj_father);
-        }
-        else if (myDict is string)
-        {
-            Add_node(obj_father, "array_item").txt_tip.text = myDict.ToString();
-        }
-        else if (myDict is int || myDict is float || myDict is double)
-        {
-            Add_node(obj_father, "array_item").txt_tip.text = myDict.ToString();
-        }
-        else if (myDict is Color)
-        {
-            Add_node(obj_father, "array_item").txt_tip.text = myDict.ToString();
-        }
-        else if (myDict is DateTime)
-        {
-            Add_node(obj_father, "array_item").txt_tip.text = myDict.ToString();
-        }
-        else
-        {
-            Add_node(obj_father, "array_item").txt_name.text = myDict.ToString();
+            object myDict = list_obj[y];
+            if (myDict == null)
+            {
+                js_object js_item_array = Add_node(obj_father, "array_item");
+                js_item_array.Set_name_key("Array_item");
+                js_item_array.Set_tip(myDict.ToString());
+            }
+            else if (myDict is IDictionary)
+            {
+                js_object js_object = Add_node(obj_father, "object");
+                IDictionary<string, object> datas = (IDictionary<string, object>)myDict;
+                paser_obj(datas, js_object);
+            }
+            else if (myDict is Array)
+            {
+                Paser_Array((IList<object>)myDict, obj_father);
+            }
+            else if (myDict is string)
+            {
+                js_object js_item_array = Add_node(obj_father, "array_item");
+                js_item_array.Set_name_key("Array_item");
+                js_item_array.Set_tip(myDict.ToString());
+            }
+            else if (myDict is int || myDict is float || myDict is double)
+            {
+                js_object js_item_array = Add_node(obj_father, "array_item");
+                js_item_array.Set_name_key("Array_item");
+                js_item_array.Set_tip(myDict.ToString());
+            }
+            else if (myDict is Color)
+            {
+                js_object js_item_array = Add_node(obj_father, "array_item");
+                js_item_array.Set_name_key("Array_item");
+                js_item_array.Set_tip(myDict.ToString());
+            }
+            else if (myDict is DateTime)
+            {
+                js_object js_item_array = Add_node(obj_father, "array_item");
+                js_item_array.Set_name_key("Array_item");
+                js_item_array.Set_tip(myDict.ToString());
+            }
+            else if (myDict is object)
+            {
+                js_object js_object = Add_node(obj_father, "object");
+                IDictionary<string, object> datas = (IDictionary<string, object>)myDict;
+                paser_obj(datas, js_object);
+            }
         }
     }
 
@@ -464,17 +506,17 @@ public class Json_Editor : MonoBehaviour
         this.Panel_edit_Properties.SetActive(false);
     }
 
-    public void show_Properties(js_object o_edit)
+    public void Show_Properties(js_object o_edit)
     {
         this.Js_object_edit_temp = o_edit;
         this.inp_edit_Properties_name.text = o_edit.txt_name.text;
         this.inp_edit_Properties_value.text = o_edit.s_Properties_value;
         this.index_edit_Properties_type = o_edit.index_Properties_type;
         this.Panel_edit_Properties.SetActive(true);
-        this.check_type_Properties();
+        this.Check_type_Properties();
     }
 
-    public void check_type_Properties()
+    public void Check_type_Properties()
     {
         this.panel_edit_Properties_color.SetActive(false);
         this.panel_edit_Properties_value.SetActive(false);
@@ -518,21 +560,21 @@ public class Json_Editor : MonoBehaviour
         }
     }
 
-    public void btn_sel_type_Properties(int index_sel)
+    public void Btn_sel_type_Properties(int index_sel)
     {
         this.app.carrot.play_sound_click();
         this.index_edit_Properties_type = index_sel;
-        this.check_type_Properties();
+        this.Check_type_Properties();
     }
 
-    public void show_select_color()
+    public void Show_select_color()
     {
         this.app.carrot.play_sound_click();
         this.Panel_select_color.show_table();
     }
 
 
-    public void btn_sel_val_bool_properties(bool is_true)
+    public void Btn_sel_val_bool_properties(bool is_true)
     {
         if (is_true)
             this.inp_edit_Properties_value.text = "true";
@@ -554,7 +596,7 @@ public class Json_Editor : MonoBehaviour
 
     }
 
-    public void close_color_select()
+    public void Close_color_select()
     {
         this.app.carrot.play_sound_click();
         this.Panel_select_color.close();
@@ -562,9 +604,25 @@ public class Json_Editor : MonoBehaviour
 
     public void Change_coder_in_view()
     {
-        this.Clear_list_item_editor();
-        IDictionary<string,object> data= (IDictionary<string,object>)Carrot.Json.Deserialize(this.inp_coder_viewer.text);
-        this.paser_obj(data, this.get_root());
+        this.Paser(this.inp_coder_viewer.text);
     }
 
+    public void Paser(string s_data)
+    {
+        this.Clear_list_item_editor();
+        object data = Json.Deserialize(s_data);
+        if(data is IDictionary)
+        {
+            Add_node(null, "root_object");
+            IDictionary<string, object> data_obj = (IDictionary<string, object>)data;
+            this.paser_obj(data_obj, this.get_root());
+        }
+
+        if (data is IList)
+        {
+            Add_node(null, "root_array");
+            IList<object> data_obj = (IList<object>)data;
+            this.Paser_Array(data_obj, this.get_root());
+        }
+    }
 }

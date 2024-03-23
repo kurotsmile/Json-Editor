@@ -59,6 +59,16 @@ public class js_object : MonoBehaviour
         this.check_child_expanded();
     }
 
+    public void Set_name_key(string s_name)
+    {
+        this.txt_name.text = s_name;
+    }
+
+    public void Set_tip(string s_tip)
+    {
+        this.txt_tip.text = s_tip;
+    }
+
     public void Delete_all_child()
     {
         for (int i = 0; i < this.list_child.Count; i++) {

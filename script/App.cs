@@ -60,12 +60,11 @@ public class App : MonoBehaviour
     {
         carrot.play_sound_click();
         this.json_editor.Clear_list_item_editor();
+        this.json_editor.Add_node();
         this.txt_save_status.text = PlayerPrefs.GetString("new_file","New File");
         this.manager_Project.Set_new_project();
         this.carrot.ads.show_ads_Interstitial();
     }
-
-
 
     public void show_project()
     {
