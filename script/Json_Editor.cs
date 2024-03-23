@@ -22,6 +22,7 @@ public class Json_Editor : MonoBehaviour
     public Sprite sp_icon_root_object;
     public Sprite sp_icon_root_array;
     public Sprite sp_icon_clear;
+    public Sprite sp_icon_edit_properties;
 
     public Sprite sp_icon_properties_string;
     public Sprite sp_icon_properties_number;
@@ -51,7 +52,6 @@ public class Json_Editor : MonoBehaviour
 
     private int index_sel_mode = 0;
     private bool is_change_coderviewer;
-    private js_object Js_object_edit_temp;
 
     [Header("Edit Properties")]
     public Image[] img_btn_Properties;
@@ -155,6 +155,7 @@ public class Json_Editor : MonoBehaviour
             btn_add_propertie.set_icon(this.sp_icon_properties);
             btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
 
+            this.Create_btn_edit_key(js_obj);
             this.Create_btn_delete(js_obj);
         }
 
@@ -174,10 +175,8 @@ public class Json_Editor : MonoBehaviour
             btn_add_propertie.set_icon(this.sp_icon_properties);
             btn_add_propertie.set_act(() => this.Add_node(js_obj, "propertie"));
 
-            Carrot_Box_Btn_Item btn_edit = js_obj.Create_btn("btn_edit");
-            btn_edit.set_icon(this.app.carrot.user.icon_user_edit);
-            btn_edit.set_act(() => Show_edit_key(js_obj));
 
+            this.Create_btn_edit_key(js_obj);
             this.Create_btn_delete(js_obj);
         }
 
@@ -185,16 +184,16 @@ public class Json_Editor : MonoBehaviour
         {
             js_obj.Set_icon(sp_icon_properties);
 
-            Carrot_Box_Btn_Item btn_edit = js_obj.Create_btn("btn_edit");
-            btn_edit.set_icon(this.app.carrot.user.icon_user_edit);
-            btn_edit.set_act(() => Show_edit_key(js_obj));
-
+            this.Create_btn_edit_key(js_obj);
+            this.Create_btn_edit_val(js_obj);
             this.Create_btn_delete(js_obj);
         }
 
         if(s_type== "array_item")
         {
             js_obj.Set_icon(sp_icon_array_item);
+            this.Create_btn_edit_key(js_obj);
+            this.Create_btn_edit_val(js_obj);
             this.Create_btn_delete(js_obj);
         }
 
@@ -203,6 +202,20 @@ public class Json_Editor : MonoBehaviour
         btn_menu.set_act(() => Show_menu(js_obj));
         this.Update_index_list();
         return js_obj;
+    }
+
+    private void Create_btn_edit_val(js_object js_obj)
+    {
+        Carrot_Box_Btn_Item btn_edit_val = js_obj.Create_btn("btn_edit_val");
+        btn_edit_val.set_icon(this.sp_icon_edit_properties);
+        btn_edit_val.set_act(() => Show_edit_key(js_obj));
+    }
+
+    private void Create_btn_edit_key(js_object js_obj)
+    {
+        Carrot_Box_Btn_Item btn_edit = js_obj.Create_btn("btn_edit_key");
+        btn_edit.set_icon(this.app.carrot.user.icon_user_edit);
+        btn_edit.set_act(() => Show_edit_key(js_obj));
     }
 
     private void Create_btn_delete(js_object js_obj,bool is_delete=true)
@@ -422,7 +435,7 @@ public class Json_Editor : MonoBehaviour
                     {
                         js_object js_obj = this.Add_node(js_father, "propertie");
                         js_obj.Set_name_key(obj_js.Key.ToString());
-                        js_obj.Set_val(obj_js.Value.ToString(), Type_Properties_val.number_val, this);
+                        js_obj.Set_val(obj_number.ToString(), Type_Properties_val.number_val, this);
                     }
                     else
                     {
@@ -520,7 +533,6 @@ public class Json_Editor : MonoBehaviour
             }
         }
     }
-
 
     public void Check_type_Properties()
     {

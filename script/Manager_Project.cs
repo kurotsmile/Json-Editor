@@ -99,7 +99,6 @@ public class Manager_Project : MonoBehaviour
                     btn_public.set_act(() => Upload_project(index));
                 }
 
-
                 Carrot_Box_Btn_Item btn_edit = item_project.create_item();
                 btn_edit.set_icon(app.carrot.user.icon_user_edit);
                 btn_edit.set_color(app.carrot.color_highlight);
@@ -195,18 +194,19 @@ public class Manager_Project : MonoBehaviour
     {
         if (box != null) box.close();
         if (box_menu != null) box_menu.close();
-        if (data["index"] != null) this.sel_project_index = int.Parse(data["index"].ToString());
+        if (data["index"] != null)
+            this.sel_project_index = int.Parse(data["index"].ToString());
+        else
+            this.sel_project_index = -1;
 
-        this.app.json_editor.Clear_list_item_editor();
         this.app.txt_save_status.text = data["title"].ToString();
-        IDictionary<string, object> thanh = (IDictionary<string, object>)Json.Deserialize(data["code"].ToString());
-        this.paser_obj(thanh, this.app.json_editor.Get_root());
+
+        
         if (this.app.get_index_sel_mode() == 2)
             this.app.json_editor.Show_code_json(true);
         else
             this.app.json_editor.Show_code_json(false);
-
-        this.app.carrot.close();
+        this.app.json_editor.Paser(data["code"].ToString());
         this.app.json_editor.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
         this.app.carrot.play_sound_click();
     }

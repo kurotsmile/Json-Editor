@@ -49,11 +49,7 @@ public class App : MonoBehaviour
 
     private void Check_exit_app()
     {
-        if (this.json_editor.Panel_edit_Properties.activeInHierarchy)
-        {
-            this.json_editor.close_Properties();
-            this.carrot.set_no_check_exit_app();
-        }
+
     }
 
     public void new_project()

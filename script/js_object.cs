@@ -89,29 +89,30 @@ public class js_object : MonoBehaviour
 
         if (this.s_type == "root_object")
         {
-            s_json = s_json + "{\n";
+            s_json += "{\n";
             for (int i = 0; i < this.list_child.Count; i++)
             {
-                if (this.list_child[i] != null) s_json = s_json + this.list_child[i].get_result();
+                if (this.list_child[i] != null) s_json += this.list_child[i].get_result();
             }
-            s_json = s_json + "}";
+            s_json += "}";
         }
         else if (this.s_type == "root_array")
         {
-            s_json = s_json + "[\n";
+            s_json += "[\n";
             for (int i = 0; i < this.list_child.Count; i++)
             {
-                if (this.list_child[i] != null) s_json = s_json + this.list_child[i].get_result();
+                if (this.list_child[i] != null) s_json += this.list_child[i].get_result();
             }
-            s_json = s_json + "]";
+            s_json += "]";
         }
         else if (this.s_type == "object")
         {
-            if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
-            s_json = s_json + "\"" + this.s_name + "\":{";
+            if (this.x > 1) for (int i = 1; i < this.x; i++) s_json += "\t";
+            if(s_name.Trim()!="") s_json +=s_json + "\"" + this.s_name + "\":";
+            s_json += "{";
             for (int i = 0; i < this.list_child.Count; i++)
             {
-                if (i == 0) s_json = s_json + "\n";
+                if (i == 0) s_json += "\n";
                 if (this.list_child[i] != null) s_json = s_json + this.list_child[i].get_result();
             }
             if (this.x > 1 && this.list_child.Count > 0) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
@@ -138,7 +139,7 @@ public class js_object : MonoBehaviour
         else if (this.s_type == "array_item")
         {
             if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
-            s_json = s_json + "\"" + this.s_name + "\",";
+            s_json = s_json + "\"" + this.s_val + "\",";
         }
         else if (this.s_type == "propertie")
         {
@@ -218,7 +219,7 @@ public class js_object : MonoBehaviour
         }
         else if (this.s_type == "array_item")
         {
-            s_json = s_json + "\"" + this.s_name + "\",";
+            s_json = s_json + "\"" + this.s_val + "\",";
         }
         else if (this.s_type == "propertie")
         {
