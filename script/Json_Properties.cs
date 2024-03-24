@@ -57,14 +57,14 @@ public class Json_Properties : MonoBehaviour
         if (type_box == Type_box.add_array)
         {
             s_name = "Array" + (obj.get_length_item() + 1);
-            box.set_icon(app.json_editor.sp_icon_root_array);
+            box.set_icon(app.json_editor.sp_icon_array);
             box.set_title("Add Array");
         }
 
         if (type_box == Type_box.edit_array)
         {
             s_name = obj.s_name;
-            box.set_icon(app.json_editor.sp_icon_root_array);
+            box.set_icon(app.json_editor.sp_icon_array);
             box.set_title("Edit Array ("+obj.s_name+")");
         }
 
@@ -80,7 +80,7 @@ public class Json_Properties : MonoBehaviour
             box.set_title("Edit Array Item");
         }
 
-        if (type_box != Type_box.edit_array_item || type_box != Type_box.add_array_item)
+        if (type_box != Type_box.edit_array_item && type_box != Type_box.add_array_item)
         {
             item_key = box.create_item();
             item_key.set_icon(app.carrot.icon_carrot_write);
