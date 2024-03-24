@@ -1,8 +1,7 @@
 using Carrot;
+using SimpleFileBrowser;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -17,7 +16,9 @@ public class Manager_Project : MonoBehaviour
 
     private Carrot_Box box = null;
     private Carrot_Box box_menu = null;
+    private Carrot_Window_Input box_inp = null;
     private int sel_project_index = -1;
+    private IDictionary data_project_temp = null;
 
     public void On_load()
     {
@@ -250,12 +251,6 @@ public class Manager_Project : MonoBehaviour
         this.sel_project_index = -1;
     }
 
-    public void Import_json_url(string url_data)
-    {
-        app.carrot.show_loading();
-        StartCoroutine(Get_data_json_by_url(url_data));
-    }
-
     IEnumerator Get_data_json_by_url(string url_json)
     {
         using UnityWebRequest www = UnityWebRequest.Get(url_json);
@@ -273,6 +268,7 @@ public class Manager_Project : MonoBehaviour
             this.app.json_editor.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
             this.app.carrot.play_sound_click();
             if (box != null) box.close();
+            if(box_inp!=null) box_inp.close();
         }
         else
         {
@@ -361,10 +357,15 @@ public class Manager_Project : MonoBehaviour
 
         Carrot_Box_Item item_url = box.create_item("item_name");
         item_url.set_icon(app.sp_icon_project);
-        item_url.set_title("URL");
+        item_url.set_title("Enter from web address");
         item_url.set_tip("Enter json web url");
-        item_url.set_type(Box_Item_Type.box_value_input);
-        item_url.check_type();
+        item_url.set_act(() => Import_from_web_address());
+
+        Carrot_Box_Item item_import_file = box.create_item("item_import_file");
+        item_import_file.set_icon(app.sp_icon_project);
+        item_import_file.set_title("Import from file");
+        item_import_file.set_tip("Click here to select the json file to import");
+        item_import_file.set_act(() => Import_from_file());
 
         Carrot_Box_Btn_Panel panel_btn = box.create_panel_btn();
 
@@ -383,6 +384,12 @@ public class Manager_Project : MonoBehaviour
         btn_cancel.set_act_click(() => Act_close_save());
     }
 
+    private void Import_from_web_address()
+    {
+        this.box_inp = app.carrot.show_input("Import json data from web address", "Enter from web address");
+        this.box_inp.set_act_done(Act_import_project);
+    }
+
     private void Act_import_project(string s_data)
     {
         if (s_data.Trim() == "")
@@ -391,8 +398,28 @@ public class Manager_Project : MonoBehaviour
             this.app.carrot.play_vibrate();
             return;
         }
-        this.Import_json_url(s_data);
+
+        app.carrot.show_loading();
+        StartCoroutine(Get_data_json_by_url(s_data));
     }
+     
+    private void Import_from_file()
+    {
+        if (FileBrowser.AskPermissions == false)
+        {
+            FileBrowser.RequestPermission();
+            app.carrot.show_msg("Json Editor", "You need to give the application permission to read and write json data files on the drive!", Msg_Icon.Alert);
+        }
+
+        FileBrowser.ShowLoadDialog(Act_Import_from_file_done, Act_Import_from_file_cancel, FileBrowser.PickMode.Files);
+    }
+
+    private void Act_Import_from_file_done(string[] paths)
+    {
+
+    }
+
+    private void Act_Import_from_file_cancel(){}
 
     public int Get_Index_project_curent()
     {
@@ -401,37 +428,27 @@ public class Manager_Project : MonoBehaviour
 
     private void Export_file(IDictionary data)
     {
-        string s_data = data["code"].ToString();
-        string s_name = data["title"].ToString();
+        data_project_temp = data;
+        FileBrowser.ShowSaveDialog(Export_file_done, Export_file_cancel, FileBrowser.PickMode.Files);
+    }
 
-#if UNITY_EDITOR
-        string filePath = EditorUtility.SaveFilePanel("Save File", "", s_name, "json");
-        if (!string.IsNullOrEmpty(filePath))
-        {
-            try
-            {
-                System.IO.File.WriteAllText(filePath, s_data);
-                app.carrot.show_input("Save", "File saved successfully at: ", filePath, Window_Input_value_Type.input_field);
-            }
-            catch (System.Exception ex)
-            {
-                app.carrot.show_msg("Error", "Failed to save file: " + ex.Message, Msg_Icon.Error);
-            }
-        }
-#endif
-
-#if UNITY_ANDROID && !UNITY_EDITOR
-        string filePath = DirectoryHelper.GetAndroidExternalFilesDir() + "/" + s_name + ".json";
+    private void Export_file_done(string[] paths)
+    {
+        string filePath = paths[0];
         try
         {
-            System.IO.File.WriteAllText(filePath, s_data);
+            FileBrowserHelpers.WriteTextToFile(filePath, data_project_temp["code"].ToString());
             app.carrot.show_input("Save", "File saved successfully at: ", filePath, Window_Input_value_Type.input_field);
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             app.carrot.show_msg("Error", "Failed to save file: " + ex.Message, Msg_Icon.Error);
         }
-#endif
+    }
+
+    private void Export_file_cancel()
+    {
+
     }
 
     private void Upload_project(int index)

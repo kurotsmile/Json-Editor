@@ -201,11 +201,17 @@ public class Json_Properties : MonoBehaviour
         box_sub = app.carrot.Create_Box();
         box_sub.set_icon(app.carrot.icon_carrot_add);
 
-        Carrot_Box_Item item_color = box_sub.create_item();
-        item_color.set_icon(sp_icon_properties_color);
-        item_color.set_title("Add value color");
-        item_color.set_tip("Add color value in hexa color table");
-        item_color.set_act(() => app.carrot.theme.show_list_color(Act_add_color_for_field));
+        Carrot_Box_Item item_color_hex = box_sub.create_item();
+        item_color_hex.set_icon(sp_icon_properties_color);
+        item_color_hex.set_title("Add value color");
+        item_color_hex.set_tip("Add color value in hexa color table");
+        item_color_hex.set_act(() => app.carrot.theme.Show_list_color(Act_add_color_for_field));
+
+        Carrot_Box_Item item_color_rgb = box_sub.create_item();
+        item_color_rgb.set_icon(sp_icon_properties_color);
+        item_color_rgb.set_title("Add value color");
+        item_color_rgb.set_tip("Add color value in RGB color table");
+        item_color_rgb.set_act(() => app.carrot.theme.Show_list_color(Act_add_color_for_field));
 
         Carrot_Box_Item item_date = box_sub.create_item();
         item_date.set_icon(sp_icon_properties_date);
@@ -223,8 +229,8 @@ public class Json_Properties : MonoBehaviour
 
     private void Act_add_color_for_field(Color32 color_val)
     {
+        app.carrot.play_sound_click();
         this.item_val.set_val(color_val.ToString());
-        this.app.carrot.show_msg(color_val.ToString());
         if (box_sub != null) box_sub.close();
     }
 }
