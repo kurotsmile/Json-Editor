@@ -22,6 +22,7 @@ public class Json_Editor : MonoBehaviour
     public Sprite sp_icon_root_object;
     public Sprite sp_icon_root_array;
     public Sprite sp_icon_clear;
+    public Sprite sp_icon_eraser;
     public Sprite sp_icon_edit_properties;
 
     [Header("Color")]
@@ -221,7 +222,33 @@ public class Json_Editor : MonoBehaviour
     {
         box = app.carrot.Create_Box();
         box.set_icon(app.carrot.icon_carrot_all_category);
-        box.set_title("Menu");
+
+        if(obj.s_name!="")
+            box.set_title("Menu ("+obj.s_name+")");
+        else
+            box.set_title("Menu");
+
+        if (obj.s_type == "root_object" || obj.s_type == "root_array" || obj.s_type == "object" || obj.s_type == "array")
+        {
+            Carrot_Box_Item item_add_obj = box.create_item();
+            item_add_obj.set_icon(sp_icon_object);
+            item_add_obj.set_title("Add Object");
+            item_add_obj.set_tip("Add an object with the keyword pair key object name and value");
+            item_add_obj.set_act(() => app.json_properties.Show(obj, Type_box.add_object));
+
+            Carrot_Box_Item item_add_array = box.create_item();
+            item_add_array.set_icon(sp_icon_array);
+            item_add_array.set_title("Add Array");
+            item_add_array.set_tip("Add the subarray to this data object");
+            item_add_array.set_act(() => app.json_properties.Show(obj, Type_box.edit_object));
+
+            Carrot_Box_Item item_add_propertie = box.create_item();
+            item_add_propertie.set_icon(sp_icon_properties);
+            item_add_propertie.set_title("Add propertie");
+            item_add_propertie.set_tip("Add properties to this object");
+            item_add_propertie.set_act(() => app.json_properties.Show(obj, Type_box.edit_object));
+
+        }
 
         if (obj.get_length_item() > 0)
         {

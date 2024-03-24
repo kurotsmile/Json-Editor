@@ -91,7 +91,6 @@ public class Json_Properties : MonoBehaviour
             item_key.set_val(s_name);
         }
 
- 
         if (
            type_box==Type_box.add_properties||type_box == Type_box.edit_properties||
            type_box == Type_box.add_properties || type_box == Type_box.edit_properties|| 
