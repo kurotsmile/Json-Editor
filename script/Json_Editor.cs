@@ -240,14 +240,55 @@ public class Json_Editor : MonoBehaviour
             item_add_array.set_icon(sp_icon_array);
             item_add_array.set_title("Add Array");
             item_add_array.set_tip("Add the subarray to this data object");
-            item_add_array.set_act(() => app.json_properties.Show(obj, Type_box.edit_object));
+            item_add_array.set_act(() => app.json_properties.Show(obj, Type_box.add_array));
 
             Carrot_Box_Item item_add_propertie = box.create_item();
             item_add_propertie.set_icon(sp_icon_properties);
             item_add_propertie.set_title("Add propertie");
             item_add_propertie.set_tip("Add properties to this object");
-            item_add_propertie.set_act(() => app.json_properties.Show(obj, Type_box.edit_object));
+            item_add_propertie.set_act(() => app.json_properties.Show(obj, Type_box.add_properties));
+        }
 
+        if (obj.s_type == "array")
+        {
+            Carrot_Box_Item item_add_array_item = box.create_item();
+            item_add_array_item.set_icon(sp_icon_array_item);
+            item_add_array_item.set_title("Add Array item");
+            item_add_array_item.set_tip("Adds an element of the array that does not have a specified key");
+            item_add_array_item.set_act(() => app.json_properties.Show(obj, Type_box.add_array_item));
+
+            Carrot_Box_Item item_edit_array = box.create_item();
+            item_edit_array.set_icon(app.carrot.user.icon_user_edit);
+            item_edit_array.set_title("Edit Array");
+            item_edit_array.set_tip("Update this array information");
+            item_edit_array.set_act(() => app.json_properties.Show(obj, Type_box.edit_array));
+        }
+
+        if (obj.s_type == "object")
+        {
+            Carrot_Box_Item item_edit_obj = box.create_item();
+            item_edit_obj.set_icon(app.carrot.user.icon_user_edit);
+            item_edit_obj.set_title("Edit Object");
+            item_edit_obj.set_tip("Update this object's information");
+            item_edit_obj.set_act(() => app.json_properties.Show(obj, Type_box.edit_object));
+        }
+
+        if (obj.s_type == "array_item")
+        {
+            Carrot_Box_Item item_edit_array_item = box.create_item();
+            item_edit_array_item.set_icon(sp_icon_edit_properties);
+            item_edit_array_item.set_title("Edit Array item");
+            item_edit_array_item.set_tip("Edit the value of this element!");
+            item_edit_array_item.set_act(() => app.json_properties.Show(obj, Type_box.add_array_item));
+        }
+
+        if (obj.s_type == "object" || obj.s_type == "array")
+        {
+            Carrot_Box_Item item_remove_key = box.create_item();
+            item_remove_key.set_icon(sp_icon_eraser);
+            item_remove_key.set_title("Remove name key");
+            item_remove_key.set_tip("Remove the identifier key with this object");
+            item_remove_key.set_act(() => Remove_key_name(obj));
         }
 
         if (obj.get_length_item() > 0)
@@ -281,7 +322,16 @@ public class Json_Editor : MonoBehaviour
     {
         app.carrot.play_sound_click();
         obj.Delete();
-        app.carrot.show_msg("Json Editor", "Delete node " + obj.txt_name.text + " success!", Msg_Icon.Alert);
+        app.carrot.show_msg("Json Editor", "Delete node " + obj.s_name + " success!", Msg_Icon.Alert);
+        if (box != null) box.close();
+    }
+
+    private void Remove_key_name(js_object obj)
+    {
+        app.carrot.play_sound_click();
+        obj.Remove_name_key();
+        app.carrot.show_msg("Json Editor", "Successfully removed the object's identifier key!", Msg_Icon.Alert);
+        if(box != null) box.close();
     }
 
     private void Clear_child_in_node(js_object obj)
@@ -289,6 +339,7 @@ public class Json_Editor : MonoBehaviour
         app.carrot.play_sound_click();
         obj.Delete_all_child();
         app.carrot.show_msg("Json Editor", "Clear al child in node data " + obj.txt_name.text + " success!", Msg_Icon.Alert);
+        if (box != null) box.close();
     }
 
     public void Btn_sel_mode(int index_mode)

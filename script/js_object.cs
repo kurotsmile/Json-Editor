@@ -61,7 +61,15 @@ public class js_object : MonoBehaviour
     public void Set_name_key(string s_name)
     {
         this.txt_name.text = s_name;
+        this.txt_name.color = new Color32(115, 0, 48, 255);
         this.s_name = s_name;
+    }
+
+    public void Remove_name_key()
+    {
+        this.txt_name.text = this.s_type;
+        this.txt_name.color = Color.black;
+        this.s_name ="";
     }
 
     public void Set_val(string s_val,Type_Properties_val type_properties, Json_Editor js_edit)
