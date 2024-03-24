@@ -1,4 +1,5 @@
 using Carrot;
+using System;
 using UnityEngine;
 
 public enum Type_box {add_object,add_properties,add_array,edit_array,edit_object,edit_properties,add_array_item,edit_array_item}
@@ -204,10 +205,25 @@ public class Json_Properties : MonoBehaviour
         item_color.set_icon(sp_icon_properties_color);
         item_color.set_title("Add value color");
         item_color.set_tip("Add color value in hexa color table");
+        item_color.set_act(() => Show_list_color());
 
         Carrot_Box_Item item_date = box_sub.create_item();
         item_date.set_icon(sp_icon_properties_date);
         item_date.set_title("Add value date");
         item_date.set_tip("Add the current time price to the data field");
+        item_date.set_act(() => Act_add_date_for_field(item_val));
+    }
+
+    private void Show_list_color()
+    {
+        box_sub=app.carrot.Create_Box();
+        box_sub.set_icon(this.sp_icon_properties_color);
+    }
+
+    private void Act_add_date_for_field(Carrot_Box_Item item_box)
+    {
+        app.carrot.play_sound_click();
+        item_box.set_val(DateTime.Now.ToString());
+        if (box_sub != null) box_sub.close();
     }
 }
