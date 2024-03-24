@@ -14,7 +14,6 @@ public class Json_Properties : MonoBehaviour
     public Sprite sp_icon_properties_string;
     public Sprite sp_icon_properties_number;
     public Sprite sp_icon_properties_date;
-    public Sprite sp_icon_properties_color;
     public Sprite sp_icon_properties_null;
     public Sprite sp_icon_properties_bool;
 
@@ -200,18 +199,25 @@ public class Json_Properties : MonoBehaviour
         app.carrot.play_sound_click();
         box_sub = app.carrot.Create_Box();
         box_sub.set_icon(app.carrot.icon_carrot_add);
+        box_sub.set_title("Add built-in values to the property's value");
 
         Carrot_Box_Item item_color_hex = box_sub.create_item();
-        item_color_hex.set_icon(sp_icon_properties_color);
-        item_color_hex.set_title("Add value color");
-        item_color_hex.set_tip("Add color value in hexa color table");
-        item_color_hex.set_act(() => app.carrot.theme.Show_list_color(Act_add_color_for_field));
+        item_color_hex.set_icon(app.carrot.sp_icon_theme_color);
+        item_color_hex.set_title("Add value color Hex");
+        item_color_hex.set_tip("Add color value in hex color table");
+        item_color_hex.set_act(() => app.carrot.theme.Show_list_color(Act_add_color_hex_for_field));
 
         Carrot_Box_Item item_color_rgb = box_sub.create_item();
-        item_color_rgb.set_icon(sp_icon_properties_color);
-        item_color_rgb.set_title("Add value color");
+        item_color_rgb.set_icon(app.carrot.sp_icon_mixer_color);
+        item_color_rgb.set_title("Add value color RGB");
         item_color_rgb.set_tip("Add color value in RGB color table");
-        item_color_rgb.set_act(() => app.carrot.theme.Show_list_color(Act_add_color_for_field));
+        item_color_rgb.set_act(() => app.carrot.theme.Show_list_color(Act_add_color_rgb_for_field));
+
+        Carrot_Box_Item item_color_hsv = box_sub.create_item();
+        item_color_hsv.set_icon(app.carrot.sp_icon_table_color);
+        item_color_hsv.set_title("Add value color HSV");
+        item_color_hsv.set_tip("Add color value in HSV color table");
+        item_color_hsv.set_act(() => app.carrot.theme.Show_list_color(Act_add_color_hsv_for_field));
 
         Carrot_Box_Item item_date = box_sub.create_item();
         item_date.set_icon(sp_icon_properties_date);
@@ -227,10 +233,25 @@ public class Json_Properties : MonoBehaviour
         if (box_sub != null) box_sub.close();
     }
 
-    private void Act_add_color_for_field(Color32 color_val)
+    private void Act_add_color_rgb_for_field(Color32 color_val)
     {
         app.carrot.play_sound_click();
         this.item_val.set_val(color_val.ToString());
+        if (box_sub != null) box_sub.close();
+    }
+
+    private void Act_add_color_hex_for_field(Color32 color_val)
+    {
+        app.carrot.play_sound_click();
+        this.item_val.set_val("#"+ColorUtility.ToHtmlStringRGB(color_val));
+        if (box_sub != null) box_sub.close();
+    }
+
+    private void Act_add_color_hsv_for_field(Color32 color_val)
+    {
+        app.carrot.play_sound_click();
+        Color.RGBToHSV(color_val, out float hue, out float saturation, out float value);
+        this.item_val.set_val("HSV("+hue+";"+ saturation + ";"+ value + ")");
         if (box_sub != null) box_sub.close();
     }
 }

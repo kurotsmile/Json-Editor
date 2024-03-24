@@ -228,7 +228,7 @@ public class Manager_Project : MonoBehaviour
         {
             this.length = 0;
             PlayerPrefs.DeleteKey("p_length");
-            this.app.set_save_status_default();
+            this.app.Set_save_status_default();
             if (box != null) box.close();
         }
         Destroy(obj_item);
@@ -414,7 +414,7 @@ public class Manager_Project : MonoBehaviour
         string s_data=FileBrowserHelpers.ReadTextFromFile(paths[0]);
         this.app.json_editor.Paser(s_data);
         this.app.txt_save_status.text= FileBrowserHelpers.GetFilename(paths[0]);
-        this.app.set_save_status_new();
+        this.app.Set_save_status_new();
         if (box != null) box.close();
     }
 

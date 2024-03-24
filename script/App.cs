@@ -113,7 +113,7 @@ public class App : MonoBehaviour
 
     public void check_change_coder_viewer()
     {
-        this.set_save_status_new();
+        this.Set_save_status_new();
         this.json_editor.Change_coder_in_view();
     }
 
@@ -138,13 +138,13 @@ public class App : MonoBehaviour
         this.carrot.show_share();
     }
 
-    public void set_save_status_default()
+    public void Set_save_status_default()
     {
         this.txt_save_status.text = "New File";
         this.obj_icon_save_status_new.SetActive(true);
     }
 
-    public void set_save_status_new()
+    public void Set_save_status_new()
     {
         this.obj_icon_save_status_new.SetActive(true);
         this.is_change_editor = true;

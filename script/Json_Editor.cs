@@ -32,8 +32,6 @@ public class Json_Editor : MonoBehaviour
 
     [Header("Obj Json")]
     public GameObject prefab_obj_js;
-    public GameObject Panel_edit_Properties;
-    public Color_Board Panel_select_color;
     public Transform area_all_item_editor;
     public ScrollRect ScrollRect_all_item_editor;
     public InputField inp_coder_viewer;
@@ -46,23 +44,12 @@ public class Json_Editor : MonoBehaviour
     private int index_sel_mode = 0;
     private bool is_change_coderviewer;
 
-    [Header("Edit Properties")]
-    public Image[] img_btn_Properties;
-    public Image[] img_btn_Properties_bool;
-    public InputField inp_edit_Properties_name;
-    public InputField inp_edit_Properties_value;
-    public int index_edit_Properties_type;
-    public GameObject panel_edit_Properties_value;
-    public GameObject panel_edit_Properties_color;
-    public GameObject panel_edit_Properties_bool;
 
     private Carrot_Box box = null;
     private js_object js_object_root = null;
 
     public void On_load()
     {
-        this.Panel_edit_Properties.SetActive(false);
-        this.Panel_select_color.gameObject.SetActive(false);
         this.app.carrot.clear_contain(this.area_all_item_editor);
         this.Add_node();
         this.Check_mode();
@@ -435,92 +422,6 @@ public class Json_Editor : MonoBehaviour
                 Paser_obj(datas, js_object);
             }
         }
-    }
-
-    public void Check_type_Properties()
-    {
-        this.panel_edit_Properties_color.SetActive(false);
-        this.panel_edit_Properties_value.SetActive(false);
-        this.panel_edit_Properties_bool.SetActive(false);
-        for (int i = 0; i < this.img_btn_Properties.Length; i++) this.img_btn_Properties[i].color = this.color_properties_nomal;
-        this.img_btn_Properties[this.index_edit_Properties_type].color = this.color_properties_select;
-        if (this.index_edit_Properties_type == 0)
-        {
-            this.panel_edit_Properties_value.SetActive(true);
-            this.inp_edit_Properties_value.contentType = InputField.ContentType.Standard;
-        }
-
-        if (this.index_edit_Properties_type == 1)
-        {
-            this.panel_edit_Properties_value.SetActive(true);
-            this.inp_edit_Properties_value.contentType = InputField.ContentType.DecimalNumber;
-            int obj_number;
-            int.TryParse(this.inp_edit_Properties_value.text, out obj_number);
-            this.inp_edit_Properties_value.text = obj_number.ToString();
-
-        }
-        if (this.index_edit_Properties_type == 2)
-        {
-            this.panel_edit_Properties_color.SetActive(true);
-            this.inp_edit_Properties_value.contentType = InputField.ContentType.Standard;
-            if (this.inp_edit_Properties_value.text == "") this.inp_edit_Properties_value.text = "#000000";
-            this.Panel_select_color.set_color_for_edit_properties(this.inp_edit_Properties_value.text);
-        }
-
-        if (this.index_edit_Properties_type == 3)
-        {
-            this.inp_edit_Properties_value.contentType = InputField.ContentType.Standard;
-            this.inp_edit_Properties_value.text = "null";
-        }
-
-        if (this.index_edit_Properties_type == 4)
-        {
-            this.panel_edit_Properties_bool.SetActive(true);
-            this.inp_edit_Properties_value.contentType = InputField.ContentType.Standard;
-            this.Check_val_bool_properties();
-        }
-    }
-
-    public void Btn_sel_type_Properties(int index_sel)
-    {
-        this.app.carrot.play_sound_click();
-        this.index_edit_Properties_type = index_sel;
-        this.Check_type_Properties();
-    }
-
-    public void Show_select_color()
-    {
-        this.app.carrot.play_sound_click();
-        this.Panel_select_color.show_table();
-    }
-
-
-    public void Btn_sel_val_bool_properties(bool is_true)
-    {
-        if (is_true)
-            this.inp_edit_Properties_value.text = "true";
-        else
-            this.inp_edit_Properties_value.text = "false";
-
-        this.Check_val_bool_properties();
-        this.app.carrot.play_sound_click();
-    }
-
-    private void Check_val_bool_properties()
-    {
-        this.img_btn_Properties_bool[0].color = this.color_properties_nomal;
-        this.img_btn_Properties_bool[1].color = this.color_properties_nomal;
-        if (this.inp_edit_Properties_value.text.ToLower() == "true")
-            this.img_btn_Properties_bool[0].color = this.color_properties_select;
-        else
-            this.img_btn_Properties_bool[1].color = this.color_properties_select;
-
-    }
-
-    public void Close_color_select()
-    {
-        this.app.carrot.play_sound_click();
-        this.Panel_select_color.close();
     }
 
     public void Change_coder_in_view()
