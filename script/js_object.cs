@@ -30,7 +30,7 @@ public class js_object : MonoBehaviour
 
     private string s_result = "";
     private List<js_object> list_child = new();
-    private Type_Properties_val type_Propertie;
+    private Type_Properties_val type_Propertie = Type_Properties_val.string_val;
     private bool is_show_child = true;
 
     public void On_load(string s_type)
@@ -72,6 +72,11 @@ public class js_object : MonoBehaviour
         this.s_name ="";
     }
 
+    public void Set_type(Type_Properties_val type)
+    {
+        this.type_Propertie = type;
+    }
+
     public void Set_val(string s_val,Type_Properties_val type_properties, Json_Editor js_edit)
     {
         this.type_Propertie = type_properties;
@@ -80,6 +85,7 @@ public class js_object : MonoBehaviour
         if (this.type_Propertie == Type_Properties_val.color_val) this.img_type_properties.sprite = js_edit.app.carrot.sp_icon_theme_color;
         if (this.type_Propertie == Type_Properties_val.date_val) this.img_type_properties.sprite = js_edit.app.json_properties.sp_icon_properties_date;
         if (this.type_Propertie == Type_Properties_val.null_val) this.img_type_properties.sprite = js_edit.app.json_properties.sp_icon_properties_null;
+        if (this.type_Propertie == Type_Properties_val.bool_val) this.img_type_properties.sprite = js_edit.app.json_properties.sp_icon_properties_bool;
         this.txt_tip.text = s_val;
         this.s_val = s_val;
         this.txt_tip.color = Color.blue;

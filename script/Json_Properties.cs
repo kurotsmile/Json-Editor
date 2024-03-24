@@ -20,9 +20,11 @@ public class Json_Properties : MonoBehaviour
     private Type_box type;
     private Carrot_Box_Item item_key = null;
     private Carrot_Box_Item item_val = null;
+    private js_object js_obj_temp = null;
 
     public void Show(js_object obj,Type_box type_box=Type_box.add_object)
     {
+        this.js_obj_temp = obj;
         this.type=type_box;
         box = app.carrot.Create_Box();
         string s_name = "";
@@ -224,10 +226,29 @@ public class Json_Properties : MonoBehaviour
         item_date.set_title("Add value date");
         item_date.set_tip("Add the current time price to the data field");
         item_date.set_act(() => Act_add_date_for_field(item_val));
+
+        Carrot_Box_Item item_bool_true = box_sub.create_item();
+        item_bool_true.set_icon(sp_icon_properties_bool);
+        item_bool_true.set_title("Add bool value TRUE");
+        item_bool_true.set_tip("Add the logical value true");
+        item_bool_true.set_act(() => Act_add_bool_for_field(true));
+
+        Carrot_Box_Item item_bool_false = box_sub.create_item();
+        item_bool_false.set_icon(sp_icon_properties_bool);
+        item_bool_false.set_title("Add bool value FALSE");
+        item_bool_false.set_tip("Add the logical value false");
+        item_bool_false.set_act(() => Act_add_bool_for_field(false));
+
+        Carrot_Box_Item item_null = box_sub.create_item();
+        item_null.set_icon(sp_icon_properties_null);
+        item_null.set_title("Add null value");
+        item_null.set_tip("Adding an empty value represents the absence of an object or property");
+        item_null.set_act(() => Act_add_null_for_field());
     }
 
     private void Act_add_date_for_field(Carrot_Box_Item item_box)
     {
+        this.js_obj_temp.Set_type(Type_Properties_val.date_val);
         app.carrot.play_sound_click();
         item_box.set_val(DateTime.Now.ToString());
         if (box_sub != null) box_sub.close();
@@ -235,6 +256,7 @@ public class Json_Properties : MonoBehaviour
 
     private void Act_add_color_rgb_for_field(Color32 color_val)
     {
+        this.js_obj_temp.Set_type(Type_Properties_val.color_val);
         app.carrot.play_sound_click();
         this.item_val.set_val(color_val.ToString());
         if (box_sub != null) box_sub.close();
@@ -242,6 +264,7 @@ public class Json_Properties : MonoBehaviour
 
     private void Act_add_color_hex_for_field(Color32 color_val)
     {
+        this.js_obj_temp.Set_type(Type_Properties_val.color_val);
         app.carrot.play_sound_click();
         this.item_val.set_val("#"+ColorUtility.ToHtmlStringRGB(color_val));
         if (box_sub != null) box_sub.close();
@@ -249,9 +272,26 @@ public class Json_Properties : MonoBehaviour
 
     private void Act_add_color_hsv_for_field(Color32 color_val)
     {
+        this.js_obj_temp.Set_type(Type_Properties_val.color_val);
         app.carrot.play_sound_click();
         Color.RGBToHSV(color_val, out float hue, out float saturation, out float value);
         this.item_val.set_val("HSV("+hue+";"+ saturation + ";"+ value + ")");
+        if (box_sub != null) box_sub.close();
+    }
+
+    private void Act_add_bool_for_field(bool is_bool)
+    {
+        this.js_obj_temp.Set_type(Type_Properties_val.bool_val);
+        app.carrot.play_sound_click();
+        this.item_val.set_val(is_bool.ToString());
+        if (box_sub != null) box_sub.close();
+    }
+
+    private void Act_add_null_for_field()
+    {
+        this.js_obj_temp.Set_type(Type_Properties_val.null_val);
+        app.carrot.play_sound_click();
+        this.item_val.set_val("null");
         if (box_sub != null) box_sub.close();
     }
 }

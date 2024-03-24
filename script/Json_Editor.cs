@@ -275,6 +275,12 @@ public class Json_Editor : MonoBehaviour
 
         if (obj.s_type == "array_item")
         {
+            Carrot_Box_Item item_edit_array = box.create_item();
+            item_edit_array.set_icon(sp_icon_edit_properties);
+            item_edit_array.set_title("Edit Array Item");
+            item_edit_array.set_tip("Update this array item information");
+            item_edit_array.set_act(() => app.json_properties.Show(obj, Type_box.edit_array_item));
+
             Carrot_Box_Item item_edit_array_item = box.create_item();
             item_edit_array_item.set_icon(sp_icon_edit_properties);
             item_edit_array_item.set_title("Edit Array item");
