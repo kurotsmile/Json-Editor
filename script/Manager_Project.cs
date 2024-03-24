@@ -400,12 +400,15 @@ public class Manager_Project : MonoBehaviour
      
     private void Import_from_file()
     {
-        if (FileBrowser.AskPermissions == false)
-        {
-            FileBrowser.RequestPermission();
-            app.carrot.show_msg("Json Editor", "You need to give the application permission to read and write json data files on the drive!", Msg_Icon.Alert);
-        }
-
+        this.Check_Permissions();
+        FileBrowser.SetFilters(true, 
+            new FileBrowser.Filter("Json data file", ".json", ".jsonl", ".json5"),
+            new FileBrowser.Filter("Geo Map json", ".geojson"), 
+            new FileBrowser.Filter("Web App Manifest", ".webappmanifest"),
+            new FileBrowser.Filter("Babel", ".babelrc"),
+            new FileBrowser.Filter("Prettier,", ".prettierrc"),
+             new FileBrowser.Filter("ESLint,", ".eslintrc")
+        );
         FileBrowser.ShowLoadDialog(Act_Import_from_file_done, Act_Import_from_file_cancel, FileBrowser.PickMode.Files);
     }
 
@@ -428,6 +431,7 @@ public class Manager_Project : MonoBehaviour
     private void Export_file(IDictionary data)
     {
         data_project_temp = data;
+        this.Check_Permissions();
         FileBrowser.ShowSaveDialog(Export_file_done, Export_file_cancel, FileBrowser.PickMode.Files);
     }
 
@@ -436,6 +440,14 @@ public class Manager_Project : MonoBehaviour
         string filePath = paths[0];
         try
         {
+            FileBrowser.SetFilters(true,
+                new FileBrowser.Filter("Json data file", ".json", ".jsonl", ".json5"),
+                new FileBrowser.Filter("Geo Map json", ".geojson"),
+                new FileBrowser.Filter("Web App Manifest", ".webappmanifest"),
+                new FileBrowser.Filter("Babel", ".babelrc"),
+                new FileBrowser.Filter("Prettier,", ".prettierrc"),
+                new FileBrowser.Filter("ESLint,", ".eslintrc")
+            );
             FileBrowserHelpers.WriteTextToFile(filePath, data_project_temp["code"].ToString());
             app.carrot.show_input("Save", "File saved successfully at: ", filePath, Window_Input_value_Type.input_field);
         }
@@ -537,5 +549,14 @@ public class Manager_Project : MonoBehaviour
     {
         app.carrot.play_sound_click();
         if (this.box_menu != null) this.box_menu.close();
+    }
+
+    private void Check_Permissions()
+    {
+        if (FileBrowser.AskPermissions == false)
+        {
+            FileBrowser.RequestPermission();
+            app.carrot.show_msg("Json Editor", "You need to give the application permission to read and write json data files on the drive!", Msg_Icon.Alert);
+        }
     }
 }
