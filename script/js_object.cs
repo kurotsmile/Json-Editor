@@ -123,27 +123,28 @@ public class js_object : MonoBehaviour
         }
         else if (this.s_type == "object")
         {
-            if (this.x > 1) for (int i = 1; i < this.x; i++) s_json += "\t";
-            if(s_name.Trim()!="") s_json +=s_json + "\"" + this.s_name + "\":";
+            s_json += new string('\t', this.x);
+            if(s_name.Trim()!="") s_json+="\"" + this.s_name + "\":";
             s_json += "{";
             for (int i = 0; i < this.list_child.Count; i++)
             {
                 if (i == 0) s_json += "\n";
                 if (this.list_child[i] != null) s_json = s_json + this.list_child[i].get_result();
             }
-            if (this.x > 1 && this.list_child.Count > 0) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
-            s_json = s_json + "},\n";
+            if(list_child.Count>0) s_json += new string('\t', this.x);
+            s_json += "},\n";
         }
         else if (this.s_type == "array")
         {
-            if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
-            if(this.s_name!="") s_json = s_json + "\"" + this.s_name + "\":";
+            s_json += new string('\t', this.x);
+            if (this.s_name!="") s_json = s_json + "\"" + this.s_name + "\":";
             s_json +="[";
+            if (list_child.Count > 0) s_json += "\n";
             for (int i = 0; i < this.list_child.Count; i++)
             {
-                if (i == 0) s_json += "\n";
                 if (this.list_child[i] != null)
                 {
+                    s_json +=new string('\t', this.x);
                     if (this.list_child[i].s_type == "array_item")
                         s_json = s_json + this.list_child[i].get_result();
                     else
@@ -151,7 +152,7 @@ public class js_object : MonoBehaviour
                 }
             }
             s_json = s_json.Replace(",}", "}");
-            if (this.x > 1&&this.list_child.Count>0) for (int i = 1; i < this.x; i++) s_json+="\t";
+            if(list_child.Count>0) s_json += new string('\t', this.x);
             s_json = s_json + "],\n";
         }
         else if (this.s_type == "array_item")
@@ -165,8 +166,8 @@ public class js_object : MonoBehaviour
             if (this.type_Propertie==Type_Properties_val.null_val) s_val = "null";
             else if (this.type_Propertie==Type_Properties_val.number_val) s_val_propertie = this.s_val;
             else s_val_propertie = "\"" + this.s_val + "\"";
-            if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
-            s_json = s_json + "\"" + this.s_name + "\":" + s_val_propertie + ",\n";
+            s_json +=new string('\t',this.x);
+            s_json +="\"" + this.s_name + "\":" + s_val_propertie + ",\n";
         }
 
         this.s_result = s_json;
