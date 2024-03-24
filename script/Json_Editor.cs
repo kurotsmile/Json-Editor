@@ -506,9 +506,9 @@ public class Json_Editor : MonoBehaviour
             }
             else if (myDict is object)
             {
-                js_object js_object = Add_node(obj_father, "object");
-                IDictionary<string, object> datas = (IDictionary<string, object>)myDict;
-                Paser_obj(datas, js_object);
+                js_object js_item_array = Add_node(obj_father, "array_item");
+                js_item_array.Set_name_key("Array_item");
+                js_item_array.Set_val(myDict.ToString(), Type_Properties_val.date_val, this);
             }
         }
     }

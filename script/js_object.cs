@@ -135,6 +135,7 @@ public class js_object : MonoBehaviour
             s_json +="[";
             for (int i = 0; i < this.list_child.Count; i++)
             {
+                if (i == 0) s_json += "\n";
                 if (this.list_child[i] != null)
                 {
                     if (this.list_child[i].s_type == "array_item")
@@ -144,13 +145,13 @@ public class js_object : MonoBehaviour
                 }
             }
             s_json = s_json.Replace(",}", "}");
-            if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
+            if (this.x > 1&&this.list_child.Count>0) for (int i = 1; i < this.x; i++) s_json+="\t";
             s_json = s_json + "],\n";
         }
         else if (this.s_type == "array_item")
         {
-            if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
-            s_json = s_json + "\"" + this.s_val + "\",";
+            if (this.x > 1) for (int i = 1; i < this.x; i++) s_json += "\t";
+            s_json = s_json + "\"" + this.s_val + "\",\n";
         }
         else if (this.s_type == "propertie")
         {
