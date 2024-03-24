@@ -1,5 +1,4 @@
 
-using SimpleFileBrowser;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,8 +15,9 @@ public class App : MonoBehaviour
     public Sprite sp_icon_save;
     public Sprite sp_icon_save_as;
     public Sprite sp_icon_project;
-    public Sprite sp_icon_import;
+    public Sprite sp_icon_import_web;
     public Sprite sp_icon_export_file;
+    public Sprite sp_icon_import_file;
 
     [Header("Obj Json")]
 

@@ -7215,8 +7215,9 @@ MonoBehaviour:
   sp_icon_save: {fileID: 21300000, guid: 69ebf96cc3d4592429c77c9931d0a8eb, type: 3}
   sp_icon_save_as: {fileID: 21300000, guid: 0988896d74c3b2a44acafbd1fddecf53, type: 3}
   sp_icon_project: {fileID: 21300000, guid: d99adeef468f88b4bb9cec5cd29be0a1, type: 3}
-  sp_icon_import: {fileID: 21300000, guid: b34b5599774f5464ca9c78d230adcf59, type: 3}
+  sp_icon_import_web: {fileID: 21300000, guid: b34b5599774f5464ca9c78d230adcf59, type: 3}
   sp_icon_export_file: {fileID: 21300000, guid: 44a2e0d95c1cdfe418354395b13455a0, type: 3}
+  sp_icon_import_file: {fileID: 21300000, guid: d6fe0b4f1e33699489ce7c995ebc7e22, type: 3}
   space_x_item: 25
   obj_icon_save_status_new: {fileID: 1300290689547265365}
   txt_save_status: {fileID: 5798091516863670132}

@@ -350,19 +350,14 @@ public class Manager_Project : MonoBehaviour
         box.set_icon(app.sp_icon_save);
         box.set_title("Project Import");
 
-        Carrot_Box_Item item_tip = box.create_item("item_tip");
-        item_tip.set_icon(app.sp_icon_import);
-        item_tip.set_title("Import");
-        item_tip.set_tip("Import json data from web address");
-
         Carrot_Box_Item item_url = box.create_item("item_name");
-        item_url.set_icon(app.sp_icon_project);
+        item_url.set_icon(app.sp_icon_import_web);
         item_url.set_title("Enter from web address");
         item_url.set_tip("Enter json web url");
         item_url.set_act(() => Import_from_web_address());
 
         Carrot_Box_Item item_import_file = box.create_item("item_import_file");
-        item_import_file.set_icon(app.sp_icon_project);
+        item_import_file.set_icon(app.sp_icon_import_file);
         item_import_file.set_title("Import from file");
         item_import_file.set_tip("Click here to select the json file to import");
         item_import_file.set_act(() => Import_from_file());
@@ -416,7 +411,11 @@ public class Manager_Project : MonoBehaviour
 
     private void Act_Import_from_file_done(string[] paths)
     {
-
+        string s_data=FileBrowserHelpers.ReadTextFromFile(paths[0]);
+        this.app.json_editor.Paser(s_data);
+        this.app.txt_save_status.text= FileBrowserHelpers.GetFilename(paths[0]);
+        this.app.set_save_status_new();
+        if (box != null) box.close();
     }
 
     private void Act_Import_from_file_cancel(){}
