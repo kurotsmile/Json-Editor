@@ -131,7 +131,8 @@ public class js_object : MonoBehaviour
         else if (this.s_type == "array")
         {
             if (this.x > 1) for (int i = 1; i < this.x; i++) s_json = s_json + "\t";
-            s_json = s_json + "\"" + this.s_name + "\":[";
+            if(this.s_name!="") s_json = s_json + "\"" + this.s_name + "\":";
+            s_json +="[";
             for (int i = 0; i < this.list_child.Count; i++)
             {
                 if (this.list_child[i] != null)

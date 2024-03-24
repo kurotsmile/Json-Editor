@@ -282,13 +282,16 @@ public class Json_Editor : MonoBehaviour
             item_edit_array_item.set_act(() => app.json_properties.Show(obj, Type_box.add_array_item));
         }
 
-        if (obj.s_type == "object" || obj.s_type == "array")
+        if (obj.s_name != "")
         {
-            Carrot_Box_Item item_remove_key = box.create_item();
-            item_remove_key.set_icon(sp_icon_eraser);
-            item_remove_key.set_title("Remove name key");
-            item_remove_key.set_tip("Remove the identifier key with this object");
-            item_remove_key.set_act(() => Remove_key_name(obj));
+            if (obj.s_type == "object" || obj.s_type == "array")
+            {
+                Carrot_Box_Item item_remove_key = box.create_item();
+                item_remove_key.set_icon(sp_icon_eraser);
+                item_remove_key.set_title("Remove name key");
+                item_remove_key.set_tip("Remove the identifier key with this object");
+                item_remove_key.set_act(() => Remove_key_name(obj));
+            }
         }
 
         if (obj.get_length_item() > 0)
@@ -532,5 +535,10 @@ public class Json_Editor : MonoBehaviour
             IList<object> data_obj = (IList<object>)data;
             this.Paser_Array(data_obj, this.Get_root());
         }
+    }
+
+    public void Close_box()
+    {
+        if (this.box != null) this.box.close();
     }
 }

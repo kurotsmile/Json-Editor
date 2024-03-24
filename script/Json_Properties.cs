@@ -29,14 +29,14 @@ public class Json_Properties : MonoBehaviour
         if (type_box == Type_box.add_object)
         {
             s_name = "Object" + (obj.get_length_item() + 1);
-            box.set_icon(app.sp_icon_project);
+            box.set_icon(app.json_editor.sp_icon_object);
             box.set_title("Add Object");
         }
 
         if (type_box == Type_box.edit_object)
         {
             s_name = obj.s_name;
-            box.set_icon(app.sp_icon_project);
+            box.set_icon(app.carrot.user.icon_user_edit);
             box.set_title("Edit Object ("+obj.s_name+")");
         }
 
@@ -50,7 +50,7 @@ public class Json_Properties : MonoBehaviour
         if (type_box == Type_box.edit_properties)
         {
             s_name = obj.s_name;
-            box.set_icon(app.json_editor.sp_icon_properties);
+            box.set_icon(app.json_editor.sp_icon_edit_properties);
             box.set_title("Edit Propertie ("+obj.s_name+")");
         }
 
@@ -64,7 +64,7 @@ public class Json_Properties : MonoBehaviour
         if (type_box == Type_box.edit_array)
         {
             s_name = obj.s_name;
-            box.set_icon(app.json_editor.sp_icon_array);
+            box.set_icon(app.carrot.user.icon_user_edit);
             box.set_title("Edit Array ("+obj.s_name+")");
         }
 
@@ -76,7 +76,7 @@ public class Json_Properties : MonoBehaviour
 
         if (type_box == Type_box.edit_array_item)
         {
-            box.set_icon(app.json_editor.sp_icon_array_item);
+            box.set_icon(app.json_editor.sp_icon_edit_properties);
             box.set_title("Edit Array Item");
         }
 
@@ -190,6 +190,7 @@ public class Json_Properties : MonoBehaviour
     {
         app.carrot.play_sound_click();
         if (box != null) box.close();
+        app.json_editor.Close_box();
     }
 
     private void Show_list_propertie_val(Carrot_Box_Item item_val)
@@ -204,19 +205,19 @@ public class Json_Properties : MonoBehaviour
         item_color_hex.set_icon(app.carrot.sp_icon_theme_color);
         item_color_hex.set_title("Add value color Hex");
         item_color_hex.set_tip("Add color value in hex color table");
-        item_color_hex.set_act(() => app.carrot.theme.Show_list_color(Act_add_color_hex_for_field));
+        item_color_hex.set_act(() => app.carrot.theme.Show_box_change_color(Act_add_color_hex_for_field));
 
         Carrot_Box_Item item_color_rgb = box_sub.create_item();
         item_color_rgb.set_icon(app.carrot.sp_icon_mixer_color);
         item_color_rgb.set_title("Add value color RGB");
         item_color_rgb.set_tip("Add color value in RGB color table");
-        item_color_rgb.set_act(() => app.carrot.theme.Show_list_color(Act_add_color_rgb_for_field));
+        item_color_rgb.set_act(() => app.carrot.theme.Show_box_change_color(Act_add_color_rgb_for_field));
 
         Carrot_Box_Item item_color_hsv = box_sub.create_item();
         item_color_hsv.set_icon(app.carrot.sp_icon_table_color);
         item_color_hsv.set_title("Add value color HSV");
         item_color_hsv.set_tip("Add color value in HSV color table");
-        item_color_hsv.set_act(() => app.carrot.theme.Show_list_color(Act_add_color_hsv_for_field));
+        item_color_hsv.set_act(() => app.carrot.theme.Show_box_change_color(Act_add_color_hsv_for_field));
 
         Carrot_Box_Item item_date = box_sub.create_item();
         item_date.set_icon(sp_icon_properties_date);

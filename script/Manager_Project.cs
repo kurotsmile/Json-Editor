@@ -449,7 +449,7 @@ public class Manager_Project : MonoBehaviour
                 new FileBrowser.Filter("ESLint,", ".eslintrc")
             );
             FileBrowserHelpers.WriteTextToFile(filePath, data_project_temp["code"].ToString());
-            app.carrot.show_input("Save", "File saved successfully at: ", filePath, Window_Input_value_Type.input_field);
+            app.carrot.show_msg("Export File", "File saved successfully at: "+filePath,Msg_Icon.Success);
         }
         catch (Exception ex)
         {
