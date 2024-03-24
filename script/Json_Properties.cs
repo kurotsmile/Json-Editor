@@ -205,7 +205,7 @@ public class Json_Properties : MonoBehaviour
         item_color.set_icon(sp_icon_properties_color);
         item_color.set_title("Add value color");
         item_color.set_tip("Add color value in hexa color table");
-        item_color.set_act(() => Show_list_color());
+        item_color.set_act(() => app.carrot.theme.show_list_color(Act_add_color_for_field));
 
         Carrot_Box_Item item_date = box_sub.create_item();
         item_date.set_icon(sp_icon_properties_date);
@@ -214,16 +214,17 @@ public class Json_Properties : MonoBehaviour
         item_date.set_act(() => Act_add_date_for_field(item_val));
     }
 
-    private void Show_list_color()
-    {
-        box_sub=app.carrot.Create_Box();
-        box_sub.set_icon(this.sp_icon_properties_color);
-    }
-
     private void Act_add_date_for_field(Carrot_Box_Item item_box)
     {
         app.carrot.play_sound_click();
         item_box.set_val(DateTime.Now.ToString());
+        if (box_sub != null) box_sub.close();
+    }
+
+    private void Act_add_color_for_field(Color32 color_val)
+    {
+        this.item_val.set_val(color_val.ToString());
+        this.app.carrot.show_msg(color_val.ToString());
         if (box_sub != null) box_sub.close();
     }
 }
