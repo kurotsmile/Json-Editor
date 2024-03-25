@@ -181,6 +181,32 @@ public class Manager_Project : MonoBehaviour
         }
     }
 
+    public void Show_project_by_id(string s_id)
+    {
+        app.carrot.play_sound_click();
+        app.carrot.show_loading();
+        StructuredQuery q = new("code");
+        q.Add_where("id", Query_OP.EQUAL, s_id);
+        q.Set_limit(1);
+        app.carrot.server.Get_doc(q.ToJson(), Act_get_project_by_id,Act_server_fail);
+    }
+
+    private void Act_get_project_by_id(string s_data)
+    {
+        app.carrot.hide_loading();
+        Fire_Collection fc = new(s_data);
+        if (!fc.is_null)
+        {
+            IDictionary data = fc.fire_document[0].Get_IDictionary();
+            this.Show_project(data);
+        }
+        else
+        {
+            this.app.carrot.show_msg("Json Editor", "This project does not exist!", Carrot.Msg_Icon.Alert);
+            app.carrot.play_vibrate();
+        }
+    }
+
     private void Show_share_project(string s_link)
     {
         app.carrot.show_share(s_link, "Share this project with everyone");
@@ -442,24 +468,17 @@ public class Manager_Project : MonoBehaviour
     private void Export_file_done(string[] paths)
     {
         string filePath = paths[0];
-        try
-        {
-            FileBrowser.SetDefaultFilter(".json");
-            FileBrowser.SetFilters(true,
-                new FileBrowser.Filter("Json data file", ".json", ".jsonl", ".json5"),
-                new FileBrowser.Filter("Geo Map json", ".geojson"),
-                new FileBrowser.Filter("Web App Manifest", ".webappmanifest"),
-                new FileBrowser.Filter("Babel", ".babelrc"),
-                new FileBrowser.Filter("Prettier,", ".prettierrc"),
-                new FileBrowser.Filter("ESLint,", ".eslintrc")
-            );
-            FileBrowserHelpers.WriteTextToFile(filePath, data_project_temp["code"].ToString());
-            app.carrot.show_msg("Export File", "File saved successfully at: " + filePath, Msg_Icon.Success);
-        }
-        catch (Exception ex)
-        {
-            app.carrot.show_msg("Error", "Failed to save file: " + ex.Message, Msg_Icon.Error);
-        }
+        FileBrowser.SetDefaultFilter(".json");
+        FileBrowser.SetFilters(true,
+            new FileBrowser.Filter("Json data file", ".json", ".jsonl", ".json5"),
+            new FileBrowser.Filter("Geo Map json", ".geojson"),
+            new FileBrowser.Filter("Web App Manifest", ".webappmanifest"),
+            new FileBrowser.Filter("Babel", ".babelrc"),
+            new FileBrowser.Filter("Prettier,", ".prettierrc"),
+            new FileBrowser.Filter("ESLint,", ".eslintrc")
+        );
+        FileBrowserHelpers.WriteTextToFile(filePath, data_project_temp["code"].ToString());
+        app.carrot.show_msg("Export File", "File saved successfully at: " + filePath, Msg_Icon.Success);
     }
 
     private void Export_file_cancel()

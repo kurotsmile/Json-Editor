@@ -34,8 +34,13 @@ public class App : MonoBehaviour
     public AudioClip soundclip_click;
     public AudioSource soundBackground;
 
+    private string link_deep_app = "";
+
     private void Start()
     {
+        this.link_deep_app = Application.absoluteURL;
+        Application.deepLinkActivated += onDeepLinkActivated;
+
         this.carrot.Load_Carrot(this.Check_exit_app);
         this.carrot.change_sound_click(this.soundclip_click);
         this.carrot.game.load_bk_music(this.soundBackground);
@@ -47,6 +52,42 @@ public class App : MonoBehaviour
         this.manager_Project.On_load();
 
         this.Check_data_login();
+    }
+
+
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (hasFocus) this.carrot.delay_function(3f, this.check_link_deep_app);
+    }
+
+    private void onDeepLinkActivated(string url)
+    {
+        this.link_deep_app = url;
+        if (this.carrot != null) this.carrot.delay_function(1f, this.check_link_deep_app);
+    }
+
+
+    public void check_link_deep_app()
+    {
+        if (this.link_deep_app.Trim() != "")
+        {
+            if (this.carrot.is_online())
+            {
+                if (this.link_deep_app.Contains("codejson:"))
+                {
+                    string id_project = this.link_deep_app.Replace("codejson://show/", "");
+                    Debug.Log("Get Project id:" + id_project);
+                    manager_Project.Show_project_by_id(id_project);
+                    this.link_deep_app = "";
+                }
+            }
+        }
+    }
+
+    [ContextMenu("Test Deep Link")]
+    public void test_deep_link()
+    {
+        this.onDeepLinkActivated("codejson://show/code-id1687455026204");
     }
 
     private void Check_exit_app()
