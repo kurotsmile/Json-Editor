@@ -2,8 +2,16 @@ using Carrot;
 using SimpleFileBrowser;
 using System;
 using System.Collections;
+using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
+
+#if UNITY_WSA && !UNITY_EDITOR
+using System.Threading.Tasks;
+using Windows.Storage.Pickers;
+using Windows.Storage;
+#endif
+
 
 public class Manager_Project : MonoBehaviour
 {
@@ -169,7 +177,7 @@ public class Manager_Project : MonoBehaviour
                 Carrot_Box_Btn_Item btn_del = item_project.create_item();
                 btn_del.set_icon(app.carrot.sp_icon_del_data);
                 btn_del.set_color(Color.red);
-                btn_del.set_act(() => Delete_project_online(data["id"].ToString()));
+                btn_del.set_act(() => Delete_project_online(data["id"].ToString(), item_project.gameObject));
             }
         }
         else
@@ -234,10 +242,11 @@ public class Manager_Project : MonoBehaviour
         Destroy(obj_item);
     }
 
-    public void Delete_project_online(string s_id_project)
+    public void Delete_project_online(string s_id_project,GameObject obj_item)
     {
         app.carrot.show_loading();
         app.carrot.server.Delete_Doc("code", s_id_project, Act_delete_project_online_done, Act_server_fail);
+        Destroy(obj_item);
     }
 
     private void Act_delete_project_online_done(string s_data)
@@ -400,16 +409,24 @@ public class Manager_Project : MonoBehaviour
      
     private void Import_from_file()
     {
-        this.Check_Permissions();
-        FileBrowser.SetFilters(true, 
-            new FileBrowser.Filter("Json data file", ".json", ".jsonl", ".json5"),
-            new FileBrowser.Filter("Geo Map json", ".geojson"), 
-            new FileBrowser.Filter("Web App Manifest", ".webappmanifest"),
-            new FileBrowser.Filter("Babel", ".babelrc"),
-            new FileBrowser.Filter("Prettier,", ".prettierrc"),
-             new FileBrowser.Filter("ESLint,", ".eslintrc")
-        );
-        FileBrowser.ShowLoadDialog(Act_Import_from_file_done, Act_Import_from_file_cancel, FileBrowser.PickMode.Files);
+        if (app.carrot.os_app == OS.Window)
+        {
+            OpenAndReadFile_UWP();
+        }
+        else
+        {
+            this.Check_Permissions();
+            FileBrowser.SetDefaultFilter(".json");
+            FileBrowser.SetFilters(true,
+                new FileBrowser.Filter("Json data file", ".json", ".jsonl", ".json5"),
+                new FileBrowser.Filter("Geo Map json", ".geojson"),
+                new FileBrowser.Filter("Web App Manifest", ".webappmanifest"),
+                new FileBrowser.Filter("Babel", ".babelrc"),
+                new FileBrowser.Filter("Prettier,", ".prettierrc"),
+                new FileBrowser.Filter("ESLint,", ".eslintrc")
+            );
+            FileBrowser.ShowLoadDialog(Act_Import_from_file_done, Act_Import_from_file_cancel, FileBrowser.PickMode.Files);
+        }
     }
 
     private void Act_Import_from_file_done(string[] paths)
@@ -431,8 +448,16 @@ public class Manager_Project : MonoBehaviour
     private void Export_file(IDictionary data)
     {
         data_project_temp = data;
-        this.Check_Permissions();
-        FileBrowser.ShowSaveDialog(Export_file_done, Export_file_cancel, FileBrowser.PickMode.Files);
+
+        if (this.app.carrot.os_app == OS.Window)
+        {
+            SaveTextToFile_UWP(data["code"].ToString());
+        }
+        else
+        {
+            this.Check_Permissions();
+            FileBrowser.ShowSaveDialog(Export_file_done, Export_file_cancel, FileBrowser.PickMode.Files);
+        }
     }
 
     private void Export_file_done(string[] paths)
@@ -440,6 +465,7 @@ public class Manager_Project : MonoBehaviour
         string filePath = paths[0];
         try
         {
+            FileBrowser.SetDefaultFilter(".json");
             FileBrowser.SetFilters(true,
                 new FileBrowser.Filter("Json data file", ".json", ".jsonl", ".json5"),
                 new FileBrowser.Filter("Geo Map json", ".geojson"),
@@ -558,5 +584,48 @@ public class Manager_Project : MonoBehaviour
             FileBrowser.RequestPermission();
             app.carrot.show_msg("Json Editor", "You need to give the application permission to read and write json data files on the drive!", Msg_Icon.Alert);
         }
+    }
+
+    public async void SaveTextToFile_UWP(string textToSave)
+    {
+#if UNITY_WSA && !UNITY_EDITOR
+        FileSavePicker savePicker = new FileSavePicker();
+        savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+        savePicker.FileTypeChoices.Add("Json", new string[] { ".json" });
+        savePicker.SuggestedFileName = data_project_temp["title"].ToString();
+
+        StorageFile file = await savePicker.PickSaveFileAsync();
+        if (file != null)
+        {
+            await FileIO.WriteTextAsync(file, textToSave);
+        }
+#else
+        app.carrot.show_msg("Error", "Failed to save file!", Msg_Icon.Error);
+#endif
+    }
+
+    public async void OpenAndReadFile_UWP()
+    {
+#if UNITY_WSA && !UNITY_EDITOR
+        FileOpenPicker openPicker = new FileOpenPicker();
+        openPicker.ViewMode = PickerViewMode.List;
+        openPicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+        openPicker.FileTypeFilter.Add(".json");
+
+
+        StorageFile file = await openPicker.PickSingleFileAsync();
+        if (file != null)
+        {
+            string fileContent = await FileIO.ReadTextAsync(file);
+            this.app.json_editor.Paser(fileContent);
+            this.app.txt_save_status.text = "New File";
+            this.app.Set_save_status_new();
+            if (box != null) box.close();
+        }
+        else
+        {
+            app.carrot.show_msg("Error", "No files have been selected yet!", Msg_Icon.Error);
+        }
+#endif
     }
 }
