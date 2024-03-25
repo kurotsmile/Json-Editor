@@ -2,16 +2,8 @@ using Carrot;
 using SimpleFileBrowser;
 using System;
 using System.Collections;
-using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
-
-#if UNITY_WSA && !UNITY_EDITOR
-using System.Threading.Tasks;
-using Windows.Storage.Pickers;
-using Windows.Storage;
-#endif
-
 
 public class Manager_Project : MonoBehaviour
 {
@@ -35,7 +27,7 @@ public class Manager_Project : MonoBehaviour
 
     private void Add_project(string s_name, string s_data)
     {
-        IDictionary data =(IDictionary) Json.Deserialize("{}");
+        IDictionary data = (IDictionary)Json.Deserialize("{}");
         data["id"] = "code" + app.carrot.generateID() + UnityEngine.Random.Range(1, 20);
         data["title"] = s_name;
         data["code"] = s_data;
@@ -53,7 +45,7 @@ public class Manager_Project : MonoBehaviour
 
     public void Show_list_project()
     {
-        string id_user_login= this.app.carrot.user.get_id_user_login();
+        string id_user_login = this.app.carrot.user.get_id_user_login();
         if (id_user_login != "")
         {
             box_menu = app.carrot.Create_Box();
@@ -64,13 +56,13 @@ public class Manager_Project : MonoBehaviour
             item_list_offline.set_icon(sp_icon_open_project);
             item_list_offline.set_title("Offline project");
             item_list_offline.set_tip("Local security projects are only visible to you");
-            item_list_offline.set_act(()=>Show_list_offline());
+            item_list_offline.set_act(() => Show_list_offline());
 
             Carrot_Box_Item item_list_online = box_menu.create_item();
             item_list_online.set_icon(sp_icon_project_online);
             item_list_online.set_title("Online project");
             item_list_online.set_tip("Projects you can store online and share with the world");
-            item_list_online.set_act(()=>Show_list_online());
+            item_list_online.set_act(() => Show_list_online());
         }
         else
         {
@@ -93,10 +85,10 @@ public class Manager_Project : MonoBehaviour
         for (int i = this.length - 1; i >= 0; i--)
         {
             string s_data_project = PlayerPrefs.GetString("js_data_" + i, "");
-            if (s_data_project!="")
+            if (s_data_project != "")
             {
                 var index = i;
-                IDictionary data = (IDictionary) Json.Deserialize(s_data_project);
+                IDictionary data = (IDictionary)Json.Deserialize(s_data_project);
                 data["index"] = i;
                 Carrot_Box_Item item_project = this.Add_item_to_list_box(data);
 
@@ -124,7 +116,7 @@ public class Manager_Project : MonoBehaviour
     private Carrot_Box_Item Add_item_to_list_box(IDictionary data)
     {
         Carrot_Box_Item item_project = box.create_item("item_project");
-        item_project.set_icon(this.app.sp_icon_project); 
+        item_project.set_icon(this.app.sp_icon_project);
         item_project.set_title(data["title"].ToString());
         item_project.set_tip(data["date"].ToString());
 
@@ -141,7 +133,8 @@ public class Manager_Project : MonoBehaviour
     {
         app.carrot.show_loading();
         string id_user_login = this.app.carrot.user.get_id_user_login();
-        if (id_user_login != "") {
+        if (id_user_login != "")
+        {
             StructuredQuery q = new("code");
             q.Add_where("user_id", Query_OP.EQUAL, id_user_login);
             app.carrot.server.Get_doc(q.ToJson(), Act_list_online_done, Act_server_fail);
@@ -158,17 +151,17 @@ public class Manager_Project : MonoBehaviour
             this.box.set_title("List of projects archived online");
             this.box.set_icon(this.sp_icon_project_online);
 
-            for(int i = 0; i < fc.fire_document.Length; i++)
+            for (int i = 0; i < fc.fire_document.Length; i++)
             {
                 IDictionary data = fc.fire_document[i].Get_IDictionary();
-                Carrot_Box_Item item_project=this.Add_item_to_list_box(data);
+                Carrot_Box_Item item_project = this.Add_item_to_list_box(data);
 
                 Carrot_Box_Btn_Item btn_download = item_project.create_item();
                 btn_download.set_color(app.carrot.color_highlight);
                 btn_download.set_icon(app.carrot.icon_carrot_download);
-                btn_download.set_act(()=>Download_project(data));
+                btn_download.set_act(() => Download_project(data));
 
-                string s_link_share = app.carrot.mainhost+"/?p=code&id="+data["id"].ToString();
+                string s_link_share = app.carrot.mainhost + "/?p=code&id=" + data["id"].ToString();
                 Carrot_Box_Btn_Item btn_share = item_project.create_item();
                 btn_share.set_color(app.carrot.color_highlight);
                 btn_share.set_icon(app.carrot.sp_icon_share);
@@ -210,7 +203,7 @@ public class Manager_Project : MonoBehaviour
 
         this.app.txt_save_status.text = data["title"].ToString();
 
-        
+
         if (this.app.get_index_sel_mode() == 2)
             this.app.json_editor.Show_code_json(true);
         else
@@ -223,10 +216,10 @@ public class Manager_Project : MonoBehaviour
     public void Show_project_online(string id_project)
     {
         StructuredQuery q = new(app.carrot.Carrotstore_AppId);
-        q.Add_where("project_id",Query_OP.EQUAL, id_project);
+        q.Add_where("project_id", Query_OP.EQUAL, id_project);
     }
 
-    public void Delete_project_offline(int index,GameObject obj_item)
+    public void Delete_project_offline(int index, GameObject obj_item)
     {
         PlayerPrefs.DeleteKey("js_data_" + index);
         bool is_null_list = true;
@@ -242,7 +235,7 @@ public class Manager_Project : MonoBehaviour
         Destroy(obj_item);
     }
 
-    public void Delete_project_online(string s_id_project,GameObject obj_item)
+    public void Delete_project_online(string s_id_project, GameObject obj_item)
     {
         app.carrot.show_loading();
         app.carrot.server.Delete_Doc("code", s_id_project, Act_delete_project_online_done, Act_server_fail);
@@ -264,11 +257,11 @@ public class Manager_Project : MonoBehaviour
     {
         using UnityWebRequest www = UnityWebRequest.Get(url_json);
         yield return www.SendWebRequest();
-        if (www.result == UnityWebRequest.Result.Success) 
+        if (www.result == UnityWebRequest.Result.Success)
         {
             app.carrot.hide_loading();
             this.app.json_editor.Clear_list_item_editor();
-            this.app.txt_save_status.text ="Import file";
+            this.app.txt_save_status.text = "Import file";
             this.app.json_editor.Paser(www.downloadHandler.text);
             if (this.app.get_index_sel_mode() == 2)
                 this.app.json_editor.Show_code_json(true);
@@ -277,7 +270,7 @@ public class Manager_Project : MonoBehaviour
             this.app.json_editor.ScrollRect_all_item_editor.verticalNormalizedPosition = 1f;
             this.app.carrot.play_sound_click();
             if (box != null) box.close();
-            if(box_inp!=null) box_inp.close();
+            if (box_inp != null) box_inp.close();
         }
         else
         {
@@ -292,7 +285,7 @@ public class Manager_Project : MonoBehaviour
         box.set_icon(app.sp_icon_save);
         box.set_title("Project Archives");
 
-        if (is_save_as==false)
+        if (is_save_as == false)
         {
             Carrot_Box_Item item_tip = box.create_item("item_tip");
             item_tip.set_icon(app.sp_icon_save);
@@ -316,7 +309,7 @@ public class Manager_Project : MonoBehaviour
 
         Carrot_Box_Btn_Panel panel_btn = box.create_panel_btn();
 
-        Carrot_Button_Item btn_save=panel_btn.create_btn("btn_save");
+        Carrot_Button_Item btn_save = panel_btn.create_btn("btn_save");
         btn_save.set_icon_white(app.carrot.icon_carrot_done);
         btn_save.set_bk_color(app.carrot.color_highlight);
         btn_save.set_label_color(Color.white);
@@ -398,7 +391,7 @@ public class Manager_Project : MonoBehaviour
     {
         if (s_data.Trim() == "")
         {
-            this.app.carrot.show_msg("Import","Input url cannot be empty", Msg_Icon.Error);
+            this.app.carrot.show_msg("Import", "Input url cannot be empty", Msg_Icon.Error);
             this.app.carrot.play_vibrate();
             return;
         }
@@ -406,39 +399,32 @@ public class Manager_Project : MonoBehaviour
         app.carrot.show_loading();
         StartCoroutine(Get_data_json_by_url(s_data));
     }
-     
+
     private void Import_from_file()
     {
-        if (app.carrot.os_app == OS.Window)
-        {
-            OpenAndReadFile_UWP();
-        }
-        else
-        {
-            this.Check_Permissions();
-            FileBrowser.SetDefaultFilter(".json");
-            FileBrowser.SetFilters(true,
-                new FileBrowser.Filter("Json data file", ".json", ".jsonl", ".json5"),
-                new FileBrowser.Filter("Geo Map json", ".geojson"),
-                new FileBrowser.Filter("Web App Manifest", ".webappmanifest"),
-                new FileBrowser.Filter("Babel", ".babelrc"),
-                new FileBrowser.Filter("Prettier,", ".prettierrc"),
-                new FileBrowser.Filter("ESLint,", ".eslintrc")
-            );
-            FileBrowser.ShowLoadDialog(Act_Import_from_file_done, Act_Import_from_file_cancel, FileBrowser.PickMode.Files);
-        }
+        this.Check_Permissions();
+        FileBrowser.SetDefaultFilter(".json");
+        FileBrowser.SetFilters(true,
+            new FileBrowser.Filter("Json data file", ".json", ".jsonl", ".json5"),
+            new FileBrowser.Filter("Geo Map json", ".geojson"),
+            new FileBrowser.Filter("Web App Manifest", ".webappmanifest"),
+            new FileBrowser.Filter("Babel", ".babelrc"),
+            new FileBrowser.Filter("Prettier,", ".prettierrc"),
+            new FileBrowser.Filter("ESLint,", ".eslintrc")
+        );
+        FileBrowser.ShowLoadDialog(Act_Import_from_file_done, Act_Import_from_file_cancel, FileBrowser.PickMode.Files);
     }
 
     private void Act_Import_from_file_done(string[] paths)
     {
-        string s_data=FileBrowserHelpers.ReadTextFromFile(paths[0]);
+        string s_data = FileBrowserHelpers.ReadTextFromFile(paths[0]);
         this.app.json_editor.Paser(s_data);
-        this.app.txt_save_status.text= FileBrowserHelpers.GetFilename(paths[0]);
+        this.app.txt_save_status.text = FileBrowserHelpers.GetFilename(paths[0]);
         this.app.Set_save_status_new();
         if (box != null) box.close();
     }
 
-    private void Act_Import_from_file_cancel(){}
+    private void Act_Import_from_file_cancel() { }
 
     public int Get_Index_project_curent()
     {
@@ -448,16 +434,9 @@ public class Manager_Project : MonoBehaviour
     private void Export_file(IDictionary data)
     {
         data_project_temp = data;
+        this.Check_Permissions();
+        FileBrowser.ShowSaveDialog(Export_file_done, Export_file_cancel, FileBrowser.PickMode.Files);
 
-        if (this.app.carrot.os_app == OS.Window)
-        {
-            SaveTextToFile_UWP(data["code"].ToString());
-        }
-        else
-        {
-            this.Check_Permissions();
-            FileBrowser.ShowSaveDialog(Export_file_done, Export_file_cancel, FileBrowser.PickMode.Files);
-        }
     }
 
     private void Export_file_done(string[] paths)
@@ -475,7 +454,7 @@ public class Manager_Project : MonoBehaviour
                 new FileBrowser.Filter("ESLint,", ".eslintrc")
             );
             FileBrowserHelpers.WriteTextToFile(filePath, data_project_temp["code"].ToString());
-            app.carrot.show_msg("Export File", "File saved successfully at: "+filePath,Msg_Icon.Success);
+            app.carrot.show_msg("Export File", "File saved successfully at: " + filePath, Msg_Icon.Success);
         }
         catch (Exception ex)
         {
@@ -492,7 +471,7 @@ public class Manager_Project : MonoBehaviour
     {
         app.carrot.show_loading();
         string s_data = PlayerPrefs.GetString("js_data_" + index);
-        IDictionary data = (IDictionary) Json.Deserialize(s_data);
+        IDictionary data = (IDictionary)Json.Deserialize(s_data);
         data["code_theme"] = "docco.min.css";
         data["code_type"] = "json";
         data["code"] = data["code"].ToString().Replace("\"", "\\\"");
@@ -519,10 +498,10 @@ public class Manager_Project : MonoBehaviour
 
     internal void Update_project_curent()
     {
-        IDictionary data = (IDictionary)Json.Deserialize(PlayerPrefs.GetString("js_data_"+this.sel_project_index));
+        IDictionary data = (IDictionary)Json.Deserialize(PlayerPrefs.GetString("js_data_" + this.sel_project_index));
         data["code"] = app.json_editor.Get_data_cur();
         data["date"] = DateTime.Now.ToString();
-        PlayerPrefs.SetString("js_data_"+this.sel_project_index, Json.Serialize(data));
+        PlayerPrefs.SetString("js_data_" + this.sel_project_index, Json.Serialize(data));
     }
 
     private void Show_edit_info(IDictionary data)
@@ -545,14 +524,14 @@ public class Manager_Project : MonoBehaviour
         item_describe.set_icon(this.app.carrot.icon_carrot_database);
         item_describe.set_type(Box_Item_Type.box_value_input);
         item_describe.check_type();
-        if(data["describe"]!=null) item_describe.set_val(data["describe"].ToString());
+        if (data["describe"] != null) item_describe.set_val(data["describe"].ToString());
 
         Carrot_Box_Btn_Panel panel_btn = this.box_menu.create_panel_btn();
-        Carrot_Button_Item btn_done=panel_btn.create_btn("btn_done");
+        Carrot_Button_Item btn_done = panel_btn.create_btn("btn_done");
         btn_done.set_icon_white(app.carrot.icon_carrot_done);
         btn_done.set_bk_color(app.carrot.color_highlight);
         btn_done.set_label_color(Color.white);
-        btn_done.set_act_click(()=>Act_update_info_project(item_title.get_val(), item_describe.get_val(), data));
+        btn_done.set_act_click(() => Act_update_info_project(item_title.get_val(), item_describe.get_val(), data));
 
         Carrot_Button_Item btn_cancel = panel_btn.create_btn("btn_done");
         btn_cancel.set_icon_white(app.carrot.icon_carrot_cancel);
@@ -561,7 +540,7 @@ public class Manager_Project : MonoBehaviour
         btn_cancel.set_act_click(() => Act_close_box_edit_info());
     }
 
-    private void Act_update_info_project(string s_title,string s_description,IDictionary data)
+    private void Act_update_info_project(string s_title, string s_description, IDictionary data)
     {
         data["title"] = s_title;
         data["describe"] = s_description;
@@ -584,48 +563,5 @@ public class Manager_Project : MonoBehaviour
             FileBrowser.RequestPermission();
             app.carrot.show_msg("Json Editor", "You need to give the application permission to read and write json data files on the drive!", Msg_Icon.Alert);
         }
-    }
-
-    public async void SaveTextToFile_UWP(string textToSave)
-    {
-#if UNITY_WSA && !UNITY_EDITOR
-        FileSavePicker savePicker = new FileSavePicker();
-        savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-        savePicker.FileTypeChoices.Add("Json", new string[] { ".json" });
-        savePicker.SuggestedFileName = data_project_temp["title"].ToString();
-
-        StorageFile file = await savePicker.PickSaveFileAsync();
-        if (file != null)
-        {
-            await FileIO.WriteTextAsync(file, textToSave);
-        }
-#else
-        app.carrot.show_msg("Error", "Failed to save file!", Msg_Icon.Error);
-#endif
-    }
-
-    public async void OpenAndReadFile_UWP()
-    {
-#if UNITY_WSA && !UNITY_EDITOR
-        FileOpenPicker openPicker = new FileOpenPicker();
-        openPicker.ViewMode = PickerViewMode.List;
-        openPicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-        openPicker.FileTypeFilter.Add(".json");
-
-
-        StorageFile file = await openPicker.PickSingleFileAsync();
-        if (file != null)
-        {
-            string fileContent = await FileIO.ReadTextAsync(file);
-            this.app.json_editor.Paser(fileContent);
-            this.app.txt_save_status.text = "New File";
-            this.app.Set_save_status_new();
-            if (box != null) box.close();
-        }
-        else
-        {
-            app.carrot.show_msg("Error", "No files have been selected yet!", Msg_Icon.Error);
-        }
-#endif
     }
 }
