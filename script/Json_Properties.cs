@@ -32,62 +32,62 @@ public class Json_Properties : MonoBehaviour
         {
             s_name = "Object" + (obj.get_length_item() + 1);
             box.set_icon(app.json_editor.sp_icon_object);
-            box.set_title("Add Object");
+            box.set_title(app.carrot.L("add_object", "Add Object"));
         }
 
         if (type_box == Type_box.edit_object)
         {
             s_name = obj.s_name;
             box.set_icon(app.carrot.user.icon_user_edit);
-            box.set_title("Edit Object ("+obj.s_name+")");
+            box.set_title(app.carrot.L("edit_object", "Edit Object")+" ("+obj.s_name+")");
         }
 
         if (type_box == Type_box.add_properties)
         {
             s_name = "Propertie" + (obj.get_length_item() + 1);
             box.set_icon(app.json_editor.sp_icon_properties);
-            box.set_title("Add Propertie");
+            box.set_title(app.carrot.L("add_propertie", "Add Propertie"));
         }
 
         if (type_box == Type_box.edit_properties)
         {
             s_name = obj.s_name;
             box.set_icon(app.json_editor.sp_icon_edit_properties);
-            box.set_title("Edit Propertie ("+obj.s_name+")");
+            box.set_title(app.carrot.L("edit_properties", "Edit Propertie")+" ("+obj.s_name+")");
         }
 
         if (type_box == Type_box.add_array)
         {
             s_name = "Array" + (obj.get_length_item() + 1);
             box.set_icon(app.json_editor.sp_icon_array);
-            box.set_title("Add Array");
+            box.set_title(app.carrot.L("add_array", "Add Array"));
         }
 
         if (type_box == Type_box.edit_array)
         {
             s_name = obj.s_name;
             box.set_icon(app.carrot.user.icon_user_edit);
-            box.set_title("Edit Array ("+obj.s_name+")");
+            box.set_title(app.carrot.L("edit_array", "Edit Array")+" ("+obj.s_name+")");
         }
 
         if (type_box == Type_box.add_array_item)
         {
             box.set_icon(app.json_editor.sp_icon_array_item);
-            box.set_title("Add Array Item");
+            box.set_title(app.carrot.L("add_array_item", "Add Array Item"));
         }
 
         if (type_box == Type_box.edit_array_item)
         {
             box.set_icon(app.json_editor.sp_icon_edit_properties);
-            box.set_title("Edit Array Item");
+            box.set_title(app.carrot.L("edit_array_item", "Edit Array Item"));
         }
 
         if (type_box != Type_box.edit_array_item && type_box != Type_box.add_array_item)
         {
             item_key = box.create_item();
             item_key.set_icon(app.carrot.icon_carrot_write);
-            item_key.set_title("Key name");
-            item_key.set_tip("The name of the object or property");
+            item_key.set_title(app.carrot.L("key_name","Key name"));
+            item_key.set_tip(app.carrot.L("key_name_tip","The name of the object or property"));
             item_key.set_type(Box_Item_Type.box_value_input);
             item_key.check_type();
             item_key.set_val(s_name);
@@ -101,8 +101,8 @@ public class Json_Properties : MonoBehaviour
         {
             item_val = box.create_item();
             item_val.set_icon(app.carrot.icon_carrot_database);
-            item_val.set_title("Value");
-            item_val.set_tip("The value of the object or property");
+            item_val.set_title(app.carrot.L("val","Value"));
+            item_val.set_tip(app.carrot.L("val_tip","The value of the object or property"));
             item_val.set_type(Box_Item_Type.box_value_input);
             item_val.check_type();
             item_val.set_val(obj.s_val);
@@ -119,14 +119,14 @@ public class Json_Properties : MonoBehaviour
         btn_done.set_bk_color(app.carrot.color_highlight);
         btn_done.set_icon_white(app.carrot.icon_carrot_done);
         btn_done.set_label_color(Color.white);
-        btn_done.set_label("Done");
+        btn_done.set_label(app.carrot.L("done","Done"));
         btn_done.set_act_click(() => Act_edit_val_done(obj));
 
         Carrot_Button_Item btn_cancel = panel_btn.create_btn("btn_cancel");
         btn_cancel.set_bk_color(app.carrot.color_highlight);
         btn_cancel.set_icon_white(app.carrot.icon_carrot_cancel);
         btn_cancel.set_label_color(Color.white);
-        btn_cancel.set_label("Cancel");
+        btn_cancel.set_label(app.carrot.L("cancel","Cancel"));
         btn_cancel.set_act_click(() => Act_close_box());
     }
 
@@ -135,13 +135,13 @@ public class Json_Properties : MonoBehaviour
         if (this.type == Type_box.add_object)
         {
             app.json_editor.Add_node(js_obj, "object").Set_name_key(item_key.get_val());
-            app.carrot.Show_msg("Json Editor", "Add object success!", Msg_Icon.Success);
+            app.carrot.Show_msg(app.carrot.L("add_object", "Add Object"), app.carrot.L("add_object_success", "New object added successfully!"), Msg_Icon.Success);
         }
 
         if (this.type == Type_box.edit_object)
         {
             js_obj.Set_name_key(item_key.get_val());
-            app.carrot.Show_msg("Json Editor", "Update object success!", Msg_Icon.Success);
+            app.carrot.Show_msg(app.carrot.L("edit_object", "Edit Object"),app.carrot.L("update_object_success", "Object updated successfully!"), Msg_Icon.Success);
         }
 
         if (this.type == Type_box.add_properties)
@@ -149,40 +149,40 @@ public class Json_Properties : MonoBehaviour
             js_object js_properties = app.json_editor.Add_node(js_obj, "propertie");
             js_properties.Set_name_key(item_key.get_val());
             js_properties.Set_val(item_val.get_val(), js_obj.get_Type_Properties(), app.json_editor);
-            app.carrot.Show_msg("Json Editor", "Add propertie success!", Msg_Icon.Success);
+            app.carrot.Show_msg(app.carrot.L("add_propertie", "Add propertie"), app.carrot.L("add_propertie_success", "New attribute added successfully!"), Msg_Icon.Success);
         }
 
         if (this.type == Type_box.edit_properties)
         {
             js_obj.Set_name_key(item_key.get_val());
             js_obj.Set_val(item_val.get_val(), js_obj.get_Type_Properties(), app.json_editor);
-            app.carrot.Show_msg("Json Editor", "Update propertie success!", Msg_Icon.Success);
+            app.carrot.Show_msg(app.carrot.L("edit_properties", "Edit properties"), app.carrot.L("update_propertie_success", "Attribute update successful!"), Msg_Icon.Success);
         }
 
         if (this.type == Type_box.add_array)
         {
             js_object js_array = app.json_editor.Add_node(js_obj, "array");
             js_array.Set_name_key(item_key.get_val());
-            app.carrot.Show_msg("Json Editor", "Add array success!", Msg_Icon.Success);
+            app.carrot.Show_msg(app.carrot.L("add_array", "Add Array"), app.carrot.L("add_array_success", "Added new array successfully!"), Msg_Icon.Success);
         }
 
         if (this.type == Type_box.edit_array)
         {
             js_obj.Set_name_key(item_key.get_val());
-            app.carrot.Show_msg("Json Editor", "Update array success!", Msg_Icon.Success);
+            app.carrot.Show_msg(app.carrot.L("edit_array", "Edit Array"), app.carrot.L("update_array_success", "Array update successful!"), Msg_Icon.Success);
         }
 
         if (this.type == Type_box.add_array_item)
         {
             js_object js_array_item = app.json_editor.Add_node(js_obj, "array_item");
             js_array_item.Set_val(item_val.get_val(), js_obj.get_Type_Properties(), app.json_editor);
-            app.carrot.Show_msg("Json Editor", "Add array item success!", Msg_Icon.Success);
+            app.carrot.Show_msg(app.carrot.L("add_array_item", "Add Array item"), app.carrot.L("add_array_item_success", "Added new element of an array successfully!"),Msg_Icon.Success);
         }
 
         if (this.type == Type_box.edit_array_item)
         {
             js_obj.Set_val(item_val.get_val(), js_obj.get_Type_Properties(), app.json_editor);
-            app.carrot.Show_msg("Json Editor", "Update array item success!", Msg_Icon.Success);
+            app.carrot.Show_msg(app.carrot.L("edit_array_item", "Edit Array item"), app.carrot.L("update_array_item_success", "Updating elements of an array successfully!"), Msg_Icon.Success);
         }
 
         this.Act_close_box();

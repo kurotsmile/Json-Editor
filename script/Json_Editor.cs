@@ -224,28 +224,28 @@ public class Json_Editor : MonoBehaviour
         box.set_icon(app.carrot.icon_carrot_all_category);
 
         if(obj.s_name!="")
-            box.set_title("Menu ("+obj.s_name+")");
+            box.set_title(app.carrot.L("node_menu","Menu")+" ("+obj.s_name+")");
         else
-            box.set_title("Menu");
+            box.set_title(app.carrot.L("node_menu", "Menu"));
 
         if (obj.s_type == "root_object" || obj.s_type == "root_array" || obj.s_type == "object" || obj.s_type == "array")
         {
             Carrot_Box_Item item_add_obj = box.create_item();
             item_add_obj.set_icon(sp_icon_object);
-            item_add_obj.set_title("Add Object");
-            item_add_obj.set_tip("Add an object with the keyword pair key object name and value");
+            item_add_obj.set_title(app.carrot.L("add_object","Add Object"));
+            item_add_obj.set_tip(app.carrot.L("add_object_tip","Add an object with the keyword pair key object name and value"));
             item_add_obj.set_act(() => app.json_properties.Show(obj, Type_box.add_object));
 
             Carrot_Box_Item item_add_array = box.create_item();
             item_add_array.set_icon(sp_icon_array);
-            item_add_array.set_title("Add Array");
-            item_add_array.set_tip("Add the subarray to this data object");
+            item_add_array.set_title(app.carrot.L("add_array","Add Array"));
+            item_add_array.set_tip(app.carrot.L("add_array_tip","Add the subarray to this data object"));
             item_add_array.set_act(() => app.json_properties.Show(obj, Type_box.add_array));
 
             Carrot_Box_Item item_add_propertie = box.create_item();
             item_add_propertie.set_icon(sp_icon_properties);
-            item_add_propertie.set_title("Add propertie");
-            item_add_propertie.set_tip("Add properties to this object");
+            item_add_propertie.set_title(app.carrot.L("add_propertie","Add propertie"));
+            item_add_propertie.set_tip(app.carrot.L("add_propertie_tip","Add properties to this object"));
             item_add_propertie.set_act(() => app.json_properties.Show(obj, Type_box.add_properties));
         }
 
@@ -253,14 +253,14 @@ public class Json_Editor : MonoBehaviour
         {
             Carrot_Box_Item item_add_array_item = box.create_item();
             item_add_array_item.set_icon(sp_icon_array_item);
-            item_add_array_item.set_title("Add Array item");
-            item_add_array_item.set_tip("Adds an element of the array that does not have a specified key");
+            item_add_array_item.set_title(app.carrot.L("add_array_item","Add Array item"));
+            item_add_array_item.set_tip(app.carrot.L("add_array_item_tip", "Adds an element of the array that does not have a specified key"));
             item_add_array_item.set_act(() => app.json_properties.Show(obj, Type_box.add_array_item));
 
             Carrot_Box_Item item_edit_array = box.create_item();
             item_edit_array.set_icon(app.carrot.user.icon_user_edit);
-            item_edit_array.set_title("Edit Array");
-            item_edit_array.set_tip("Update this array information");
+            item_edit_array.set_title(app.carrot.L("edit_array","Edit Array"));
+            item_edit_array.set_tip(app.carrot.L("edit_array_tip","Update this array information"));
             item_edit_array.set_act(() => app.json_properties.Show(obj, Type_box.edit_array));
         }
 
@@ -268,8 +268,8 @@ public class Json_Editor : MonoBehaviour
         {
             Carrot_Box_Item item_edit_obj = box.create_item();
             item_edit_obj.set_icon(app.carrot.user.icon_user_edit);
-            item_edit_obj.set_title("Edit Object");
-            item_edit_obj.set_tip("Update this object's information");
+            item_edit_obj.set_title(app.carrot.L("edit_object","Edit Object"));
+            item_edit_obj.set_tip(app.carrot.L("edit_object_tip", "Update this object's information"));
             item_edit_obj.set_act(() => app.json_properties.Show(obj, Type_box.edit_object));
         }
 
@@ -277,8 +277,8 @@ public class Json_Editor : MonoBehaviour
         {
             Carrot_Box_Item item_edit_array_item = box.create_item();
             item_edit_array_item.set_icon(sp_icon_edit_properties);
-            item_edit_array_item.set_title("Edit Array item");
-            item_edit_array_item.set_tip("Edit the value of this element!");
+            item_edit_array_item.set_title(app.carrot.L("edit_array", "Edit Array item"));
+            item_edit_array_item.set_tip(app.carrot.L("edit_array_tip","Edit the value of this element!"));
             item_edit_array_item.set_act(() => app.json_properties.Show(obj, Type_box.add_array_item));
         }
 
@@ -286,8 +286,8 @@ public class Json_Editor : MonoBehaviour
         {
             Carrot_Box_Item item_edit_array = box.create_item();
             item_edit_array.set_icon(sp_icon_edit_properties);
-            item_edit_array.set_title("Edit properties");
-            item_edit_array.set_tip("Update this properties information");
+            item_edit_array.set_title(app.carrot.L("edit_properties", "Edit properties"));
+            item_edit_array.set_tip(app.carrot.L("edit_properties_tip", "Update this properties information"));
             item_edit_array.set_act(() => app.json_properties.Show(obj, Type_box.edit_properties));
         }
 
@@ -297,8 +297,8 @@ public class Json_Editor : MonoBehaviour
             {
                 Carrot_Box_Item item_remove_key = box.create_item();
                 item_remove_key.set_icon(sp_icon_eraser);
-                item_remove_key.set_title("Remove name key");
-                item_remove_key.set_tip("Remove the identifier key with this object");
+                item_remove_key.set_title(app.carrot.L("remove_key", "Remove name key"));
+                item_remove_key.set_tip(app.carrot.L("remove_key_tip", "Remove the identifier key with this object"));
                 item_remove_key.set_act(() => Remove_key_name(obj));
             }
         }
@@ -307,17 +307,17 @@ public class Json_Editor : MonoBehaviour
         {
             Carrot_Box_Item item_clear = box.create_item();
             item_clear.set_icon(sp_icon_clear);
-            item_clear.set_title("Clean up");
-            item_clear.set_tip("Delete all data of sub-blocks");
+            item_clear.set_title(app.carrot.L("clean_up", "Clean up"));
+            item_clear.set_tip(app.carrot.L("clean_up_tip","Delete all data of sub-blocks"));
             item_clear.set_act(() => Clear_child_in_node(obj));
         }
 
-        if (obj.s_type != "root_object" || obj.s_type != "root_array")
+        if (obj.s_type != "root_object" && obj.s_type != "root_array")
         {
             Carrot_Box_Item item_del = box.create_item();
             item_del.set_icon(app.carrot.sp_icon_del_data);
-            item_del.set_title("Delete");
-            item_del.set_tip("Delete all data and node");
+            item_del.set_title(app.carrot.L("del","Delete"));
+            item_del.set_tip(app.carrot.L("del_emp_tip", "Delete all data and node"));
             item_del.set_act(() => Delete_node(obj));
         }
     }
@@ -332,17 +332,20 @@ public class Json_Editor : MonoBehaviour
 
     private void Delete_node(js_object obj)
     {
-        app.carrot.play_sound_click();
-        obj.Delete();
-        app.carrot.Show_msg("Json Editor", "Delete node " + obj.s_name + " success!", Msg_Icon.Alert);
-        if (box != null) box.close();
+        app.carrot.Show_msg(app.carrot.L("del","Delete"), app.carrot.L("delete_node_question", "Are you sure you want to delete this block of data?"), () =>
+        {
+            app.carrot.play_sound_click();
+            obj.Delete();
+            app.carrot.Show_msg(app.carrot.L("del", "Delete"), app.carrot.L("delete_success", "Deleted successfully!") + " " + obj.s_name, Msg_Icon.Alert);
+            if (box != null) box.close();
+        });
     }
 
     private void Remove_key_name(js_object obj)
     {
         app.carrot.play_sound_click();
         obj.Remove_name_key();
-        app.carrot.Show_msg("Json Editor", "Successfully removed the object's identifier key!", Msg_Icon.Alert);
+        app.carrot.Show_msg(app.carrot.L("remove_key", "Remove name key"), app.carrot.L("remove_key_success", "Identification key removed successfully!"), Msg_Icon.Alert);
         if(box != null) box.close();
     }
 
@@ -350,7 +353,7 @@ public class Json_Editor : MonoBehaviour
     {
         app.carrot.play_sound_click();
         obj.Delete_all_child();
-        app.carrot.Show_msg("Json Editor", "Clear al child in node data " + obj.txt_name.text + " success!", Msg_Icon.Alert);
+        app.carrot.Show_msg(app.carrot.L("clean_up", "Clean up"),app.carrot.L("clean_up_success", "Delete objects and child data blocks successfully!"), Msg_Icon.Alert);
         if (box != null) box.close();
     }
 

@@ -211,7 +211,7 @@ public class App : MonoBehaviour
         }
         else
         {
-            this.json_editor.txt_username_login.text = carrot.lang.Val("login","Login");
+            this.json_editor.txt_username_login.text = carrot.L("login","Login");
             this.carrot.img_btn_login.color = Color.black;
         }
     }
@@ -223,6 +223,6 @@ public class App : MonoBehaviour
 
     private void Act_show_select_lang(string s_data)
     {
-        if(this.get_index_sel_mode()==-1) this.txt_save_status.text = carrot.lang.Val("new_file", "New File");
+        if(this.get_index_sel_mode()==-1) this.txt_save_status.text = carrot.L("new_file", "New File");
     }
 }
