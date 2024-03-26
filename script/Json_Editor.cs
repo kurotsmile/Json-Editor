@@ -334,7 +334,7 @@ public class Json_Editor : MonoBehaviour
     {
         app.carrot.play_sound_click();
         obj.Delete();
-        app.carrot.show_msg("Json Editor", "Delete node " + obj.s_name + " success!", Msg_Icon.Alert);
+        app.carrot.Show_msg("Json Editor", "Delete node " + obj.s_name + " success!", Msg_Icon.Alert);
         if (box != null) box.close();
     }
 
@@ -342,7 +342,7 @@ public class Json_Editor : MonoBehaviour
     {
         app.carrot.play_sound_click();
         obj.Remove_name_key();
-        app.carrot.show_msg("Json Editor", "Successfully removed the object's identifier key!", Msg_Icon.Alert);
+        app.carrot.Show_msg("Json Editor", "Successfully removed the object's identifier key!", Msg_Icon.Alert);
         if(box != null) box.close();
     }
 
@@ -350,7 +350,7 @@ public class Json_Editor : MonoBehaviour
     {
         app.carrot.play_sound_click();
         obj.Delete_all_child();
-        app.carrot.show_msg("Json Editor", "Clear al child in node data " + obj.txt_name.text + " success!", Msg_Icon.Alert);
+        app.carrot.Show_msg("Json Editor", "Clear al child in node data " + obj.txt_name.text + " success!", Msg_Icon.Alert);
         if (box != null) box.close();
     }
 

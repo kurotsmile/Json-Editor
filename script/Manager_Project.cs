@@ -74,7 +74,7 @@ public class Manager_Project : MonoBehaviour
     {
         if (this.length == 0)
         {
-            this.app.carrot.show_msg(app.carrot.lang.Val("open", "Open project"), app.carrot.lang.Val("no_project", "You don't have any archived projects yet"), Carrot.Msg_Icon.Alert);
+            this.app.carrot.Show_msg(app.carrot.lang.Val("open", "Open project"), app.carrot.lang.Val("no_project", "You don't have any archived projects yet"), Carrot.Msg_Icon.Alert);
             this.app.carrot.play_vibrate();
             return;
         }
@@ -175,7 +175,7 @@ public class Manager_Project : MonoBehaviour
         }
         else
         {
-            this.app.carrot.show_msg(app.carrot.lang.Val("open", "Open project"), app.carrot.lang.Val("no_project", "You don't have any archived projects yet"), Carrot.Msg_Icon.Alert);
+            this.app.carrot.Show_msg(app.carrot.lang.Val("open", "Open project"), app.carrot.lang.Val("no_project", "You don't have any archived projects yet"), Carrot.Msg_Icon.Alert);
             this.app.carrot.play_vibrate();
             return;
         }
@@ -202,7 +202,7 @@ public class Manager_Project : MonoBehaviour
         }
         else
         {
-            this.app.carrot.show_msg("Json Editor", "This project does not exist!", Carrot.Msg_Icon.Alert);
+            this.app.carrot.Show_msg("Json Editor", "This project does not exist!", Carrot.Msg_Icon.Alert);
             app.carrot.play_vibrate();
         }
     }
@@ -271,7 +271,7 @@ public class Manager_Project : MonoBehaviour
     private void Act_delete_project_online_done(string s_data)
     {
         app.carrot.hide_loading();
-        app.carrot.show_msg("Json Editor", "Delete project online success!", Msg_Icon.Success);
+        app.carrot.Show_msg("Json Editor", "Delete project online success!", Msg_Icon.Success);
     }
 
     public void Set_new_project()
@@ -301,7 +301,7 @@ public class Manager_Project : MonoBehaviour
         else
         {
             app.carrot.hide_loading();
-            app.carrot.show_msg("Error", www.error.ToString(), Msg_Icon.Error);
+            app.carrot.Show_msg("Error", www.error.ToString(), Msg_Icon.Error);
         }
     }
 
@@ -417,7 +417,7 @@ public class Manager_Project : MonoBehaviour
     {
         if (s_data.Trim() == "")
         {
-            this.app.carrot.show_msg("Import", "Input url cannot be empty", Msg_Icon.Error);
+            this.app.carrot.Show_msg("Import", "Input url cannot be empty", Msg_Icon.Error);
             this.app.carrot.play_vibrate();
             return;
         }
@@ -478,7 +478,7 @@ public class Manager_Project : MonoBehaviour
             new FileBrowser.Filter("ESLint,", ".eslintrc")
         );
         FileBrowserHelpers.WriteTextToFile(filePath, data_project_temp["code"].ToString());
-        app.carrot.show_msg("Export File", "File saved successfully at: " + filePath, Msg_Icon.Success);
+        app.carrot.Show_msg("Export File", "File saved successfully at: " + filePath, Msg_Icon.Success);
     }
 
     private void Export_file_cancel()
@@ -505,13 +505,13 @@ public class Manager_Project : MonoBehaviour
     private void Act_upload_project_done(string s_data)
     {
         app.carrot.hide_loading();
-        app.carrot.show_msg("Upload Project", "Public project success!", Msg_Icon.Success);
+        app.carrot.Show_msg("Upload Project", "Public project success!", Msg_Icon.Success);
     }
 
     private void Act_server_fail(string s_error)
     {
         app.carrot.hide_loading();
-        app.carrot.show_msg("Error", s_error, Msg_Icon.Error);
+        app.carrot.Show_msg("Error", s_error, Msg_Icon.Error);
         app.carrot.play_vibrate();
     }
 
@@ -580,7 +580,7 @@ public class Manager_Project : MonoBehaviour
         if (FileBrowser.AskPermissions == false)
         {
             FileBrowser.RequestPermission();
-            app.carrot.show_msg("Json Editor", "You need to give the application permission to read and write json data files on the drive!", Msg_Icon.Alert);
+            app.carrot.Show_msg("Json Editor", "You need to give the application permission to read and write json data files on the drive!", Msg_Icon.Alert);
         }
     }
 }

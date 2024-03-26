@@ -135,13 +135,13 @@ public class Json_Properties : MonoBehaviour
         if (this.type == Type_box.add_object)
         {
             app.json_editor.Add_node(js_obj, "object").Set_name_key(item_key.get_val());
-            app.carrot.show_msg("Json Editor", "Add object success!", Msg_Icon.Success);
+            app.carrot.Show_msg("Json Editor", "Add object success!", Msg_Icon.Success);
         }
 
         if (this.type == Type_box.edit_object)
         {
             js_obj.Set_name_key(item_key.get_val());
-            app.carrot.show_msg("Json Editor", "Update object success!", Msg_Icon.Success);
+            app.carrot.Show_msg("Json Editor", "Update object success!", Msg_Icon.Success);
         }
 
         if (this.type == Type_box.add_properties)
@@ -149,40 +149,40 @@ public class Json_Properties : MonoBehaviour
             js_object js_properties = app.json_editor.Add_node(js_obj, "propertie");
             js_properties.Set_name_key(item_key.get_val());
             js_properties.Set_val(item_val.get_val(), js_obj.get_Type_Properties(), app.json_editor);
-            app.carrot.show_msg("Json Editor", "Add propertie success!", Msg_Icon.Success);
+            app.carrot.Show_msg("Json Editor", "Add propertie success!", Msg_Icon.Success);
         }
 
         if (this.type == Type_box.edit_properties)
         {
             js_obj.Set_name_key(item_key.get_val());
             js_obj.Set_val(item_val.get_val(), js_obj.get_Type_Properties(), app.json_editor);
-            app.carrot.show_msg("Json Editor", "Update propertie success!", Msg_Icon.Success);
+            app.carrot.Show_msg("Json Editor", "Update propertie success!", Msg_Icon.Success);
         }
 
         if (this.type == Type_box.add_array)
         {
             js_object js_array = app.json_editor.Add_node(js_obj, "array");
             js_array.Set_name_key(item_key.get_val());
-            app.carrot.show_msg("Json Editor", "Add array success!", Msg_Icon.Success);
+            app.carrot.Show_msg("Json Editor", "Add array success!", Msg_Icon.Success);
         }
 
         if (this.type == Type_box.edit_array)
         {
             js_obj.Set_name_key(item_key.get_val());
-            app.carrot.show_msg("Json Editor", "Update array success!", Msg_Icon.Success);
+            app.carrot.Show_msg("Json Editor", "Update array success!", Msg_Icon.Success);
         }
 
         if (this.type == Type_box.add_array_item)
         {
             js_object js_array_item = app.json_editor.Add_node(js_obj, "array_item");
             js_array_item.Set_val(item_val.get_val(), js_obj.get_Type_Properties(), app.json_editor);
-            app.carrot.show_msg("Json Editor", "Add array item success!", Msg_Icon.Success);
+            app.carrot.Show_msg("Json Editor", "Add array item success!", Msg_Icon.Success);
         }
 
         if (this.type == Type_box.edit_array_item)
         {
             js_obj.Set_val(item_val.get_val(), js_obj.get_Type_Properties(), app.json_editor);
-            app.carrot.show_msg("Json Editor", "Update array item success!", Msg_Icon.Success);
+            app.carrot.Show_msg("Json Editor", "Update array item success!", Msg_Icon.Success);
         }
 
         this.Act_close_box();

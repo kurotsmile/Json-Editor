@@ -1,4 +1,6 @@
 
+using Carrot;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -54,7 +56,6 @@ public class App : MonoBehaviour
         this.Check_data_login();
     }
 
-
     void OnApplicationFocus(bool hasFocus)
     {
         if (hasFocus) this.carrot.delay_function(3f, this.check_link_deep_app);
@@ -65,7 +66,6 @@ public class App : MonoBehaviour
         this.link_deep_app = url;
         if (this.carrot != null) this.carrot.delay_function(1f, this.check_link_deep_app);
     }
-
 
     public void check_link_deep_app()
     {
@@ -100,7 +100,7 @@ public class App : MonoBehaviour
         carrot.play_sound_click();
         this.json_editor.Clear_list_item_editor();
         this.json_editor.Add_node();
-        this.txt_save_status.text = PlayerPrefs.GetString("new_file","New File");
+        this.txt_save_status.text = carrot.lang.Val("new_file","New File");
         this.manager_Project.Set_new_project();
         this.carrot.ads.show_ads_Interstitial();
     }
@@ -181,7 +181,7 @@ public class App : MonoBehaviour
 
     public void Set_save_status_default()
     {
-        this.txt_save_status.text = "New File";
+        this.txt_save_status.text = carrot.lang.Val("new_file", "New File");
         this.obj_icon_save_status_new.SetActive(true);
     }
 
@@ -211,7 +211,7 @@ public class App : MonoBehaviour
         }
         else
         {
-            this.json_editor.txt_username_login.text = "Login";
+            this.json_editor.txt_username_login.text = carrot.lang.Val("login","Login");
             this.carrot.img_btn_login.color = Color.black;
         }
     }
@@ -223,6 +223,6 @@ public class App : MonoBehaviour
 
     private void Act_show_select_lang(string s_data)
     {
-        if(this.get_index_sel_mode()==-1) this.txt_save_status.text = "New File";
+        if(this.get_index_sel_mode()==-1) this.txt_save_status.text = carrot.lang.Val("new_file", "New File");
     }
 }
