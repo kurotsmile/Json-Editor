@@ -201,48 +201,48 @@ public class Json_Properties : MonoBehaviour
         app.carrot.play_sound_click();
         box_sub = app.carrot.Create_Box();
         box_sub.set_icon(app.carrot.icon_carrot_add);
-        box_sub.set_title("Add built-in values to the property's value");
+        box_sub.set_title(app.carrot.L("val_built_in","Add built-in values to the property's value"));
 
         Carrot_Box_Item item_color_hex = box_sub.create_item();
         item_color_hex.set_icon(app.carrot.sp_icon_theme_color);
-        item_color_hex.set_title("Add value color Hex");
-        item_color_hex.set_tip("Add color value in hex color table");
+        item_color_hex.set_title(app.carrot.L("val_cololor_hex", "Add Hex color value"));
+        item_color_hex.set_tip(app.carrot.L("val_cololor_hex_tip", "Add color value in hex color table"));
         item_color_hex.set_act(() => app.carrot.theme.Show_box_change_color(Act_add_color_hex_for_field));
 
         Carrot_Box_Item item_color_rgb = box_sub.create_item();
         item_color_rgb.set_icon(app.carrot.sp_icon_mixer_color);
-        item_color_rgb.set_title("Add value color RGB");
-        item_color_rgb.set_tip("Add color value in RGB color table");
+        item_color_rgb.set_title(app.carrot.L("val_color_rgb", "Add RGB color values"));
+        item_color_rgb.set_tip(app.carrot.L("val_color_rgb_tip", "Add color values to the RGB palette"));
         item_color_rgb.set_act(() => app.carrot.theme.Show_box_change_color(Act_add_color_rgb_for_field));
 
         Carrot_Box_Item item_color_hsv = box_sub.create_item();
         item_color_hsv.set_icon(app.carrot.sp_icon_table_color);
-        item_color_hsv.set_title("Add value color HSV");
-        item_color_hsv.set_tip("Add color value in HSV color table");
+        item_color_hsv.set_title(app.carrot.L("val_color_hsv", "Add HSV color value"));
+        item_color_hsv.set_tip(app.carrot.L("val_color_hsv_tip", "Add color values to the HSV palette"));
         item_color_hsv.set_act(() => app.carrot.theme.Show_box_change_color(Act_add_color_hsv_for_field));
 
         Carrot_Box_Item item_date = box_sub.create_item();
         item_date.set_icon(sp_icon_properties_date);
-        item_date.set_title("Add value date");
-        item_date.set_tip("Add the current time price to the data field");
+        item_date.set_title(app.carrot.L("val_date", "Add date value"));
+        item_date.set_tip(app.carrot.L("val_date_tip", "Add the current time value to the data field"));
         item_date.set_act(() => Act_add_date_for_field(item_val));
 
         Carrot_Box_Item item_bool_true = box_sub.create_item();
         item_bool_true.set_icon(sp_icon_properties_bool);
-        item_bool_true.set_title("Add bool value TRUE");
-        item_bool_true.set_tip("Add the logical value true");
+        item_bool_true.set_title(app.carrot.L("val_true", "Add bool value TRUE"));
+        item_bool_true.set_tip(app.carrot.L("val_true_tip", "Add logical value - true"));
         item_bool_true.set_act(() => Act_add_bool_for_field(true));
 
         Carrot_Box_Item item_bool_false = box_sub.create_item();
         item_bool_false.set_icon(sp_icon_properties_bool);
-        item_bool_false.set_title("Add bool value FALSE");
-        item_bool_false.set_tip("Add the logical value false");
+        item_bool_false.set_title(app.carrot.L("val_false", "Add bool value FALSE"));
+        item_bool_false.set_tip(app.carrot.L("val_false_tip", "Add logical value - false"));
         item_bool_false.set_act(() => Act_add_bool_for_field(false));
 
         Carrot_Box_Item item_null = box_sub.create_item();
         item_null.set_icon(sp_icon_properties_null);
-        item_null.set_title("Add null value");
-        item_null.set_tip("Adding an empty value represents the absence of an object or property");
+        item_null.set_title(app.carrot.L("val_null", "Add null value"));
+        item_null.set_tip(app.carrot.L("val_null_tip", "Adding an empty value represents the absence of an object or property"));
         item_null.set_act(() => Act_add_null_for_field());
     }
 
