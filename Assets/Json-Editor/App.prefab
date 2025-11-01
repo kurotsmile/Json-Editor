@@ -2838,7 +2838,6 @@ GameObject:
   - component: {fileID: 8446888684771442792}
   - component: {fileID: 6230230060965458044}
   - component: {fileID: 3392668259733636396}
-  - component: {fileID: 3844366806917379129}
   m_Layer: 0
   m_Name: App
   m_TagString: Untagged
@@ -2883,7 +2882,7 @@ MonoBehaviour:
   manager_Project: {fileID: 8446888684771442792}
   file: {fileID: 0}
   help: {fileID: 6230230060965458044}
-  ads: {fileID: 3844366806917379129}
+  ads: {fileID: 0}
   sp_icon_save: {fileID: 21300000, guid: 69ebf96cc3d4592429c77c9931d0a8eb, type: 3}
   sp_icon_save_as: {fileID: 21300000, guid: 0988896d74c3b2a44acafbd1fddecf53, type: 3}
   sp_icon_project: {fileID: 21300000, guid: d99adeef468f88b4bb9cec5cd29be0a1, type: 3}
@@ -3019,25 +3018,6 @@ MonoBehaviour:
   - {fileID: 6955431593232260888}
   - {fileID: 4846569352561643006}
   List_img_change_icon_lang: []
---- !u!114 &3844366806917379129
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3495898760829344998}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8cf48dcc17672b34f83b2de7606a9b71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  count_step_show_interstitial: 5
-  emplement_Ads:
-  - {fileID: 2029057652545516327}
-  app_key: 20b37c30d
-  id_banner: nexntzsqdn19xo6e
-  id_video: 55re3ub20g7cdgmu
-  id_rewarded: vzia9gi2oo2t1kcv
 --- !u!1 &3583417957034066491
 GameObject:
   m_ObjectHideFlags: 0
