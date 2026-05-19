@@ -2,6 +2,7 @@ using Carrot;
 using SimpleFileBrowser;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -19,6 +20,7 @@ public class Manager_Project : MonoBehaviour
     private Carrot_Window_Input box_inp = null;
     private int sel_project_index = -1;
     private IDictionary data_project_temp = null;
+    private const string OnlineProjectTable = "json_designs";
 
     public void On_load()
     {
@@ -135,9 +137,10 @@ public class Manager_Project : MonoBehaviour
         string id_user_login = this.app.carrot.user.get_id_user_login();
         if (id_user_login != "")
         {
-            StructuredQuery q = new("code");
+            StructuredQuery q = new(OnlineProjectTable);
             q.Add_where("user_id", Query_OP.EQUAL, id_user_login);
-            app.carrot.server.Get_doc(q.ToJson(), Act_list_online_done, Act_server_fail);
+            q.Add_order("updated_at", Query_Order_Direction.DESCENDING);
+            app.carrot.hub.Get_doc(q.ToJson(), Act_list_online_done, Act_server_fail);
         }
     }
 
@@ -161,7 +164,7 @@ public class Manager_Project : MonoBehaviour
                 btn_download.set_icon(app.carrot.icon_carrot_download);
                 btn_download.set_act(() => Download_project(data));
 
-                string s_link_share = app.carrot.mainhost + "/?p=code&id=" + data["id"].ToString();
+                string s_link_share = app.carrot.mainhost + "/?page=json_designer&id=" + data["id"].ToString();
                 Carrot_Box_Btn_Item btn_share = item_project.create_item();
                 btn_share.set_color(app.carrot.color_highlight);
                 btn_share.set_icon(app.carrot.sp_icon_share);
@@ -185,10 +188,10 @@ public class Manager_Project : MonoBehaviour
     {
         app.carrot.play_sound_click();
         app.carrot.show_loading();
-        StructuredQuery q = new("code");
+        StructuredQuery q = new(OnlineProjectTable);
         q.Add_where("id", Query_OP.EQUAL, s_id);
         q.Set_limit(1);
-        app.carrot.server.Get_doc(q.ToJson(), Act_get_project_by_id,Act_server_fail);
+        app.carrot.hub.Get_doc(q.ToJson(), Act_get_project_by_id,Act_server_fail);
     }
 
     private void Act_get_project_by_id(string s_data)
@@ -241,7 +244,7 @@ public class Manager_Project : MonoBehaviour
 
     public void Show_project_online(string id_project)
     {
-        StructuredQuery q = new(app.carrot.Carrotstore_AppId);
+        StructuredQuery q = new(OnlineProjectTable);
         q.Add_where("project_id", Query_OP.EQUAL, id_project);
     }
 
@@ -269,7 +272,7 @@ public class Manager_Project : MonoBehaviour
         app.carrot.Show_msg(app.carrot.L("del", "Delete"), app.carrot.L("delete_project_question","Are you sure you want to delete this project?"), () =>
         {
             app.carrot.show_loading();
-            app.carrot.server.Delete_Doc("code", s_id_project, Act_delete_project_online_done, Act_server_fail);
+            this.Delete_online_project_by_id(s_id_project);
             Destroy(obj_item);
         });
     }
@@ -480,13 +483,15 @@ public class Manager_Project : MonoBehaviour
             IDictionary data = (IDictionary)Json.Deserialize(s_data);
             data["code_theme"] = "docco.min.css";
             data["code_type"] = "json";
-            data["code"] = data["code"].ToString().Replace("\"", "\\\"");
+            data["code"] = data["code"].ToString();
+            data["name"] = data["title"].ToString();
             data["user_id"] = app.carrot.user.get_id_user_login();
             data["user_lang"] = app.carrot.user.get_lang_user_login();
             data["status"] = "pending";
+            data["updated_at"] = DateTime.UtcNow.ToString("o");
+            if (data["created_at"] == null) data["created_at"] = data["updated_at"];
 
-            string s_data_json = app.carrot.server.Convert_IDictionary_to_json(data);
-            app.carrot.server.Add_Document_To_Collection("code", data["id"].ToString(), s_data_json, Act_upload_project_done, Act_server_fail);
+            this.Insert_online_project(data);
         });
     }
 
@@ -501,6 +506,48 @@ public class Manager_Project : MonoBehaviour
         app.carrot.hide_loading();
         app.carrot.Show_msg("Error", s_error, Msg_Icon.Error);
         app.carrot.play_vibrate();
+    }
+
+    private void Insert_online_project(IDictionary data)
+    {
+        IDictionary payload = new Dictionary<string, object>
+        {
+            { "table", OnlineProjectTable },
+            { "data", data }
+        };
+        StartCoroutine(Post_worker_json("/inster_table", payload, Act_upload_project_done, Act_server_fail));
+    }
+
+    private void Delete_online_project_by_id(string s_id_project)
+    {
+        IDictionary condition = new Dictionary<string, object>
+        {
+            { "id", s_id_project }
+        };
+
+        IDictionary payload = new Dictionary<string, object>
+        {
+            { "table", OnlineProjectTable },
+            { "data", condition }
+        };
+        StartCoroutine(Post_worker_json("/delete_table", payload, Act_delete_project_online_done, Act_server_fail));
+    }
+
+    private IEnumerator Post_worker_json(string path, IDictionary payload, Action<string> act_done, Action<string> act_fail)
+    {
+        string url = app.carrot.url_worker + path;
+        byte[] body = System.Text.Encoding.UTF8.GetBytes(Json.Serialize(payload));
+        UnityWebRequest req = new(url, "POST");
+        req.uploadHandler = new UploadHandlerRaw(body);
+        req.downloadHandler = new DownloadHandlerBuffer();
+        req.SetRequestHeader("Content-Type", "application/json");
+
+        yield return req.SendWebRequest();
+
+        if (req.result == UnityWebRequest.Result.Success)
+            act_done?.Invoke(req.downloadHandler.text);
+        else
+            act_fail?.Invoke(string.IsNullOrEmpty(req.downloadHandler.text) ? req.error : req.downloadHandler.text);
     }
 
     internal void Update_project_curent()
